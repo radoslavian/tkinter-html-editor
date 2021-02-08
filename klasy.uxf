@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>11</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>66</x>
+      <y>660</y>
+      <w>297</w>
+      <h>264</h>
+    </coordinates>
+    <panel_attributes>SpecialCharactersFrame
+-
+# entity_switch_rb :
+  Tkinter.Checkbutton
+# entity_switch_var : int
+# bt_frame : tk.Frame
+- special_chars[*] : tk.Button
+-
++ __init__(header : str, cols : int = 1)
++ add_char_bt(char: str,
+  callback : lambda: get_char())
+// EditHtml.insert_text(lambda: self.get_char())
+// function-obj. as arg.
++ get_char(char, edit_htm.insert_text) : lambda
++ def_chars(edit_fld)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>110</x>
+      <y>572</y>
+      <w>110</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>tkinter.Frame</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>154</x>
+      <y>594</y>
+      <w>33</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>693</x>
+      <y>638</y>
+      <w>110</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>tkinter.Frame
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>572</x>
+      <y>715</y>
+      <w>264</w>
+      <h>341</h>
+    </coordinates>
+    <panel_attributes>MainApp
+-
+# mw_menu
+# doc_path
+# config_file_path
+//# doc_status - pole tekstowe ma własną flagę
+//# app_config
+-
+// Co mam tu do konfigurowania?
+__init__(self, parent,
+ path_to_doc=None)
++ save_config(file)
++ load_config(file)
++ new_document()
++ open_document()
++ save()
++ save_as()
++ view_in_browser(html_code : Str)
++ add_special_character(char,
+  entity)
++ set_mw_title()
++ quit()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>737</x>
+      <y>660</y>
+      <w>33</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>352</x>
+      <y>737</y>
+      <w>242</w>
+      <h>44</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=#1 special_chars_fr</panel_attributes>
+    <additional_attributes>200.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>660</x>
+      <y>451</y>
+      <w>275</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>MainTabs
+-
+__init__(parent)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>825</x>
+      <y>528</y>
+      <w>121</w>
+      <h>209</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1 main_tabs</panel_attributes>
+    <additional_attributes>10.0;170.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>704</x>
+      <y>363</y>
+      <w>110</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>ttk.Notebook</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>748</x>
+      <y>385</y>
+      <w>33</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1001</x>
+      <y>638</y>
+      <w>297</w>
+      <h>253</h>
+    </coordinates>
+    <panel_attributes>ToolBar
+-
+# standard_tools
+# fonts
+# lists
+# array
+- widgets[*] : tk.Widget
+- user_widgets[*] : tk.Widget
+-
+// uses pack() to add items in a row, 
+// one after another,
+// in case I had to manually add a widget.
++ add_widget(widget,
+  user_wdg=True)
++ add_tools(tools : tuple)
+// a reference to
+// the edit_html.edit_field
++ standard_tools(edit_fld : tk.Text) 
++ font()
+//... other default sets
+//... other default sets</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1188</x>
+      <y>572</y>
+      <w>33</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1144</x>
+      <y>550</y>
+      <w>110</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>tkinter.Frame</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>880</x>
+      <y>330</y>
+      <w>121</w>
+      <h>143</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1 ~edit_html</panel_attributes>
+    <additional_attributes>10.0;110.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>979</x>
+      <y>1045</y>
+      <w>242</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>IconButton
+-
+- icon_path
+- icon_obj
+-
++ __init__(self, parent, text, icon,
+  command)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1056</x>
+      <y>968</y>
+      <w>110</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>tkinter.Button</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1100</x>
+      <y>990</y>
+      <w>33</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1210</x>
+      <y>880</y>
+      <w>99</w>
+      <h>187</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=widgets *</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>825</x>
+      <y>759</y>
+      <w>198</w>
+      <h>44</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1 - task_bar</panel_attributes>
+    <additional_attributes>10.0;10.0;160.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>891</x>
+      <y>66</y>
+      <w>297</w>
+      <h>275</h>
+    </coordinates>
+    <panel_attributes>EditHtml
+-
+~ tool_tabs : ttk.Notebook
+~ edit_field : tk.Text
+-
++ add_tool_tab(tool_bar : ToolTbar,
+  name : str)
+// should insert a single tag, for i. &lt;br /&gt;
+// if no text is selected
+// and only opening tag is given
++ insert_tag(init_tag, [opts,
+  closing_tag : bool])
++ insert_comment()
+// Displays dialog:
++ insert_tag_dialog(dialog_obj)
++ insert_text(text : Str)
+// in case the edit_field changes Class
++ get_contents() : Str</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>979</x>
+      <y>22</y>
+      <w>33</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>946</x>
+      <y>0</y>
+      <w>110</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>tkinter.Frame</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>66</x>
+      <y>957</y>
+      <w>341</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>edit_html.insert_text(lambda: self.get_char())
+bg=white</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>165</x>
+      <y>913</y>
+      <w>33</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>374</x>
+      <y>363</y>
+      <w>110</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>Tk.Frame</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>275</x>
+      <y>451</y>
+      <w>209</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>HtmlPreview
+-
+# preview_frame
+-
+- __load_image(self, url)
++ preview(html_code : Str)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>396</x>
+      <y>385</y>
+      <w>33</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>473</x>
+      <y>495</y>
+      <w>209</w>
+      <h>44</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1 
+m2=1 ~html_view</panel_attributes>
+    <additional_attributes>170.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>319</x>
+      <y>979</y>
+      <w>682</w>
+      <h>121</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>600.0;90.0;160.0;90.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>1320</x>
+      <y>583</y>
+      <w>231</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>each button gets a callback
+with arguments to insert_tag():
+lambda: insert_tag(init_tag, ...)
+bg=white</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1287</x>
+      <y>649</y>
+      <w>176</w>
+      <h>121</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>140.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1034</x>
+      <y>330</y>
+      <w>44</w>
+      <h>330</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;280.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>605</x>
+      <y>66</y>
+      <w>187</w>
+      <h>275</h>
+    </coordinates>
+    <panel_attributes>InsertImgDialog
+-
++ result
+# img_path_ent
+# alt_ent
+# height_ent
+# width_ent
+# style_ent
+# preview_lbl : tk.Label
+# preview_lbl.img
+  : PhotoImage
+# real_path_ck :
+  tkCheckBox
+-
+body()
+apply()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>781</x>
+      <y>66</y>
+      <w>132</w>
+      <h>44</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>100.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1320</x>
+      <y>66</y>
+      <w>176</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>InsertHyperlinkDialog
+-
++ result
+-
++body()
++apply()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1177</x>
+      <y>66</y>
+      <w>165</w>
+      <h>44</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;10.0;130.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>583</x>
+      <y>0</y>
+      <w>187</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>tkSimpleDialog.Dialog</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>693</x>
+      <y>22</y>
+      <w>33</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1419</x>
+      <y>22</y>
+      <w>33</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1364</x>
+      <y>0</y>
+      <w>187</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>tkSimpleDialog.Dialog</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>363</x>
+      <y>55</y>
+      <w>154</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>Add an option for 
+a relative path
+to the image:
+os.path.relpath()
+bg=white</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>506</x>
+      <y>88</y>
+      <w>121</w>
+      <h>44</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;90.0;20.0</additional_attributes>
+  </element>
+</diagram>
