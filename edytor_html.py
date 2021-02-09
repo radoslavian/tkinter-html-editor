@@ -12,17 +12,45 @@ from tkSimpleDialog import Dialog
 from urllib.request import urlopen
 from PIL import Image, ImageTk
 
-class EdytorHTML(tk.Frame):
-    def __init__(self, parent, title, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
-        self.main_win = parent
 
-    def _setup_data(self):
-        self.file_types = (
+file_types = (
             ('Pliki html', ('.htm', '.html')),
             ('Pliki tekstowe', '.txt'),
             ('Wszystkie pliki', '*')
-        )
+)
+
+class TextFieldModified(Exception): pass
+
+class EditField(ScrolledText):
+    def __init__(self, parent):
+        ScrolledText.__init__(self, parent)
+
+    def load_doc(self, path):
+        if not path: return
+        try:
+            html_file = open(path)
+        except IOError:
+            print("Add file_not_found msg")
+            raise
+        else:
+            self.insert_if_empty(html_file.read())
+        finally:
+            html_file.close()
+
+    def is_empty(self) -> bool:
+        return True if self.compare("end-1c", "==", "1.0") else False
+
+    def insert_if_empty(self, content):
+        '''Inserts text only if the text edit field is empty
+        and unmodified.'''
+
+        if self.edit_modified() or not self.is_empty():
+            raise TextFieldModified(
+                'Text field {0} is non-empty or '.format(self)
+                + 'modified.')
+        else:
+            self.insert('1.0', content)
+            self.edit_modified(False)
 
 
 class HtmlPreview(tk.Frame):
@@ -135,23 +163,19 @@ class InsertImgDialog(Dialog):
                     preview_lbl.img = ImageTk.PhotoImage(
                         Image.open(self.path_to_image))
 
-                except(ImportError, Exception) as e:
+                except (tk.TclError, OSError) as e:
                     messagebox.showerror("Can't preview image file:", e)
 
                     if preview_lbl.img is not self.no_img_available:
                         preview_lbl.img = self.no_img_available
                         preview_lbl.configure(image=preview_lbl.img)
 
-            except Exception as err:
-                messagebox.showerror("An exception has occured:", e)
-
             adjust_preview()
-
 
         try:
             self.no_img_available = tk.PhotoImage(
                 file='icons/no_image_available.png')
-        except Exception as e:
+        except tk.TclError as e:
             print(e)
             self.no_img_available = ''
 
@@ -330,7 +354,7 @@ class EditHtml(tk.Frame):
         tk.Frame.__init__(self, parent, *args, **kwargs)
 
         self.tool_tabs = ttk.Notebook(self)
-        self.edit_field = ScrolledText(self)
+        self.edit_field = EditField(self)
 
         main_tools = ToolBar(self)
         main_tools.standard_tools(self)
@@ -343,6 +367,7 @@ class EditHtml(tk.Frame):
         self.tool_tabs.pack(anchor='nw', side='top')
         self.edit_field.pack(anchor='sw', side='bottom',
                              expand=True, fill='both')
+
 
     def get_selection_indices(self):
         try:
@@ -564,19 +589,110 @@ class MainTabs(ttk.Notebook):
 
         self.bind("<<NotebookTabChanged>>", on_tab_change)
 
+
+class MenuBar(tk.Menu):
+    def __init__(self, parent, app):
+        tk.Menu.__init__(self, parent)
+        self.parent = parent
+
+        # Space for defining menus:
+        # File menu:
+        self.file_menu = tk.Menu(self, tearoff=0)
+        self.file_menu.add_command(label='Open',
+                                   command=app.open_document)
+        self.file_menu.add_command(label='Save',
+                                   command=app.save_document)
+        self.file_menu.add_command(label='Save as',
+                                   command=app.save_document_as)
+        self.file_menu.add_command(label='Exit',
+                                   command=app._quit)
+
+        # Space for adding menus to the menubar:
+        self.add_cascade(label='File', menu=self.file_menu)
+
+
+class MainApp(tk.Frame):
+    def __init__(self, parent, path_to_doc = None):
+        tk.Frame.__init__(self, parent)
+        self.parent = parent
+        self.html_file_path = None
+        self.app_name = 'Basic HTML Editor'
+
+        parent.menu = MenuBar(parent, self)
+        parent.config(menu=parent.menu)
+        self._arrange_subframes()
+
+        if path_to_doc:
+            self.open_document(path_to_doc)
+        self.set_mw_title()
+
+    def _arrange_subframes(self):
+        self.spc_frame = SpecialCharactersFrame(self,
+                                                'Special characters:',
+                                                cols=3)
+        self.main_tabs = MainTabs(self)
+        self.spc_frame.def_chars(self.main_tabs.edit_html.insert_text)
+
+        self.spc_frame.grid(row=0, column=0, sticky='nw')
+        self.main_tabs.grid(row=0, column=1, sticky='nwse')
+        tk.Grid.columnconfigure(self.parent, 1, weight=1)
+        tk.Grid.rowconfigure(self.parent, 0, weight=1)
+        self.grid()
+
+    def open_document(self, path=None):
+        if path:
+            filename = path
+        else:
+            filename = fd.askopenfilename(
+                initialdir='~/Dokumenty/Programy/kurs_html_css/',
+                title='Select file')
+        try:
+            self.main_tabs.edit_html.edit_field.load_doc(filename)
+        except TextFieldModified:
+            MainApp(tk.Toplevel(), filename)
+        except IOError:
+            messagebox.showerror(title='I/O Error',
+                                 message='Error while attempting '+ 
+                                 'to load file.')
+        else:
+            self.html_file_path = filename
+
+    def _save_doc(self, path=None):
+        '''Helper for save_document and save_document_as.'''
+        pass
+
+    def save_document(self):
+        if not self.main_tabs.edit_html.edit_field.edit_modified(): return
+
+    def save_as_decorator(self, fn):
+        pass
+
+    def save_document_as(self, fn):
+        file_path = fd.asksaveasfilename()
+        if file_path:
+            try:
+                self._save_doc(file_path)
+            except IOError:
+                messagebox.showerror(title='Error',
+                    message='Error while attempting to save file.')
+            else:
+                self.html_file_path = file_path
+                self.main_tabs.edit_html.edit_field.edit_modified(False)
+
+    def set_mw_title(self):
+        if self.html_file_path:
+            title_addon = ' - ' + os.path.basename(self.html_file_path)
+        else:
+            title_addon = ' - new document'
+
+        self.parent.title(self.app_name + title_addon)
+
+    def _quit(self):
+        self.master.destroy()
+
+
 if __name__ == '__main__':
     root = tk.Tk()
-    spc_frame = SpecialCharactersFrame(root,
-                                       'Special characters:',
-                                       cols=3)
-    main_tabs = MainTabs(root)
-
-    spc_frame.def_chars(main_tabs.edit_html.insert_text)
-
-    spc_frame.grid(row=0, column=0, sticky='nw')
-    main_tabs.grid(row=0, column=1, sticky='nwse')
-    tk.Grid.columnconfigure(root, 1, weight=1)
-    tk.Grid.rowconfigure(root, 0, weight=1)
-
-    root.mainloop()
+    app = MainApp(root)
+    tk.mainloop()
 

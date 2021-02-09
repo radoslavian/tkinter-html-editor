@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="14.2">
-  <zoom_level>11</zoom_level>
+  <zoom_level>10</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>66</x>
-      <y>660</y>
-      <w>297</w>
-      <h>264</h>
+      <x>0</x>
+      <y>600</y>
+      <w>270</w>
+      <h>240</h>
     </coordinates>
     <panel_attributes>SpecialCharactersFrame
 -
@@ -29,10 +29,10 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>110</x>
-      <y>572</y>
-      <w>110</w>
-      <h>33</h>
+      <x>40</x>
+      <y>520</y>
+      <w>100</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>tkinter.Frame</panel_attributes>
     <additional_attributes/>
@@ -40,10 +40,10 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>154</x>
-      <y>594</y>
-      <w>33</w>
-      <h>88</h>
+      <x>80</x>
+      <y>540</y>
+      <w>30</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
@@ -51,27 +51,28 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>693</x>
-      <y>638</y>
-      <w>110</w>
-      <h>33</h>
+      <x>570</x>
+      <y>580</y>
+      <w>100</w>
+      <h>30</h>
     </coordinates>
-    <panel_attributes>tkinter.Frame
+    <panel_attributes>tk.Frame
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>572</x>
-      <y>715</y>
-      <w>264</w>
-      <h>341</h>
+      <x>460</x>
+      <y>650</y>
+      <w>240</w>
+      <h>320</h>
     </coordinates>
     <panel_attributes>MainApp
 -
-# mw_menu
-# doc_path
+# mw_title
+// html file path
+# html_file_path
 # config_file_path
 //# doc_status - pole tekstowe ma własną flagę
 //# app_config
@@ -95,10 +96,10 @@ __init__(self, parent,
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>737</x>
-      <y>660</y>
-      <w>33</w>
-      <h>77</h>
+      <x>610</x>
+      <y>600</y>
+      <w>30</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -106,10 +107,10 @@ __init__(self, parent,
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>352</x>
-      <y>737</y>
-      <w>242</w>
-      <h>44</h>
+      <x>260</x>
+      <y>670</y>
+      <w>220</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1
@@ -119,10 +120,10 @@ m2=#1 special_chars_fr</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>660</x>
-      <y>451</y>
-      <w>275</w>
-      <h>88</h>
+      <x>540</x>
+      <y>410</y>
+      <w>250</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>MainTabs
 -
@@ -132,10 +133,10 @@ __init__(parent)</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>825</x>
-      <y>528</y>
-      <w>121</w>
-      <h>209</h>
+      <x>690</x>
+      <y>480</y>
+      <w>110</w>
+      <h>190</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1
@@ -145,10 +146,10 @@ m2=1 main_tabs</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>704</x>
-      <y>363</y>
-      <w>110</w>
-      <h>33</h>
+      <x>580</x>
+      <y>330</y>
+      <w>100</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>ttk.Notebook</panel_attributes>
     <additional_attributes/>
@@ -156,10 +157,10 @@ m2=1 main_tabs</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>748</x>
-      <y>385</y>
-      <w>33</w>
-      <h>88</h>
+      <x>620</x>
+      <y>350</y>
+      <w>30</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
@@ -167,10 +168,10 @@ m2=1 main_tabs</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1001</x>
-      <y>638</y>
-      <w>297</w>
-      <h>253</h>
+      <x>850</x>
+      <y>580</y>
+      <w>270</w>
+      <h>230</h>
     </coordinates>
     <panel_attributes>ToolBar
 -
@@ -198,10 +199,10 @@ m2=1 main_tabs</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1188</x>
-      <y>572</y>
-      <w>33</w>
-      <h>88</h>
+      <x>1020</x>
+      <y>520</y>
+      <w>30</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
@@ -209,10 +210,10 @@ m2=1 main_tabs</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1144</x>
-      <y>550</y>
-      <w>110</w>
-      <h>33</h>
+      <x>980</x>
+      <y>500</y>
+      <w>100</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>tkinter.Frame</panel_attributes>
     <additional_attributes/>
@@ -220,10 +221,10 @@ m2=1 main_tabs</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>880</x>
-      <y>330</y>
-      <w>121</w>
-      <h>143</h>
+      <x>740</x>
+      <y>300</y>
+      <w>110</w>
+      <h>130</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1
@@ -233,10 +234,10 @@ m2=1 ~edit_html</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>979</x>
-      <y>1045</y>
-      <w>242</w>
-      <h>110</h>
+      <x>830</x>
+      <y>950</y>
+      <w>220</w>
+      <h>100</h>
     </coordinates>
     <panel_attributes>IconButton
 -
@@ -250,10 +251,10 @@ m2=1 ~edit_html</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1056</x>
-      <y>968</y>
-      <w>110</w>
-      <h>33</h>
+      <x>900</x>
+      <y>880</y>
+      <w>100</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>tkinter.Button</panel_attributes>
     <additional_attributes/>
@@ -261,10 +262,10 @@ m2=1 ~edit_html</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1100</x>
-      <y>990</y>
-      <w>33</w>
-      <h>77</h>
+      <x>940</x>
+      <y>900</y>
+      <w>30</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -272,10 +273,10 @@ m2=1 ~edit_html</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1210</x>
-      <y>880</y>
-      <w>99</w>
-      <h>187</h>
+      <x>1040</x>
+      <y>800</y>
+      <w>90</w>
+      <h>170</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1
@@ -285,10 +286,10 @@ m2=widgets *</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>825</x>
-      <y>759</y>
-      <w>198</w>
-      <h>44</h>
+      <x>690</x>
+      <y>690</y>
+      <w>180</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1
@@ -298,15 +299,14 @@ m2=1 - task_bar</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>891</x>
-      <y>66</y>
-      <w>297</w>
-      <h>275</h>
+      <x>750</x>
+      <y>60</y>
+      <w>270</w>
+      <h>250</h>
     </coordinates>
     <panel_attributes>EditHtml
 -
 ~ tool_tabs : ttk.Notebook
-~ edit_field : tk.Text
 -
 + add_tool_tab(tool_bar : ToolTbar,
   name : str)
@@ -326,10 +326,10 @@ m2=1 - task_bar</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>979</x>
-      <y>22</y>
-      <w>33</w>
-      <h>66</h>
+      <x>830</x>
+      <y>20</y>
+      <w>30</w>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -337,10 +337,10 @@ m2=1 - task_bar</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>946</x>
+      <x>800</x>
       <y>0</y>
-      <w>110</w>
-      <h>33</h>
+      <w>100</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>tkinter.Frame</panel_attributes>
     <additional_attributes/>
@@ -348,10 +348,10 @@ m2=1 - task_bar</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>66</x>
-      <y>957</y>
-      <w>341</w>
-      <h>33</h>
+      <x>0</x>
+      <y>870</y>
+      <w>310</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>edit_html.insert_text(lambda: self.get_char())
 bg=white</panel_attributes>
@@ -360,10 +360,10 @@ bg=white</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>165</x>
-      <y>913</y>
-      <w>33</w>
-      <h>66</h>
+      <x>90</x>
+      <y>830</y>
+      <w>30</w>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -371,10 +371,10 @@ bg=white</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>374</x>
-      <y>363</y>
-      <w>110</w>
-      <h>33</h>
+      <x>280</x>
+      <y>330</y>
+      <w>100</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>Tk.Frame</panel_attributes>
     <additional_attributes/>
@@ -382,10 +382,10 @@ bg=white</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>275</x>
-      <y>451</y>
-      <w>209</w>
-      <h>110</h>
+      <x>190</x>
+      <y>410</y>
+      <w>190</w>
+      <h>100</h>
     </coordinates>
     <panel_attributes>HtmlPreview
 -
@@ -398,10 +398,10 @@ bg=white</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>396</x>
-      <y>385</y>
-      <w>33</w>
-      <h>88</h>
+      <x>300</x>
+      <y>350</y>
+      <w>30</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
@@ -409,10 +409,10 @@ bg=white</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>473</x>
-      <y>495</y>
-      <w>209</w>
-      <h>44</h>
+      <x>370</x>
+      <y>450</y>
+      <w>190</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1 
@@ -422,10 +422,10 @@ m2=1 ~html_view</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>319</x>
-      <y>979</y>
-      <w>682</w>
-      <h>121</h>
+      <x>230</x>
+      <y>890</y>
+      <w>620</w>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>600.0;90.0;160.0;90.0;10.0;10.0</additional_attributes>
@@ -433,10 +433,10 @@ m2=1 ~html_view</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1320</x>
-      <y>583</y>
-      <w>231</w>
-      <h>77</h>
+      <x>1140</x>
+      <y>530</y>
+      <w>210</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>each button gets a callback
 with arguments to insert_tag():
@@ -447,10 +447,10 @@ bg=white</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1287</x>
-      <y>649</y>
-      <w>176</w>
-      <h>121</h>
+      <x>1110</x>
+      <y>590</y>
+      <w>160</w>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>140.0;10.0;10.0;90.0</additional_attributes>
@@ -458,10 +458,10 @@ bg=white</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1034</x>
-      <y>330</y>
-      <w>44</w>
-      <h>330</h>
+      <x>880</x>
+      <y>300</y>
+      <w>40</w>
+      <h>300</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1
@@ -471,10 +471,10 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>605</x>
-      <y>66</y>
-      <w>187</w>
-      <h>275</h>
+      <x>490</x>
+      <y>60</y>
+      <w>170</w>
+      <h>250</h>
     </coordinates>
     <panel_attributes>InsertImgDialog
 -
@@ -497,10 +497,10 @@ apply()</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>781</x>
-      <y>66</y>
-      <w>132</w>
-      <h>44</h>
+      <x>650</x>
+      <y>60</y>
+      <w>120</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=1
@@ -510,10 +510,10 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1320</x>
-      <y>66</y>
-      <w>176</w>
-      <h>110</h>
+      <x>1140</x>
+      <y>60</y>
+      <w>160</w>
+      <h>100</h>
     </coordinates>
     <panel_attributes>InsertHyperlinkDialog
 -
@@ -526,10 +526,10 @@ m2=*</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1177</x>
-      <y>66</y>
-      <w>165</w>
-      <h>44</h>
+      <x>1010</x>
+      <y>60</y>
+      <w>150</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=1
@@ -539,10 +539,10 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>583</x>
+      <x>470</x>
       <y>0</y>
-      <w>187</w>
-      <h>33</h>
+      <w>170</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>tkSimpleDialog.Dialog</panel_attributes>
     <additional_attributes/>
@@ -550,10 +550,10 @@ m2=*</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>693</x>
-      <y>22</y>
-      <w>33</w>
-      <h>66</h>
+      <x>570</x>
+      <y>20</y>
+      <w>30</w>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -561,10 +561,10 @@ m2=*</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1419</x>
-      <y>22</y>
-      <w>33</w>
-      <h>66</h>
+      <x>1230</x>
+      <y>20</y>
+      <w>30</w>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
@@ -572,10 +572,10 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1364</x>
+      <x>1180</x>
       <y>0</y>
-      <w>187</w>
-      <h>33</h>
+      <w>170</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>tkSimpleDialog.Dialog</panel_attributes>
     <additional_attributes/>
@@ -583,10 +583,10 @@ m2=*</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>363</x>
-      <y>55</y>
-      <w>154</w>
-      <h>88</h>
+      <x>270</x>
+      <y>50</y>
+      <w>140</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>Add an option for 
 a relative path
@@ -598,12 +598,110 @@ bg=white</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>506</x>
-      <y>88</y>
-      <w>121</w>
-      <h>44</h>
+      <x>400</x>
+      <y>80</y>
+      <w>110</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
     <additional_attributes>10.0;10.0;90.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>400</x>
+      <y>1110</y>
+      <w>200</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>MenuBar
+-
+# file_menu
+# edit_menu</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>500</x>
+      <y>1040</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>tkinter.Menu</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>540</x>
+      <y>1060</y>
+      <w>30</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>450</x>
+      <y>960</y>
+      <w>110</w>
+      <h>170</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=1 - menu_bar</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1170</x>
+      <y>180</y>
+      <w>140</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>EditField
+-
++ load_doc(path)
++ is_empty() : bool</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1010</x>
+      <y>180</y>
+      <w>180</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1 ~edit_field</panel_attributes>
+    <additional_attributes>10.0;10.0;160.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1350</x>
+      <y>180</y>
+      <w>150</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>tkinter.ScrolledText</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1300</x>
+      <y>180</y>
+      <w>70</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>50.0;10.0;10.0;10.0</additional_attributes>
   </element>
 </diagram>
