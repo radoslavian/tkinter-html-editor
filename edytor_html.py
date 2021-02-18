@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-import os
 import io
+import os
 import sys
 import pathlib
 import tkinter as tk
@@ -12,18 +11,33 @@ from tkSimpleDialog import Dialog
 from urllib.request import urlopen
 from PIL import Image, ImageTk
 
-
 file_types = (
-            ('Pliki html', ('.htm', '.html')),
-            ('Pliki tekstowe', '.txt'),
-            ('Wszystkie pliki', '*')
+            ('Html files', ('.htm', '.html')),
+            ('Text files', '.txt'),
+            ('All files', '*')
 )
 
+def get_ev_cb(obj, event : str):
+    '''Get event callback
+    Returns callback for tkinter events such as cut, copy, paste.
+    obj - tkinter class instance with focus_get() method'''
+    return lambda: obj.focus_get().event_generate(event)
+
+def base_file_name(path : 'str, bytes, os.PathLike'):
+    try:
+        file_name = os.path.basename(path)
+    except TypeError:
+        file_name = None
+    return file_name
+
 class TextFieldModified(Exception): pass
+class UnsavedDocument(Exception): pass
+class DocumentSaveCancelled(UnsavedDocument): pass
 
 class EditField(ScrolledText):
-    def __init__(self, parent):
-        ScrolledText.__init__(self, parent)
+    def __init__(self, parent, *pargs, **kwargs):
+        ScrolledText.__init__(self, parent, undo=True, maxundo=-1,
+                              autoseparators=True, *pargs, **kwargs)
 
     def load_doc(self, path):
         if not path: return
@@ -37,12 +51,12 @@ class EditField(ScrolledText):
         finally:
             html_file.close()
 
-    def is_empty(self) -> bool:
+    def is_empty(self):
         return True if self.compare("end-1c", "==", "1.0") else False
 
     def insert_if_empty(self, content):
         '''Inserts text only if the text edit field is empty
-        and unmodified.'''
+        AND unmodified.'''
 
         if self.edit_modified() or not self.is_empty():
             raise TextFieldModified(
@@ -52,23 +66,20 @@ class EditField(ScrolledText):
             self.insert('1.0', content)
             self.edit_modified(False)
 
-
 class HtmlPreview(tk.Frame):
     """Allows previewing html within a frame that can be embedded in a
     separate tab. Requires tkhtml to work."""
 
-    # To do: doesn't support hyperlinks.
+    # To do: hyperlinks don't work (and I probably won't  be able
+    # to fix that).
 
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
-
         self.images = {}
-
         try:
             from tkinterhtml import TkinterHtml
 
         except ImportError as e:
-
             error_message = ('The preview html tab is not working due to ' +
             'the following  error:\n\n{0}.\n\nCheck the documentation ' +
             'or try to install the required tkhtml module using the ' +
@@ -77,25 +88,21 @@ class HtmlPreview(tk.Frame):
 
             self.preview_frame = tk.Text(self)
             self.preview_frame.insert('1.0', error_message.format(e))
-
             self.preview_frame.no_html = True
-
         else:
             self.preview_frame = TkinterHtml(self,
                                              imagecmd=self.__load_image)
-        self.__setup_preview()
+        self._setup_preview()
 
-
-    def __setup_preview(self):
+    def _setup_preview(self):
         scrollbar = tk.Scrollbar(self)
         self.preview_frame.configure(yscrollcommand=scrollbar.set)
         scrollbar.configure(command=self.preview_frame.yview)
 
-        tk.Grid.columnconfigure(self, 0, weight=1)
-        tk.Grid.rowconfigure(self, 0, weight=1)
         self.preview_frame.grid(row=0, column=0, sticky='wsne')
         scrollbar.grid(row=0, column=1, sticky='wsne')
-
+        tk.Grid.columnconfigure(self, 0, weight=1)
+        tk.Grid.rowconfigure(self, 0, weight=1)
 
     def __load_image(self, url):
         try:
@@ -112,18 +119,13 @@ class HtmlPreview(tk.Frame):
 
         return photo
 
-
     def preview(self, html_code : str):
         if hasattr(self.preview_frame, 'no_html'): return
-
         self.preview_frame.reset()
         self.preview_frame.parse(html_code)
 
-
 class InsertImgDialog(Dialog):
-
     def body(self, parent):
-
         def adjust_preview():
             if preview_lbl.img != '':
                 img_width = preview_lbl.img.width()
@@ -140,7 +142,6 @@ class InsertImgDialog(Dialog):
             else:
                 preview_lbl.configure(preview_def_size)
 
-
         def img_browse_callback():
             path_to_image = fd.askopenfilename(filetypes=(
                 ('Images', ('.jpg','.jpeg', '.png', '.gif')),
@@ -150,16 +151,14 @@ class InsertImgDialog(Dialog):
             if not path_to_image: return
 
             self.path_to_image = path_to_image
-            image_file_name = os.path.basename(self.path_to_image)
+            image_file_name = base_file_name(self.path_to_image)
             self.img_path.set(image_file_name)
 
             try:
                 preview_lbl.img = tk.PhotoImage(file=self.path_to_image)
-
             except tk.TclError:
                 try:
                     from PIL import Image, ImageTk
-
                     preview_lbl.img = ImageTk.PhotoImage(
                         Image.open(self.path_to_image))
 
@@ -169,7 +168,6 @@ class InsertImgDialog(Dialog):
                     if preview_lbl.img is not self.no_img_available:
                         preview_lbl.img = self.no_img_available
                         preview_lbl.configure(image=preview_lbl.img)
-
             adjust_preview()
 
         try:
@@ -218,7 +216,6 @@ class InsertImgDialog(Dialog):
         tk.Grid.columnconfigure(self, 2, weight=1)
         tk.Grid.rowconfigure(self, 1, weight=1)
 
-
     def apply(self):
         path_to_image = ''
         if self.path_to_image:
@@ -232,11 +229,8 @@ class InsertImgDialog(Dialog):
             'style'    : str(self.style_ent.get())
         }
 
-
 class InsertHyperlinkDialog(Dialog):
-
     def body(self, parent):
-
         tk.Label(parent, text='Target:').grid(row=0, column=0)
         self.target_ent = tk.Entry(parent)
         self.target_ent.grid(row=0, column=1)
@@ -251,12 +245,8 @@ class InsertHyperlinkDialog(Dialog):
             'style'  : str(self.style_ent.get())
         }
 
-
 class SpecialCharactersFrame(tk.Frame):
-    """Frame for special character buttons."""
-
     def __init__(self, parent,  header, cols = 1, *args, **kwargs):
-
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         self.header = header
@@ -269,7 +259,6 @@ class SpecialCharactersFrame(tk.Frame):
         self.__setup_widgets()
 
     def __setup_widgets(self):
-
         self.bt_frame = tk.Frame(self)
         self.entity_switch_rb = tk.Checkbutton(self,
                                         text='html entity',
@@ -280,7 +269,6 @@ class SpecialCharactersFrame(tk.Frame):
         self.entity_switch_rb.grid(row=2, column=0)
 
     def def_chars(self, fn_obj):
-
         for c, e in (
             ('←', '&#8592;'), ('↑', '&#8593;'),
             ('→', '&#8594;'), ('↓', '&#8595;'),
@@ -297,8 +285,7 @@ class SpecialCharactersFrame(tk.Frame):
                 callback=self.get_char(fn_obj, char=c, htm_entity=e))
         
     def add_char_bt(self, char : str, callback=None):
-        """Adds new button in a free row, column slot."""
-
+        """Adds a new button in a free row/column slot."""
         tk.Button(self.bt_frame,
                   text=char,
                   command=callback,
@@ -311,28 +298,19 @@ class SpecialCharactersFrame(tk.Frame):
             self.cur_col += 1
 
     def get_char(self, fn_obj, char : str = 'c', htm_entity : str = None):
-        """Takes a function-object as an argument and returns
-        a callback function to be attached to a button.
-
+        """Returns callbacks for buttons.
         fn_obj - a callable that accepts string as an input."""
-
         def char_callback():
             if self.entity_switch_var.get() == 0:
                 fn_obj(char)
             else:
                 fn_obj(htm_entity)
-
         return char_callback
 
-
 class IconButton(tk.Button):
-    """Simplifies creating icon buttons."""
-
     def __init__(self, parent, icon_path, text=None,
                  command=None, *args, **kwargs):
-
         self.parent = parent
-
         try:
             self.icon_obj = tk.PhotoImage(file=icon_path)
         except tk.TclError as err:
@@ -340,11 +318,9 @@ class IconButton(tk.Button):
             self.icon_obj = None
         else:
             self.icon_path = icon_path
-
         tk.Button.__init__(self, parent, command=command,
                            relief='solid', text=text,
                            image=self.icon_obj, *args, **kwargs)
-
 
 class EditHtml(tk.Frame):
     """Main editing tools and edit display-widget."""
@@ -356,19 +332,16 @@ class EditHtml(tk.Frame):
         self.tool_tabs = ttk.Notebook(self)
         self.edit_field = EditField(self)
 
-        main_tools = ToolBar(self)
-        main_tools.standard_tools(self)
+        main_tools = StandardTools(self)
+        font_bar = FontTools(self, self.insert_formatting_tag)
         self.tool_tabs.add(main_tools, text="Main tools")
-
-        font_bar = ToolBar(self)
-        font_bar.font(self)
         self.tool_tabs.add(font_bar, text="Edit font")    
 
-        self.tool_tabs.pack(anchor='nw', side='top')
-        self.edit_field.pack(anchor='sw', side='bottom',
-                             expand=True, fill='both')
-
-
+        self.tool_tabs.grid(row=0, column=0, sticky='w')
+        self.edit_field.grid(row=1, column=0, sticky='nwse')
+        tk.Grid.columnconfigure(self, 0, weight=1)
+        tk.Grid.rowconfigure(self, 1, weight=1)
+        
     def get_selection_indices(self):
         try:
             start_idx = self.edit_field.index('sel.first')
@@ -380,12 +353,12 @@ class EditHtml(tk.Frame):
 
         return start_idx, end_idx
 
-
     def insert_tag(self, start_idx, end_idx,
                    opening_tag='tag',
                    closing_tag : bool = False,
                    opts : str = None):
-        """Should be called for ex. that way:
+        """
+        Should be called for ex. this way:
 
         self.insert_tag(*self.get_selection_indices(),
                         opening_tag=opening_tag,
@@ -396,26 +369,19 @@ class EditHtml(tk.Frame):
         if closing_tag:
             end_tag = '</' + opening_tag + '>'
             self.edit_field.insert(end_idx, end_tag)
-
         if opts:
             opening_tag += ' ' + opts
-
         opening_tag = '<' + opening_tag + '>'
         self.edit_field.insert(start_idx, opening_tag)
 
-
     def dialog_insert_tag(self, dialog_obj, opening_tag,
                           closing_tag : bool = False, title='Tk Dialog'):
-
         options = dialog_obj(self, title).result
-
         if not options: return
-
         html_opts = str()
 
         for option in options.items():
             opt, val = option
-
             if val:
                 html_opts += "{0}='{1}' ".format(opt, val)
 
@@ -425,7 +391,6 @@ class EditHtml(tk.Frame):
                         closing_tag=closing_tag,
                         opts=html_opts)
 
-
     def insert_comment(self):
         opening_tag = '<!-- '
         closing_tag = ' -->'
@@ -434,7 +399,6 @@ class EditHtml(tk.Frame):
 
         self.edit_field.insert(end_idx, closing_tag)
         self.edit_field.insert(start_idx, opening_tag)
-
 
     def insert_formatting_tag(self, opening_tag, closing_tag : bool = False,
                    opts : str = None):
@@ -447,8 +411,7 @@ class EditHtml(tk.Frame):
                         opening_tag=opening_tag,
                         closing_tag=closing_tag, opts=opts)
 
-
-    def insert_text(self, text : str):
+    def insert_text(self, text):
         idx = self.edit_field.index('insert')
         self.edit_field.insert(idx, text)
 
@@ -466,7 +429,6 @@ class ToolBar(tk.Frame):
     - https://commons.wikimedia.org/
     - https://www.iconfinder.com/
     """
-
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
 
@@ -479,30 +441,39 @@ class ToolBar(tk.Frame):
         self.widgets.append(widget(self, *pargs, **kwargs))
         self.widgets[-1].grid(row=0, column=self.cur_widgets_col,
                               sticky='nwse', padx=1)
-
         self.cur_widgets_col += 1
-
 
     def add_tool_buttons(self, *tools):
         for tool in tools:
             self.add_widget(IconButton, *tool)
 
-
     def separator(self):
         self.add_widget(ttk.Separator, orient=tk.VERTICAL)
 
-    def standard_tools(self, edit_fld): # edit_fld-method/function only, instead of whole obj ref
-        """copy, cut, paste, par, br, img, anchor, comment"""
+
+class StandardTools(ToolBar):
+    def __init__(self, edit_fld, *args, **kwargs):
+        """
+        copy, cut, paste, par, br, img, anchor, comment
+
+        Requires following methods from the parent (edit_fld):
+        insert_formatting_tag,
+        dialog_insert_tag,
+        insert_comment
+        """
+
+        ToolBar.__init__(self, edit_fld, *args, **kwargs)
 
         # ('path_to_icon', 'text', 'command')
         # better way to supply arguments: items[:4] ...
 
-        self.add_tool_buttons(('icons/copy.png', 'Copy'),
-                              ('icons/cut.png', 'Cut'),
-                              ('icons/paste.png', 'Paste'))
-
+        self.add_tool_buttons(('icons/copy.png', 'Copy',
+                               get_ev_cb(edit_fld, '<<Copy>>')),
+                              ('icons/cut.png', 'Cut',
+                               get_ev_cb(edit_fld, '<<Cut>>')),
+                              ('icons/paste.png', 'Paste',
+                               get_ev_cb(edit_fld,'<<Paste>>')))
         self.separator()
-
         self.add_tool_buttons(('icons/paragraph.png', 'P',
                                 lambda: edit_fld.insert_formatting_tag(
                                     opening_tag='p', closing_tag=True)),
@@ -525,32 +496,33 @@ class ToolBar(tk.Frame):
                                     title = 'Insert hyperlink',
                                     dialog_obj = InsertHyperlinkDialog)
                                ))
-
         self.separator()
-
         self.add_tool_buttons(('icons/comment.png', '<!--',
                                 edit_fld.insert_comment))
 
+class FontTools(ToolBar):
+    def __init__(self, parent, format_fn, *args, **kwargs):
+        """
+        b, u, i, s, font size up/down, font size, 
+        To do: headers (as a drop-down menu).
+        """
 
-    def font(self, edit_fld):
-        """b, u, i, s, font size up/down, font size, 
-
-        To do: headers (as a drop-down menu)."""
+        ToolBar.__init__(self, parent, *args, **kwargs)
 
         self.add_tool_buttons(('icons/bold_type.png', 'B',
-                                lambda: edit_fld.insert_formatting_tag(
+                                lambda: format_fn(
                                     opening_tag='b', closing_tag=True)),
 
                                ('icons/italic_type.png', 'I',
-                                lambda: edit_fld.insert_formatting_tag(
+                                lambda: format_fn(
                                     opening_tag='i', closing_tag=True)),
 
                                ('icons/strikethrough.png', 'S',
-                                lambda: edit_fld.insert_formatting_tag(
+                                lambda: format_fn(
                                     opening_tag='strike', closing_tag=True)),
 
                                ('icons/underline.png', 'U',
-                                lambda: edit_fld.insert_formatting_tag(
+                                lambda: format_fn(
                                     opening_tag='u', closing_tag=True)))
 
         self.separator()
@@ -560,44 +532,33 @@ class ToolBar(tk.Frame):
                                ('icons/font_size.png', 'Aa'))
 
 
-    def html_list(self):
-        pass
-
-
-    def table(self):
-        pass
-
-
 class MainTabs(ttk.Notebook):
     def __init__(self, parent, *args, **kwargs):
-
         ttk.Notebook.__init__(self, parent, *args, **kwargs)
 
-        edit_tab_name = 'Edit Html'
-        preview_tab_name = 'Preview'
+        self.edit_tab_name = 'Edit Html'
+        self.preview_tab_name = 'Preview'
 
         self.edit_html = EditHtml(self)
         self.html_view = HtmlPreview(self)
 
-        self.add(self.edit_html, text=edit_tab_name)
-        self.add(self.html_view, text=preview_tab_name)
+        self.add(self.edit_html, text=self.edit_tab_name)
+        self.add(self.html_view, text=self.preview_tab_name)
 
-        def on_tab_change(event_data):
-            if self.tab(self.select())['text'] == preview_tab_name:
-                self.html_view.preview(self.edit_html.get_contents())
-                  
+        self.bind("<<NotebookTabChanged>>", self.on_tab_change)
 
-        self.bind("<<NotebookTabChanged>>", on_tab_change)
-
+    def on_tab_change(self, event_data):
+        if self.tab(self.select())['text'] == self.preview_tab_name:
+            self.html_view.preview(self.edit_html.get_contents())
 
 class MenuBar(tk.Menu):
     def __init__(self, parent, app):
         tk.Menu.__init__(self, parent)
         self.parent = parent
+        self.app = app
 
         # Space for defining menus:
-        # File menu:
-        self.file_menu = tk.Menu(self, tearoff=0)
+        self.file_menu = tk.Menu(self)
         self.file_menu.add_command(label='Open',
                                    command=app.open_document)
         self.file_menu.add_command(label='Save',
@@ -607,92 +568,33 @@ class MenuBar(tk.Menu):
         self.file_menu.add_command(label='Exit',
                                    command=app._quit)
 
+        self.edit_menu = tk.Menu(self)
+        self.edit_menu.add_command(label='Undo',
+                                   accelerator="Ctrl+Z",
+                                   command=app.edit_fld.edit_undo)
+        self.edit_menu.add_command(label='Redo',
+                                   accelerator="Shift+Ctrl+Z",
+                                   command=app.edit_fld.edit_redo)
+        self.edit_menu.add_command(label='Copy',
+                                   accelerator="Ctrl+C",
+                                   command=get_ev_cb(self.app, "<<Copy>>"))
+        self.edit_menu.add_command(label='Cut',
+                                   accelerator="Ctrl+X",
+                                   command=get_ev_cb(self.app, "<<Cut>>"))
+        self.edit_menu.add_command(label='Paste',
+                                   accelerator="Ctrl+V",
+                                   command=get_ev_cb(self.app, "<<Paste>>"))
+
+        self.document_menu = tk.Menu(self)
+        self.document_menu.add_command(label='Search')
+        self.document_menu.add_command(label='Replace text')
+        self.document_menu.add_command(label='View in browser')
+
+        self.help_menu = tk.Menu(self)
+        self.help_menu.add_command(label='About')
+
         # Space for adding menus to the menubar:
         self.add_cascade(label='File', menu=self.file_menu)
-
-
-class MainApp(tk.Frame):
-    def __init__(self, parent, path_to_doc = None):
-        tk.Frame.__init__(self, parent)
-        self.parent = parent
-        self.html_file_path = None
-        self.app_name = 'Basic HTML Editor'
-
-        parent.menu = MenuBar(parent, self)
-        parent.config(menu=parent.menu)
-        self._arrange_subframes()
-
-        if path_to_doc:
-            self.open_document(path_to_doc)
-        self.set_mw_title()
-
-    def _arrange_subframes(self):
-        self.spc_frame = SpecialCharactersFrame(self,
-                                                'Special characters:',
-                                                cols=3)
-        self.main_tabs = MainTabs(self)
-        self.spc_frame.def_chars(self.main_tabs.edit_html.insert_text)
-
-        self.spc_frame.grid(row=0, column=0, sticky='nw')
-        self.main_tabs.grid(row=0, column=1, sticky='nwse')
-        tk.Grid.columnconfigure(self.parent, 1, weight=1)
-        tk.Grid.rowconfigure(self.parent, 0, weight=1)
-        self.grid()
-
-    def open_document(self, path=None):
-        if path:
-            filename = path
-        else:
-            filename = fd.askopenfilename(
-                initialdir='~/Dokumenty/Programy/kurs_html_css/',
-                title='Select file')
-        try:
-            self.main_tabs.edit_html.edit_field.load_doc(filename)
-        except TextFieldModified:
-            MainApp(tk.Toplevel(), filename)
-        except IOError:
-            messagebox.showerror(title='I/O Error',
-                                 message='Error while attempting '+ 
-                                 'to load file.')
-        else:
-            self.html_file_path = filename
-
-    def _save_doc(self, path=None):
-        '''Helper for save_document and save_document_as.'''
-        pass
-
-    def save_document(self):
-        if not self.main_tabs.edit_html.edit_field.edit_modified(): return
-
-    def save_as_decorator(self, fn):
-        pass
-
-    def save_document_as(self, fn):
-        file_path = fd.asksaveasfilename()
-        if file_path:
-            try:
-                self._save_doc(file_path)
-            except IOError:
-                messagebox.showerror(title='Error',
-                    message='Error while attempting to save file.')
-            else:
-                self.html_file_path = file_path
-                self.main_tabs.edit_html.edit_field.edit_modified(False)
-
-    def set_mw_title(self):
-        if self.html_file_path:
-            title_addon = ' - ' + os.path.basename(self.html_file_path)
-        else:
-            title_addon = ' - new document'
-
-        self.parent.title(self.app_name + title_addon)
-
-    def _quit(self):
-        self.master.destroy()
-
-
-if __name__ == '__main__':
-    root = tk.Tk()
-    app = MainApp(root)
-    tk.mainloop()
-
+        self.add_cascade(label='Edit', menu=self.edit_menu)
+        self.add_cascade(label='Document', menu=self.document_menu)
+        self.add_cascade(label='Help', menu=self.help_menu)
