@@ -54,10 +54,12 @@ class Dialog(Toplevel):
 
         box = Frame(self)
 
-        w = Button(box, text="OK", width=10, command=self.ok, default=ACTIVE)
-        w.pack(side=LEFT, padx=5, pady=5)
-        w = Button(box, text="Cancel", width=10, command=self.cancel)
-        w.pack(side=LEFT, padx=5, pady=5)
+        self.ok_bt = Button(box, text="OK", width=10,
+                            command=self.ok, default=ACTIVE)
+        self.ok_bt.pack(side=LEFT, padx=5, pady=5)
+        self.cancel_bt = Button(box, text="Cancel",
+                                width=10, command=self.cancel)
+        self.cancel_bt.pack(side=LEFT, padx=5, pady=5)
 
         self.bind("<Return>", self.ok)
         self.bind("<Escape>", self.cancel)

@@ -3,19 +3,19 @@ import os
 import sys
 import pathlib
 import tkinter as tk
+import urllib
+from urllib.request import urlopen
 from tkinter import ttk
 from tkinter import filedialog as fd
 from tkinter import messagebox
 from tkinter.scrolledtext import ScrolledText
 from tkSimpleDialog import Dialog
-from urllib.request import urlopen
 from PIL import Image, ImageTk
 
 file_types = (
-            ('Html files', ('.htm', '.html')),
-            ('Text files', '.txt'),
-            ('All files', '*')
-)
+    ('Html files', ('.htm', '.html')),
+    ('Text files', '.txt'),
+    ('All files', '*'))
 
 def get_ev_cb(obj, event : str):
     '''Get event callback
@@ -33,6 +33,120 @@ def base_file_name(path : 'str, bytes, os.PathLike'):
 class TextFieldModified(Exception): pass
 class UnsavedDocument(Exception): pass
 class DocumentSaveCancelled(UnsavedDocument): pass
+
+class SearchTextDialog(Dialog):
+    def __init__(self, master, txt_fld : tk.Text):
+        for attr in 'direction', 'mode', 'case':
+            setattr(self, attr, tk.IntVar())
+
+        self.last_idx = txt_fld.index(tk.INSERT)
+        self.phrases_found = 0
+
+        self.txt_field_ref = txt_fld
+        txt_fld.tag_configure('highlight', background='blue', foreground='white')
+
+        Dialog.__init__(self, master, title='Search phrase:')
+
+    def body(self, master):
+        for col, name in zip(range(0, 3), ('Direction:', 'Mode:', 'Case:')):
+            tk.Label(master, text=name).grid(column=col, row=0)
+
+        col = 0
+        for names, var in ((('forward', 'backward'), self.direction),
+                           (('exact', 'regexp'), self.mode),
+                           (('case', 'nocase'), self.case)):
+            for row, name in zip(range(1, 3), names):
+                val = row - 1
+                tk.Radiobutton(master, text=name, variable=var,
+                               value=val).grid(column=col, row=row)
+            col += 1
+
+        self.entry_text = tk.StringVar()
+        tk.Label(master, text='Search for:').grid(column=0, row=3)
+        entry = tk.Entry(master, width=30, textvariable=self.entry_text)
+        entry.grid(column=1, row=3, columnspan=3)
+
+        return entry
+
+    def buttonbox(self):
+        Dialog.buttonbox(self)
+        self.ok_bt.configure(text='Search')
+        self.cancel_bt.configure(text='Close')
+
+    def ok(self, event=None):
+        self.search_text()
+
+    def clear_tags(self):
+        self.txt_field_ref.tag_remove('highlight', '1.0', tk.END)
+
+    def _search_text(self, search_txt, direction,
+                    mode, case, start_idx, stop_idx=None):
+        '''Returns indexes marking search phrase bounds if successes.
+        Implicit None otherwise.'''
+
+        # Put this def, decorator and field initialization from
+        # __init__ into activity diagram.
+
+        found_text_idx = self.txt_field_ref.search(
+            search_txt, start_idx, stop_idx, forwards=direction,
+            backwards=direction, exact=mode, regexp=mode, nocase=case)
+
+        if found_text_idx:
+            self.phrases_found += 1
+            self.clear_tags()
+            self.last_idx = '{0}+{1}c'.format(found_text_idx, len(search_txt))
+            self.txt_field_ref.tag_add('highlight', found_text_idx, self.last_idx)
+            self.txt_field_ref.mark_set(tk.INSERT, found_text_idx)
+
+            return {'start_idx': found_text_idx,
+                    'end_idx': self.last_idx}
+
+    def search_text(self):
+        entry_text = self.entry_text.get()
+        if not entry_text: return
+
+        direction = self.direction.get()
+        mode = self.mode.get()
+        case = self.case.get()
+
+        if direction == 0: # forward search
+            start_idx = self.last_idx
+            stop_idx = tk.END
+        else:
+            start_idx = self.txt_field_ref.index(tk.INSERT)
+            stop_idx = '1.0'
+
+        found_text_idxs = self._search_text(entry_text, direction,
+                                            mode, case, start_idx, stop_idx)
+
+        if not found_text_idxs and direction == 0:
+            if self.phrases_found == 0:
+                msg_title = 'Phrase not found'
+                message = ('The phrase you are looking for was not found.'
+                           +' Do you want to restart search?')
+            else:
+                msg_title = 'End of search'
+                message = ('End of the document was reached.'
+                           +' Do you want to restart search?')
+                self.phrases_found = 0
+
+            decision = tk.messagebox.askyesno(
+                parent=self, title=msg_title, message=message)
+            if decision == True:
+                self.last_idx = '1.0'
+                self.ok()
+        elif not found_text_idxs:
+            tk.messagebox.showinfo(
+                parent=self, title='End of backward search',
+                message='You reached the beginning of the document.')
+
+        # Check if a given index is outside a visible area:
+        if self.txt_field_ref.bbox(tk.INSERT) is None:
+            self.txt_field_ref.see(tk.INSERT)
+
+    def cancel(self, event=None):
+        self.clear_tags()
+        Dialog.cancel(self, event)
 
 class EditField(ScrolledText):
     def __init__(self, parent, *pargs, **kwargs):
@@ -60,8 +174,7 @@ class EditField(ScrolledText):
 
         if self.edit_modified() or not self.is_empty():
             raise TextFieldModified(
-                'Text field {0} is non-empty or '.format(self)
-                + 'modified.')
+                'Text field {0} is non-empty or modified'.format(self))
         else:
             self.insert('1.0', content)
             self.edit_modified(False)
@@ -107,8 +220,8 @@ class HtmlPreview(tk.Frame):
     def __load_image(self, url):
         try:
             fp = urlopen(url)
-        except Exception as e:
-            print(e, file=sys.stderr)
+        except (ValueError, FileNotFoundError, urllib.error.URLError) as e:
+            print("Internal exception:", e, file=sys.stderr)
             photo = None
         else:
             data = fp.read()
@@ -230,13 +343,13 @@ class InsertImgDialog(Dialog):
         }
 
 class InsertHyperlinkDialog(Dialog):
-    def body(self, parent):
-        tk.Label(parent, text='Target:').grid(row=0, column=0)
-        self.target_ent = tk.Entry(parent)
+    def body(self, master):
+        tk.Label(master, text='Target:').grid(row=0, column=0)
+        self.target_ent = tk.Entry(master)
         self.target_ent.grid(row=0, column=1)
 
-        tk.Label(parent, text='Style:').grid(row=1, column=0)
-        self.style_ent = tk.Entry(parent)
+        tk.Label(master, text='Style:').grid(row=1, column=0)
+        self.style_ent = tk.Entry(master)
         self.style_ent.grid(row=1, column=1)
 
     def apply(self):
@@ -348,8 +461,6 @@ class EditHtml(tk.Frame):
             end_idx = self.edit_field.index('sel.last')
         except tk.TclError:
             start_idx = end_idx = self.edit_field.index('insert')
-        except Exception as e:
-            print("Unexpected exception: ", e)
 
         return start_idx, end_idx
 
@@ -503,34 +614,31 @@ class StandardTools(ToolBar):
 class FontTools(ToolBar):
     def __init__(self, parent, format_fn, *args, **kwargs):
         """
-        b, u, i, s, font size up/down, font size, 
+        b, u, i, s, font size up/down, set font size, 
         To do: headers (as a drop-down menu).
         """
 
         ToolBar.__init__(self, parent, *args, **kwargs)
 
-        self.add_tool_buttons(('icons/bold_type.png', 'B',
-                                lambda: format_fn(
-                                    opening_tag='b', closing_tag=True)),
+        self.add_tool_buttons(
+            ('icons/bold_type.png', 'B',
+             lambda: format_fn(opening_tag='b', closing_tag=True)),
 
-                               ('icons/italic_type.png', 'I',
-                                lambda: format_fn(
-                                    opening_tag='i', closing_tag=True)),
+            ('icons/italic_type.png', 'I',
+             lambda: format_fn(opening_tag='i', closing_tag=True)),
 
-                               ('icons/strikethrough.png', 'S',
-                                lambda: format_fn(
-                                    opening_tag='strike', closing_tag=True)),
+            ('icons/strikethrough.png', 'S',
+             lambda: format_fn(opening_tag='strike', closing_tag=True)),
 
-                               ('icons/underline.png', 'U',
-                                lambda: format_fn(
-                                    opening_tag='u', closing_tag=True)))
+            ('icons/underline.png', 'U',
+             lambda: format_fn(opening_tag='u', closing_tag=True)))
 
         self.separator()
 
-        self.add_tool_buttons(('icons/font_size_increase.png', 'A^'),
-                               ('icons/decrease_font.png', 'A_'),
-                               ('icons/font_size.png', 'Aa'))
-
+        self.add_tool_buttons(
+            ('icons/font_size_increase.png', 'A^'),
+            ('icons/decrease_font.png', 'A_'),
+            ('icons/font_size.png', 'Aa'))
 
 class MainTabs(ttk.Notebook):
     def __init__(self, parent, *args, **kwargs):
@@ -558,43 +666,66 @@ class MenuBar(tk.Menu):
         self.app = app
 
         # Space for defining menus:
-        self.file_menu = tk.Menu(self)
-        self.file_menu.add_command(label='Open',
-                                   command=app.open_document)
-        self.file_menu.add_command(label='Save',
-                                   command=app.save_document)
-        self.file_menu.add_command(label='Save as',
-                                   command=app.save_document_as)
-        self.file_menu.add_command(label='Exit',
-                                   command=app._quit)
+        for menu in 'file_menu', 'edit_menu', 'document_menu', 'help_menu':
+            setattr(self, menu, tk.Menu(self))
 
-        self.edit_menu = tk.Menu(self)
-        self.edit_menu.add_command(label='Undo',
-                                   accelerator="Ctrl+Z",
-                                   command=app.edit_fld.edit_undo)
-        self.edit_menu.add_command(label='Redo',
-                                   accelerator="Shift+Ctrl+Z",
-                                   command=app.edit_fld.edit_redo)
-        self.edit_menu.add_command(label='Copy',
-                                   accelerator="Ctrl+C",
-                                   command=get_ev_cb(self.app, "<<Copy>>"))
-        self.edit_menu.add_command(label='Cut',
-                                   accelerator="Ctrl+X",
-                                   command=get_ev_cb(self.app, "<<Cut>>"))
-        self.edit_menu.add_command(label='Paste',
-                                   accelerator="Ctrl+V",
-                                   command=get_ev_cb(self.app, "<<Paste>>"))
+        for label, cmd in zip(
+                ('Open', 'Save', 'Save as', 'Exit'),
+                (app.open_document, app.save_document,
+                 app.save_document_as, app._quit)):
+            self.file_menu.add_command(label=label, command=cmd)
 
-        self.document_menu = tk.Menu(self)
-        self.document_menu.add_command(label='Search')
-        self.document_menu.add_command(label='Replace text')
-        self.document_menu.add_command(label='View in browser')
+        for lbl, acc, cmd in zip(
+                ('Undo', 'Redo', 'Copy', 'Cut', 'Paste'),
+                ('Ctrl+Z', 'Shift+Ctrl+Z', 'Ctrl+C', 'Ctrl+X', 'Ctrl+V'),
+                (app.edit_fld.edit_undo, app.edit_fld.edit_redo,
+                 get_ev_cb(self.app, "<<Copy>>"), get_ev_cb(self.app, "<<Cut>>"),
+                 get_ev_cb(self.app, "<<Paste>>"))):
+            self.edit_menu.add_command(label=lbl, accelerator=acc, command=cmd)
 
-        self.help_menu = tk.Menu(self)
+        for label, cmd in (('Search', lambda: SearchTextDialog(app, app.edit_fld)),
+                           ('Replace text',lambda:
+                            ReplaceTextDialog(app, app.edit_fld)),
+                           ('View in browser', lambda: 1)):
+            self.document_menu.add_command(label=label, command=cmd)
+
         self.help_menu.add_command(label='About')
 
         # Space for adding menus to the menubar:
-        self.add_cascade(label='File', menu=self.file_menu)
-        self.add_cascade(label='Edit', menu=self.edit_menu)
-        self.add_cascade(label='Document', menu=self.document_menu)
-        self.add_cascade(label='Help', menu=self.help_menu)
+        for lbl, menu in zip(
+                ('File', 'Edit', 'Document', 'Help'),
+                (self.file_menu, self.edit_menu,
+                 self.document_menu, self.help_menu)):
+            self.add_cascade(label=lbl, menu=menu)
+
+class ReplaceTextDialog(SearchTextDialog):
+    def __init__(self, *pargs, **kwargs):
+        SearchTextDialog.__init__(self, *pargs, **kwargs)
+        sys.exit()
+
+    def body(self, master):
+        focus = SearchTextDialog.body(self, master)
+
+        tk.Label(master, text='Replace with:').grid(column=0, row=4)
+        self.replace_entry = tk.StringVar()
+        replace_ent = tk.Entry(master, width=30, textvariable=self.replace_entry)
+        replace_ent.grid(column=1, row=4, columnspan=3)
+
+        self.replace_all_var = tk.IntVar()
+        tk.Checkbutton(master, text='Replace all',
+                       variable=self.replace_all_var).grid(column=1, row=5)
+
+        return focus
+
+    def find_and_replace(self):
+        phrase_bounds = self._search_text()
+
+        if phrase_bounds:
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    txt = ScrolledText(root)
+    txt.grid()
+    txt.insert('1.0', 'aaaaaaabbbcccdefg abcdefg abcdefg abcdefg')
+    std = ReplaceTextDialog(root, txt)
+    root.mainloop()
