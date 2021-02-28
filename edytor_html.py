@@ -82,7 +82,7 @@ class SearchTextDialog(Dialog):
     def _search_text(self, search_txt, direction,
                     mode, case, start_idx, stop_idx=None):
         '''Returns indexes marking search phrase bounds if successes.
-        Implicit None otherwise.'''
+        None otherwise.'''
 
         # Put this def, decorator and field initialization from
         # __init__ into activity diagram.
@@ -101,14 +101,13 @@ class SearchTextDialog(Dialog):
             return {'start_idx': found_text_idx,
                     'end_idx': self.last_idx}
 
-    def search_text(self):
-        entry_text = self.entry_text.get()
-        if not entry_text: return
+    def get_fields_values(self):
+        return (self.entry_text.get(),
+                self.direction.get(),
+                self.mode.get(),
+                self.case.get())
 
-        direction = self.direction.get()
-        mode = self.mode.get()
-        case = self.case.get()
-
+    def get_start_stop_idx(self, direction):
         if direction == 0: # forward search
             start_idx = self.last_idx
             stop_idx = tk.END
@@ -116,6 +115,13 @@ class SearchTextDialog(Dialog):
             start_idx = self.txt_field_ref.index(tk.INSERT)
             stop_idx = '1.0'
 
+        return start_idx, stop_idx
+        
+    def search_text(self):
+        (entry_text, direction, mode, case, *other) = self.get_fields_values()
+        if not entry_text: return
+
+        start_idx, stop_idx = self.get_start_stop_idx(direction)
         found_text_idxs = self._search_text(entry_text, direction,
                                             mode, case, start_idx, stop_idx)
 
@@ -717,10 +723,54 @@ class ReplaceTextDialog(SearchTextDialog):
 
         return focus
 
-    def find_and_replace(self):
-        phrase_bounds = self._search_text()
+    def get_fields_values(self):
+        return (SearchTextDialog.get_fields_values(self)
+                + (self.replace_entry.get(),))
 
-        if phrase_bounds:
+    def phrase_replacer(self, bounds, new_phrase : str):
+        self.txt_field_ref.delete(
+            bounds['start_idx'], bounds['end_idx'])
+        self.txt_field_ref.insert(bounds['start_idx'], new_phrase)
+
+    def replace_text(self):
+        (search_txt, direction,
+         mode, case, replace_txt) = self.get_fields_values()
+
+        phrase_bounds = 1
+
+        while phrase_bounds:
+            start_idx, stop_idx = self.get_start_stop_idx(direction)
+            phrase_bounds = self._search_text(
+                search_txt, direction,
+                mode, case, start_idx, stop_idx)
+
+            if not phrase_bounds:
+                 if start_idx in ('1.0', '1.0+1c', '1.1'):
+                     messagebox.showinfo(
+                         parent=self,title='Not found',
+                         message='The phrase was not found.')
+                     break
+                 else: continue
+
+            decision = messagebox.askyesnocancel(
+                parent=self, title='Found phrase', message='Replace?')
+
+            if decision == True:
+                self.phrase_replacer(phrase_bounds, replace_txt)
+            elif decision == False:
+                print('Not replaced!', decision)
+            else: break
+        else:
+            decision = messagebox.askyesno(
+                parent=self, title='End of the document',
+                message='Do you want to restart search?')
+
+            if decision == True:
+                self.last_idx = '1.0'
+                self.ok()
+
+    def ok(self, event=None):
+        self.replace_text()
 
 if __name__ == '__main__':
     root = tk.Tk()
