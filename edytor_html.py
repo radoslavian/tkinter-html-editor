@@ -76,8 +76,42 @@ class SearchTextDialog(Dialog):
     def ok(self, event=None):
         self.search_text()
 
+    def get_word_end_index(self, init_idx, text):
+        '''Returns outer bound of a given phrase in the form
+        of a tk.Text index: line.column.'''
+        return self.txt_field_ref.index('{0}+{1}c'.format(
+            init_idx, len(text)))
+
+    def search_gen_results(self, searched_text, init_idx='1.0',
+                           mode=0, case=0, stop_idx=tk.END,
+                           search_backward=False):
+        '''Searches through tk.Text object and generates indexes
+        for subsequent phrases found.'''
+
+        start_idx = init_idx
+
+        while True:
+            found_text_idx = self.txt_field_ref.search(
+                searched_text, start_idx, stop_idx,
+                backwards=search_backward, exact=mode, regexp=mode, nocase=case)
+
+            if not found_text_idx:
+                break
+
+            end_idx = self.get_word_end_index(found_text_idx, searched_text)
+
+            if search_backward:
+                start_idx = found_text_idx
+            else:
+                start_idx = end_idx
+
+            yield found_text_idx, end_idx
+
     def clear_tags(self):
         self.txt_field_ref.tag_remove('highlight', '1.0', tk.END)
+
+    def highlight_text(self, start_idx, end_idx):
+        self.txt_field_ref.tag_add('highlight', start_idx, end_idx)
 
     def _search_text(self, search_txt, direction,
                     mode, case, start_idx, stop_idx=None):
@@ -86,6 +120,7 @@ class SearchTextDialog(Dialog):
 
         # Put this def, decorator and field initialization from
         # __init__ into activity diagram.
+        # could it be turned into generator function/method?
 
         found_text_idx = self.txt_field_ref.search(
             search_txt, start_idx, stop_idx, forwards=direction,
@@ -95,11 +130,10 @@ class SearchTextDialog(Dialog):
             self.phrases_found += 1
             self.clear_tags()
             self.last_idx = '{0}+{1}c'.format(found_text_idx, len(search_txt))
-            self.txt_field_ref.tag_add('highlight', found_text_idx, self.last_idx)
+            self.highlight_text(found_text_idx, self.last_idx)
             self.txt_field_ref.mark_set(tk.INSERT, found_text_idx)
 
-            return {'start_idx': found_text_idx,
-                    'end_idx': self.last_idx}
+            return found_text_idx, self.last_idx
 
     def get_fields_values(self):
         return (self.entry_text.get(),
@@ -118,6 +152,10 @@ class SearchTextDialog(Dialog):
         return start_idx, stop_idx
         
     def search_text(self):
+        # def search_gen_results(self, searched_text, init_idx='1.0',
+        #                    mode=0, case=0, stop_idx=tk.END,
+        #                    search_backward=False):
+
         (entry_text, direction, mode, case, *other) = self.get_fields_values()
         if not entry_text: return
 
@@ -153,6 +191,19 @@ class SearchTextDialog(Dialog):
     def cancel(self, event=None):
         self.clear_tags()
         Dialog.cancel(self, event)
+
+    def search_end_msg(self, found_phrases_no, start_idx):
+        if found_phrases_no == 0 and start_idx != '1.0':
+            decision = messagebox.askyesno(
+                parent=self, title='End of the document',
+                message='Do you want to restart search?')
+            if decision == True:
+                self.last_idx = '1.0'
+                self.ok()
+        else:
+            messagebox.showinfo(
+                parent=self, title='Not found',
+                message='The phrase was not found.')
 
 class EditField(ScrolledText):
     def __init__(self, parent, *pargs, **kwargs):
@@ -727,50 +778,71 @@ class ReplaceTextDialog(SearchTextDialog):
         return (SearchTextDialog.get_fields_values(self)
                 + (self.replace_entry.get(),))
 
-    def phrase_replacer(self, bounds, new_phrase : str):
-        self.txt_field_ref.delete(
-            bounds['start_idx'], bounds['end_idx'])
-        self.txt_field_ref.insert(bounds['start_idx'], new_phrase)
+    def phrase_replacer(self, idx_1, idx_2, new_phrase : str):
+        self.txt_field_ref.delete(idx_1, idx_2)
+        self.txt_field_ref.insert(idx_1, new_phrase)
 
-    def replace_text(self):
-        (search_txt, direction,
-         mode, case, replace_txt) = self.get_fields_values()
+    def replace_text_incrementally(
+            self, search_txt, direction, mode, case, replace_txt):
 
-        phrase_bounds = 1
+        # def search_gen_results(self, searched_text, init_idx='1.0',
+        #                    mode=0, case=0, stop_idx=tk.END,
+        #                    search_backward=False):
+        # '''Searches through tk.Text object and generates indexes
+        # for subsequent phrases found.'''
 
-        while phrase_bounds:
-            start_idx, stop_idx = self.get_start_stop_idx(direction)
-            phrase_bounds = self._search_text(
-                search_txt, direction,
-                mode, case, start_idx, stop_idx)
+        start_idx, stop_idx = self.get_start_stop_idx(direction)
+        found_phrases_no = 0
+        print('start_idx:', start_idx) # debug
 
-            if not phrase_bounds:
-                 if start_idx in ('1.0', '1.0+1c', '1.1'):
-                     messagebox.showinfo(
-                         parent=self,title='Not found',
-                         message='The phrase was not found.')
-                     break
-                 else: continue
+        for idx_1, idx_2 in self.search_gen_results(
+                search_txt, init_idx=start_idx,
+                stop_idx=stop_idx, mode=mode, case=case):
+            print('entered loop') # debug
+
+            self.clear_tags()
+            self.highlight_text(idx_1, idx_2)
+            found_phrases_no += 1
 
             decision = messagebox.askyesnocancel(
                 parent=self, title='Found phrase', message='Replace?')
 
             if decision == True:
-                self.phrase_replacer(phrase_bounds, replace_txt)
+                self.phrase_replacer(idx_1, idx_2, replace_txt)
             elif decision == False:
                 print('Not replaced!', decision)
             else: break
         else:
-            decision = messagebox.askyesno(
-                parent=self, title='End of the document',
-                message='Do you want to restart search?')
+            self.search_end_msg(found_phrases_no, start_idx)
 
-            if decision == True:
-                self.last_idx = '1.0'
-                self.ok()
+    def replace_all(self, searched_text, mode, case, replace_txt):
+        if searched_text == replace_txt:
+            messagebox.showinfo(
+                parent=self, title='Same text in both fields',
+                message='Cannot proceed if both fields (search and '
+                + 'replace) have the same content.')
+            return
+
+        while True:
+            idx_1 = self.txt_field_ref.search(
+                searched_text, '1.0', exact=mode, regexp=mode, nocase=case)
+            if not idx_1:
+                break
+            idx_2 = self.get_word_end_index(idx_1, searched_text)
+            self.phrase_replacer(idx_1, idx_2, replace_txt)
 
     def ok(self, event=None):
-        self.replace_text()
+        (search_txt, direction,
+         mode, case, replace_txt) = self.get_fields_values()
+
+        if not search_txt and not replace_txt: return
+
+        if self.replace_all_var.get():
+            self.replace_all(searched_text=search_txt, mode=mode,
+                             case=case, replace_txt=replace_txt)
+        else:
+            self.replace_text_incrementally(
+                search_txt, direction, mode, case, replace_txt)
 
 if __name__ == '__main__':
     root = tk.Tk()
