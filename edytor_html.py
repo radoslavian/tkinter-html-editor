@@ -747,6 +747,171 @@ class MenuBar(tk.Menu):
                  self.document_menu, self.help_menu)):
             self.add_cascade(label=lbl, menu=menu)
 
+<<<<<<< HEAD
+=======
+class SearchTextDialog(Dialog):
+    def __init__(self, master, txt_fld : tk.Text):
+        for attr in 'direction', 'mode', 'case':
+            setattr(self, attr, tk.IntVar())
+
+        self.last_idx = txt_fld.index(tk.INSERT)
+
+        self.txt_field_ref = txt_fld
+        txt_fld.tag_configure('highlight', background='blue', foreground='white')
+
+        Dialog.__init__(self, master, title='Search phrase:')
+
+    def body(self, master):
+        for col, name in zip(range(0, 3), ('Direction:', 'Mode:', 'Case:')):
+            tk.Label(master, text=name).grid(column=col, row=0)
+
+        col = 0
+        for names, var in ((('forward', 'backward'), self.direction),
+                           (('exact', 'regexp'), self.mode),
+                           (('case', 'nocase'), self.case)):
+            for row, name in zip(range(1, 3), names):
+                val = row - 1
+                tk.Radiobutton(master, text=name, variable=var,
+                               value=val).grid(column=col, row=row)
+            col += 1
+
+        self.entry_text = tk.StringVar()
+        tk.Label(master, text='Search for:').grid(column=0, row=3)
+        entry = tk.Entry(master, width=30, textvariable=self.entry_text)
+        entry.grid(column=1, row=3, columnspan=3)
+
+        return entry
+
+    def buttonbox(self):
+        Dialog.buttonbox(self)
+        self.ok_bt.configure(text='Search')
+        self.cancel_bt.configure(text='Close')
+
+    def ok(self, event=None):
+        self.search_text()
+
+    def get_word_end_index(self, init_idx, text_len):
+        '''Returns outer bound of a given phrase in the form
+        of a tk.Text index: line.column.'''
+        return self.txt_field_ref.index('{0}+{1}c'.format(
+            init_idx, text_len))
+
+    def search_gen_results(self, searched_text, init_idx='1.0',
+                           mode=0, case=0, stop_idx=tk.END, direction=0):
+        '''Searches through tk.Text object and generates indexes
+        for subsequent phrases found.'''
+
+        start_idx = init_idx
+        found_text_len = tk.IntVar()
+
+        while True:
+            found_text_init_idx = self.txt_field_ref.search(
+                searched_text, start_idx, stop_idx, count=found_text_len,
+                backwards=direction, exact=mode, regexp=mode, nocase=case)
+
+            if not found_text_init_idx:
+                break
+
+            found_text_end_idx = self.get_word_end_index(
+                found_text_init_idx, found_text_len.get())
+
+            if direction == 0:
+                start_idx = found_text_end_idx
+            else:
+                start_idx = found_text_init_idx
+
+            print('start_idx, found_text_end_idx:', start_idx, found_text_end_idx)
+
+            yield found_text_init_idx, found_text_end_idx
+
+    def clear_tags(self):
+        self.txt_field_ref.tag_remove('highlight', '1.0', tk.END)
+
+    def highlight_text(self, start_idx, end_idx):
+        self.txt_field_ref.tag_add('highlight', start_idx, end_idx)
+
+    def highlight_make_visible(self, found_text_idx, last_idx):
+        self.highlight_text(found_text_idx, last_idx)
+        self.bring_index_up(found_text_idx)
+
+    def _search_text(self, search_txt, direction,
+                    mode, case, start_idx, stop_idx=None):
+        '''Returns indexes marking search phrase bounds if successes.
+        None otherwise.'''
+
+        # Put all search code into UML diagrams.
+        # merge into search_text()
+
+        found_text_idx = self.txt_field_ref.search(
+            search_txt, start_idx, stop_idx, forwards=direction,
+            backwards=direction, exact=mode, regexp=mode, nocase=case)
+
+        if found_text_idx:
+            self.clear_tags()
+            self.last_idx = '{0}+{1}c'.format(found_text_idx, len(search_txt))
+            self.txt_field_ref.mark_set('insert', found_text_idx)
+            self.highlight_make_visible(found_text_idx, self.last_idx)
+
+            return found_text_idx, self.last_idx
+
+    def get_form_values(self):
+        return (self.entry_text.get(),
+                self.direction.get(),
+                self.mode.get(),
+                self.case.get())
+
+    def get_start_stop_idx(self, direction):
+        '''Returns indexes needed by search methods
+        for seeking through contents of the tk.Text.'''
+        if direction == 0: # forward search
+            start_idx = self.last_idx
+            stop_idx = tk.END
+        else:
+            start_idx = self.txt_field_ref.index(tk.INSERT)
+            stop_idx = '1.0'
+
+        return start_idx, stop_idx
+        
+    def search_text(self):
+        (entry_text, direction, mode, case, *other) = self.get_form_values()
+        if not entry_text: return
+
+        start_idx, stop_idx = self.get_start_stop_idx(direction)
+        found_text_idxs = self._search_text(entry_text, direction,
+                                            mode, case, start_idx, stop_idx)
+
+        if not found_text_idxs and direction == 0:
+            self.ask_to_restart_search(direction)
+        elif not found_text_idxs:
+            print(found_text_idxs, direction)
+            tk.messagebox.showinfo(
+                parent=self, title='End of backward search',
+                message='You reached the beginning of the document.')
+
+        self.bring_index_up(start_idx)
+
+    def bring_index_up(self, idx):
+        '''Moves the view into the position of insert index.'''
+        if self.txt_field_ref.bbox(idx) is None:
+            self.txt_field_ref.see(idx)
+
+    def cancel(self, event=None):
+        self.clear_tags()
+        Dialog.cancel(self, event)
+
+    def ask_to_restart_search(self, direction):
+        decision = messagebox.askyesno(
+            parent=self, title='End of search',
+            message='Do you want to restart search?')
+
+        if decision == True:
+            if direction == 0:
+                self.last_idx = '1.0'
+            else:
+                self.last_idx = tk.END
+            self.ok()
+
+>>>>>>> aaa8942
 class ReplaceTextDialog(SearchTextDialog):
     def __init__(self, *pargs, **kwargs):
         SearchTextDialog.__init__(self, *pargs, **kwargs)
