@@ -628,11 +628,11 @@ class SearchTextDialog(Dialog):
     def ok(self, event=None):
         self.search_text()
 
-    def get_word_end_index(self, init_idx, text):
+    def get_word_end_index(self, init_idx, text_len):
         '''Returns outer bound of a given phrase in the form
         of a tk.Text index: line.column.'''
         return self.txt_field_ref.index('{0}+{1}c'.format(
-            init_idx, len(text)))
+            init_idx, text_len))
 
     def search_gen_results(self, searched_text, init_idx='1.0',
                            mode=0, case=0, stop_idx=tk.END, direction=0):
@@ -640,23 +640,27 @@ class SearchTextDialog(Dialog):
         for subsequent phrases found.'''
 
         start_idx = init_idx
+        found_text_len = tk.IntVar()
 
         while True:
-            found_text_idx = self.txt_field_ref.search(
-                searched_text, start_idx, stop_idx,
+            found_text_init_idx = self.txt_field_ref.search(
+                searched_text, start_idx, stop_idx, count=found_text_len,
                 backwards=direction, exact=mode, regexp=mode, nocase=case)
 
-            if not found_text_idx:
+            if not found_text_init_idx:
                 break
 
-            end_idx = self.get_word_end_index(found_text_idx, searched_text)
+            found_text_end_idx = self.get_word_end_index(
+                found_text_init_idx, found_text_len.get())
 
             if direction == 0:
-                start_idx = end_idx
+                start_idx = found_text_end_idx
             else:
-                start_idx = found_text_idx
+                start_idx = found_text_init_idx
 
-            yield found_text_idx, end_idx
+            print('start_idx, found_text_end_idx:', start_idx, found_text_end_idx)
+
+            yield found_text_init_idx, found_text_end_idx
 
     def clear_tags(self):
         self.txt_field_ref.tag_remove('highlight', '1.0', tk.END)

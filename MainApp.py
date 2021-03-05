@@ -20,7 +20,7 @@ class MainApp(tk.Frame):
         @classmethod
         def save(cls, fn):
             def wrapper(self):
-                if not self.edit_fld.edit_modified():
+                if not self.main_tabs.edit_html.edit_modified():
                     return
                 if self.html_file_path:
                     fn(self, file_path=self.html_file_path)
@@ -35,9 +35,6 @@ class MainApp(tk.Frame):
         self.app_name = 'Basic HTML Editor'
 
         self._arrange_subframes()
-
-        # shortcut for easier access:
-        self.edit_fld = self.main_tabs.edit_html.edit_field
 
         parent.menu = MenuBar(parent, self)
         parent.config(menu=parent.menu)
@@ -79,7 +76,7 @@ class MainApp(tk.Frame):
                 title='Select file',
                 filetypes=file_types)
         try:
-            self.edit_fld.load_doc(filename)
+            self.main_tabs.edit_html.load_doc(filename)
         except TextFieldModified:
             MainApp.new_instance(tk.Toplevel(), filename)
         except IOError as e:
@@ -96,7 +93,7 @@ class MainApp(tk.Frame):
 
     def save_doc(self, file_path):
         try:
-            self._save(file_path, self.edit_fld)
+            self._save(file_path, self.main_tabs.edit_html)
         except IOError as e:
             messagebox.showerror(parent=self.parent, title='I/O Error',
                                  message='Error while attempting '
@@ -105,7 +102,7 @@ class MainApp(tk.Frame):
             if self.html_file_path != file_path:
                 self.html_file_path = file_path
                 self.set_mw_title()
-            self.edit_fld.edit_modified(False)
+            self.main_tabs.edit_html.edit_modified(False)
 
     save_document_as = InnerDecorators.save_as(save_doc)
     save_document = InnerDecorators.save(save_doc)
@@ -131,7 +128,7 @@ class MainApp(tk.Frame):
             raise DocumentSaveCancelled
 
     def _quit(self):
-        if self.edit_fld.edit_modified():
+        if self.main_tabs.edit_html.edit_modified():
             try:
                 self.ask_to_save_file()
             except DocumentSaveCancelled as s:
