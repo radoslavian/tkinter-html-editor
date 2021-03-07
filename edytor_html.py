@@ -19,6 +19,7 @@ file_types = (
 
 def get_ev_cb(obj, event : str):
     '''Get event callback
+
     Returns callback for tkinter events such as cut, copy, paste.
     obj - tkinter class instance with focus_get() method'''
     return lambda: obj.focus_get().event_generate(event)
@@ -33,169 +34,7 @@ def base_file_name(path : 'str, bytes, os.PathLike'):
 class TextFieldModified(Exception): pass
 class UnsavedDocument(Exception): pass
 class DocumentSaveCancelled(UnsavedDocument): pass
-
-class SearchTextDialog(Dialog):
-    def __init__(self, master, txt_fld : tk.Text):
-        for attr in 'direction', 'mode', 'case':
-            setattr(self, attr, tk.IntVar())
-
-        self.last_idx = txt_fld.index(tk.INSERT)
-
-        self.txt_field_ref = txt_fld
-        txt_fld.tag_configure('highlight', background='blue', foreground='white')
-
-        Dialog.__init__(self, master, title='Search phrase:')
-
-    def body(self, master):
-        for col, name in zip(range(0, 3), ('Direction:', 'Mode:', 'Case:')):
-            tk.Label(master, text=name).grid(column=col, row=0)
-
-        col = 0
-        for names, var in ((('forward', 'backward'), self.direction),
-                           (('exact', 'regexp'), self.mode),
-                           (('case', 'nocase'), self.case)):
-            for row, name in zip(range(1, 3), names):
-                val = row - 1
-                tk.Radiobutton(master, text=name, variable=var,
-                               value=val).grid(column=col, row=row)
-            col += 1
-
-        self.entry_text = tk.StringVar()
-        tk.Label(master, text='Search for:').grid(column=0, row=3)
-        entry = tk.Entry(master, width=30, textvariable=self.entry_text)
-        entry.grid(column=1, row=3, columnspan=3)
-
-        return entry
-
-    def buttonbox(self):
-        Dialog.buttonbox(self)
-        self.ok_bt.configure(text='Search')
-        self.cancel_bt.configure(text='Close')
-
-    def ok(self, event=None):
-        self.search_text()
-
-    def get_word_end_index(self, init_idx, text):
-        '''Returns outer bound of a given phrase in the form
-        of a tk.Text index: line.column.'''
-        return self.txt_field_ref.index('{0}+{1}c'.format(
-            init_idx, len(text)))
-
-    def search_gen_results(self, searched_text, init_idx='1.0',
-                           mode=0, case=0, stop_idx=tk.END, direction=0):
-        '''Searches through tk.Text object and generates indexes
-        for subsequent phrases found.'''
-
-        start_idx = init_idx
-
-        while True:
-            found_text_idx = self.txt_field_ref.search(
-                searched_text, start_idx, stop_idx,
-                backwards=direction, exact=mode, regexp=mode, nocase=case)
-
-            if not found_text_idx:
-                break
-
-            end_idx = self.get_word_end_index(found_text_idx, searched_text)
-
-            if direction == 0:
-                start_idx = end_idx
-            else:
-                start_idx = found_text_idx
-
-            yield found_text_idx, end_idx
-
-    def clear_tags(self):
-        self.txt_field_ref.tag_remove('highlight', '1.0', tk.END)
-
-    def highlight_text(self, start_idx, end_idx):
-        self.txt_field_ref.tag_add('highlight', start_idx, end_idx)
-
-    def highlight_make_visible(self, found_text_idx, last_idx):
-        self.highlight_text(found_text_idx, last_idx)
-        self.bring_index_up(found_text_idx)
-
-    def _search_text(self, search_txt, direction,
-                    mode, case, start_idx, stop_idx=None):
-        '''Returns indexes marking search phrase bounds if successes.
-        None otherwise.'''
-
-        # Put all search code into UML diagrams.
-        # could it be turned into generator function/method?
-
-        found_text_idx = self.txt_field_ref.search(
-            search_txt, start_idx, stop_idx, forwards=direction,
-            backwards=direction, exact=mode, regexp=mode, nocase=case)
-
-        if found_text_idx:
-            self.clear_tags()
-            self.last_idx = '{0}+{1}c'.format(found_text_idx, len(search_txt))
-            self.txt_field_ref.mark_set('insert', found_text_idx)
-            self.highlight_make_visible(found_text_idx, self.last_idx)
-
-            return found_text_idx, self.last_idx
-
-    def get_fields_values(self):
-        return (self.entry_text.get(),
-                self.direction.get(),
-                self.mode.get(),
-                self.case.get())
-
-    def get_start_stop_idx(self, direction):
-        '''Get start/stop indexes for continuing search
-        (depending on search direction-forward/backward).'''
-        if direction == 0: # forward search
-            start_idx = self.last_idx
-            stop_idx = tk.END
-        else:
-            start_idx = self.txt_field_ref.index(tk.INSERT)
-            stop_idx = '1.0'
-
-        return start_idx, stop_idx
-        
-    def search_text(self):
-        (entry_text, direction, mode, case, *other) = self.get_fields_values()
-        if not entry_text: return
-
-        start_idx, stop_idx = self.get_start_stop_idx(direction)
-        found_text_idxs = self._search_text(entry_text, direction,
-                                            mode, case, start_idx, stop_idx)
-
-        if not found_text_idxs and direction == 0:
-            self.restart_search_dialog(direction)
-
-        elif not found_text_idxs:
-            tk.messagebox.showinfo(
-                parent=self, title='End of backward search',
-                message='You reached the beginning of the document.')
-
-        self.bring_index_up(start_idx)
-
-    def bring_index_up(self, idx):
-        '''Moves the view into the position of insert index.'''
-        if self.txt_field_ref.bbox(idx) is None:
-            self.txt_field_ref.see(idx)
-
-    def cancel(self, event=None):
-        self.clear_tags()
-        Dialog.cancel(self, event)
-
-    def restart_search_dialog(self, direction):
-        decision = messagebox.askyesno(
-            parent=self, title='End of search',
-            message='Do you want to restart search?')
-
-        if decision == True:
-            if direction == 0:
-                self.last_idx = '1.0'
-            else:
-                self.last_idx = tk.END
-            self.ok()
-
-    def end_of_search_dialog(self):
-        messagebox.showinfo(
-            parent=self, title='End of search',
-            message='The search has reached an end.')
+class BreakLoop(Exception): pass
 
 class EditField(ScrolledText):
     def __init__(self, parent, *pargs, **kwargs):
@@ -252,8 +91,8 @@ class HtmlPreview(tk.Frame):
             self.preview_frame.insert('1.0', error_message.format(e))
             self.preview_frame.no_html = True
         else:
-            self.preview_frame = TkinterHtml(self,
-                                             imagecmd=self.__load_image)
+            self.preview_frame = TkinterHtml(
+                self, imagecmd=self.__load_image)
         self._setup_preview()
 
     def _setup_preview(self):
@@ -299,8 +138,8 @@ class InsertImgDialog(Dialog):
                 if img_height > 256:
                     img_height = 256
 
-                preview_lbl.configure(width=img_width, height=img_height,
-                                      image=preview_lbl.img)
+                preview_lbl.configure(
+                    width=img_width, height=img_height, image=preview_lbl.img)
             else:
                 preview_lbl.configure(preview_def_size)
 
@@ -344,10 +183,11 @@ class InsertImgDialog(Dialog):
         self.img_path = tk.StringVar()
         self.path_to_image = ''
 
+        # use loops to put it in a form:
+
         tk.Label(parent, text='Path:').grid(row=1)
-        self.img_path_ent = tk.Entry(parent,
-                                     textvariable = self.img_path,
-                                     state='readonly')
+        self.img_path_ent = tk.Entry(
+            parent, textvariable = self.img_path, state='readonly')
         self.img_path_ent.grid(row=1, column=1)
 
         tk.Label(parent, text='Alt:').grid(row=2)
@@ -448,10 +288,9 @@ class SpecialCharactersFrame(tk.Frame):
         
     def add_char_bt(self, char : str, callback=None):
         """Adds a new button in a free row/column slot."""
-        tk.Button(self.bt_frame,
-                  text=char,
-                  command=callback,
-                  relief='flat').grid(row=self.cur_row, column=self.cur_col)
+        tk.Button(
+            self.bt_frame, text=char, command=callback, relief='flat').grid(
+                row=self.cur_row, column=self.cur_col)
 
         if self.cur_col == self.no_of_cols - 1:
             self.cur_row += 1
@@ -486,9 +325,7 @@ class IconButton(tk.Button):
 
 class EditHtml(tk.Frame):
     """Main editing tools and edit display-widget."""
-
     def __init__(self, parent, *args, **kwargs):
-
         tk.Frame.__init__(self, parent, *args, **kwargs)
 
         self.tool_tabs = ttk.Notebook(self)
@@ -503,7 +340,12 @@ class EditHtml(tk.Frame):
         self.edit_field.grid(row=1, column=0, sticky='nwse')
         tk.Grid.columnconfigure(self, 0, weight=1)
         tk.Grid.rowconfigure(self, 1, weight=1)
-        
+
+    def __getattr__(self, attr):
+        def wrapper(*pargs, **kwargs):
+            return getattr(self.edit_field, attr)(*pargs, **kwargs)
+        return wrapper
+
     def get_selection_indices(self):
         try:
             start_idx = self.edit_field.index('sel.first')
@@ -513,10 +355,8 @@ class EditHtml(tk.Frame):
 
         return start_idx, end_idx
 
-    def insert_tag(self, start_idx, end_idx,
-                   opening_tag='tag',
-                   closing_tag : bool = False,
-                   opts : str = None):
+    def insert_tag(self, start_idx, end_idx, opening_tag='tag',
+                   closing_tag : bool = False, opts : str = None):
         """
         Should be called for ex. this way:
 
@@ -546,10 +386,9 @@ class EditHtml(tk.Frame):
                 html_opts += "{0}='{1}' ".format(opt, val)
 
         start_idx, end_idx = self.get_selection_indices()
-        self.insert_tag(start_idx=start_idx, end_idx=end_idx,
-                        opening_tag=opening_tag,
-                        closing_tag=closing_tag,
-                        opts=html_opts)
+        self.insert_tag(
+            start_idx=start_idx, end_idx=end_idx, opening_tag=opening_tag,
+            closing_tag=closing_tag, opts=html_opts)
 
     def insert_comment(self):
         opening_tag = '<!-- '
@@ -727,14 +566,16 @@ class MenuBar(tk.Menu):
         for lbl, acc, cmd in zip(
                 ('Undo', 'Redo', 'Copy', 'Cut', 'Paste'),
                 ('Ctrl+Z', 'Shift+Ctrl+Z', 'Ctrl+C', 'Ctrl+X', 'Ctrl+V'),
-                (app.edit_fld.edit_undo, app.edit_fld.edit_redo,
+                (app.main_tabs.edit_html.edit_undo,
+                 app.main_tabs.edit_html.edit_redo,
                  get_ev_cb(self.app, "<<Copy>>"), get_ev_cb(self.app, "<<Cut>>"),
                  get_ev_cb(self.app, "<<Paste>>"))):
             self.edit_menu.add_command(label=lbl, accelerator=acc, command=cmd)
 
-        for label, cmd in (('Search', lambda: SearchTextDialog(app, app.edit_fld)),
+        for label, cmd in (('Search', lambda: SearchTextDialog(
+                app, app.main_tabs.edit_html)),
                            ('Replace text',lambda:
-                            ReplaceTextDialog(app, app.edit_fld)),
+                            ReplaceTextDialog(app, app.main_tabs.edit_html)),
                            ('View in browser', lambda: 1)):
             self.document_menu.add_command(label=label, command=cmd)
 
@@ -747,8 +588,6 @@ class MenuBar(tk.Menu):
                  self.document_menu, self.help_menu)):
             self.add_cascade(label=lbl, menu=menu)
 
-<<<<<<< HEAD
-=======
 class SearchTextDialog(Dialog):
     def __init__(self, master, txt_fld : tk.Text):
         for attr in 'direction', 'mode', 'case':
@@ -795,34 +634,6 @@ class SearchTextDialog(Dialog):
         of a tk.Text index: line.column.'''
         return self.txt_field_ref.index('{0}+{1}c'.format(
             init_idx, text_len))
-
-    def search_gen_results(self, searched_text, init_idx='1.0',
-                           mode=0, case=0, stop_idx=tk.END, direction=0):
-        '''Searches through tk.Text object and generates indexes
-        for subsequent phrases found.'''
-
-        start_idx = init_idx
-        found_text_len = tk.IntVar()
-
-        while True:
-            found_text_init_idx = self.txt_field_ref.search(
-                searched_text, start_idx, stop_idx, count=found_text_len,
-                backwards=direction, exact=mode, regexp=mode, nocase=case)
-
-            if not found_text_init_idx:
-                break
-
-            found_text_end_idx = self.get_word_end_index(
-                found_text_init_idx, found_text_len.get())
-
-            if direction == 0:
-                start_idx = found_text_end_idx
-            else:
-                start_idx = found_text_init_idx
-
-            print('start_idx, found_text_end_idx:', start_idx, found_text_end_idx)
-
-            yield found_text_init_idx, found_text_end_idx
 
     def clear_tags(self):
         self.txt_field_ref.tag_remove('highlight', '1.0', tk.END)
@@ -884,16 +695,13 @@ class SearchTextDialog(Dialog):
             self.ask_to_restart_search(direction)
         elif not found_text_idxs:
             print(found_text_idxs, direction)
-            tk.messagebox.showinfo(
+            messagebox.showinfo(
                 parent=self, title='End of backward search',
                 message='You reached the beginning of the document.')
 
-        self.bring_index_up(start_idx)
-
     def bring_index_up(self, idx):
-        '''Moves the view into the position of insert index.'''
-        if self.txt_field_ref.bbox(idx) is None:
-            self.txt_field_ref.see(idx)
+        '''Moves the view into the position of a given index.'''
+        self.txt_field_ref.see(idx)
 
     def cancel(self, event=None):
         self.clear_tags()
@@ -911,7 +719,6 @@ class SearchTextDialog(Dialog):
                 self.last_idx = tk.END
             self.ok()
 
->>>>>>> aaa8942
 class ReplaceTextDialog(SearchTextDialog):
     def __init__(self, *pargs, **kwargs):
         SearchTextDialog.__init__(self, *pargs, **kwargs)
@@ -930,82 +737,89 @@ class ReplaceTextDialog(SearchTextDialog):
 
         return focus
 
-    def get_fields_values(self):
-        return (SearchTextDialog.get_fields_values(self)
+    def get_form_values(self):
+        return (SearchTextDialog.get_form_values(self)
                 + (self.replace_entry.get(),))
 
-    def phrase_replacer(self, idx_1, idx_2, new_phrase : str):
+    def phrase_replacer(self, idx_1, idx_2, new_phrase):
         self.txt_field_ref.delete(idx_1, idx_2)
         self.txt_field_ref.insert(idx_1, new_phrase)
 
-    def replace_text_incrementally(
-            self, search_txt, direction, mode, case, replace_txt):
+    def replace_text(
+            self, searched_text, mode, case, replace_txt, interactive_mode=False, direction=0,):
+        '''Replaces text from the current cursor position to the end
+        of the document (noninteractive mode is default).'''
 
         start_idx, stop_idx = self.get_start_stop_idx(direction)
-        found_phrases_no = 0
-        print('before loop')
+        found_text_len = tk.IntVar()
+        end_text_idx = ''
+        replaced_phrases_no = 0
 
-        for idx_1, idx_2 in self.search_gen_results(
-                search_txt, init_idx=start_idx, direction=direction,
-                stop_idx=stop_idx, mode=mode, case=case):
+        def _noninteractive_replace():
+            nonlocal found_text_init_idx, end_text_idx
+            nonlocal replace_txt, replaced_phrases_no
 
-            print(idx_1, idx_2)
+            self.phrase_replacer(
+                found_text_init_idx, end_text_idx, replace_txt)
+            end_text_idx = self.get_word_end_index(
+                found_text_init_idx, len(replace_txt))
+            replaced_phrases_no += 1
 
-            self.clear_tags()
-            self.highlight_make_visible(idx_1, idx_2)
-            found_phrases_no += 1
-
+        def _interactive_replace():
             decision = messagebox.askyesnocancel(
                 parent=self, title='Found phrase', message='Replace?')
 
             if decision == True:
-                self.phrase_replacer(idx_1, idx_2, replace_txt)
+                _noninteractive_replace()
             elif decision is None:
-                break
-            else:
-                print('Dont change!')
-        else:
-            if not found_phrases_no and start_idx == '1.0':
-                self.end_of_search_dialog()
-            else:
-                self.restart_search_dialog(direction)
-
-    def replace_all(self, searched_text, mode, case, replace_txt):
-        if searched_text == replace_txt:
-            messagebox.showinfo(
-                parent=self, title='Same text in both fields',
-                message="Can't proceed if both fields (search and "
-                + "replace) have the same content.")
-            return
-
-        phrase_counter = 0
+                raise BreakLoop
 
         while True:
-            idx_1 = self.txt_field_ref.search(
-                searched_text, '1.0', exact=mode, regexp=mode, nocase=case)
-            if not idx_1:
-                break
-            idx_2 = self.get_word_end_index(idx_1, searched_text)
-            self.phrase_replacer(idx_1, idx_2, replace_txt)
-            phrase_counter += 1
+            found_text_init_idx = self.txt_field_ref.search(
+                searched_text, start_idx, stop_idx, count=found_text_len,
+                backwards=direction, exact=mode, regexp=mode, nocase=case)
 
-        messagebox.showinfo(
-            parent=self, title='Number of changes',
-            message='Total number of {} change/changes was made.'.format(
-                phrase_counter))
+            if not found_text_init_idx:
+                break
+
+            end_text_idx = self.get_word_end_index(
+                    found_text_init_idx, found_text_len.get())
+            if interactive_mode:
+                self.highlight_make_visible(found_text_init_idx, end_text_idx)
+                try:
+                    _interactive_replace()
+                except BreakLoop:
+                    break
+                self.clear_tags()
+            else:
+                _noninteractive_replace()
+
+            if direction == 0:
+                start_idx = end_text_idx
+            else:
+                start_idx = found_text_init_idx
+
+        if replaced_phrases_no:
+            messagebox.showinfo(
+                title='Search and replace summary',
+                message='Number of changes made: {}'.format(replaced_phrases_no))
 
     def ok(self, event=None):
         (search_txt, direction,
-         mode, case, replace_txt) = self.get_fields_values()
+         mode, case, replace_txt) = self.get_form_values()
 
-        if not search_txt and not replace_txt: return
+        if not search_txt and not replace_txt:
+            return
+        self.clear_tags()
 
         if self.replace_all_var.get():
-            self.replace_all(searched_text=search_txt, mode=mode,
-                             case=case, replace_txt=replace_txt)
+            self.last_idx = '1.0'
+            self.replace_text(searched_text=search_txt, mode=mode, case=case,
+                              replace_txt=replace_txt)
         else:
-            self.replace_text_incrementally(
-                search_txt, direction, mode, case, replace_txt)
+            self.replace_text(
+                search_txt, mode, case,
+                replace_txt, direction=direction, interactive_mode=True)
 
 if __name__ == '__main__':
     root = tk.Tk()
