@@ -799,10 +799,14 @@ class ReplaceTextDialog(SearchTextDialog):
             else:
                 start_idx = found_text_init_idx
 
+        title = 'Search and replace summary'
         if replaced_phrases_no:
-            messagebox.showinfo(
-                title='Search and replace summary',
-                message='Number of changes made: {}'.format(replaced_phrases_no))
+            message = 'Number of changes made: {}.'.format(replaced_phrases_no)
+        else:
+            message = 'No changes have been made.'
+
+        messagebox.showinfo(
+            parent=self, title=title, message=message)
 
     def ok(self, event=None):
         (search_txt, direction,
