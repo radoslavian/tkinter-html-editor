@@ -14,6 +14,19 @@ def index_to_numbers(idx : 'line.col') -> '(line, col)':
 
 class TextFieldModified(Exception): pass
 
+def update_doc(fn):
+    '''To be used as a decorator.'''
+    def wrapper(self, *args, **kwargs):
+        fn(self, *args, **kwargs)
+        self.update_whole_doc()
+    return wrapper
+
+def update_screen(fn):
+    def wrapper(self,  *args, **kwargs):
+        fn(self, *args, **kwargs)
+        self.update_current_screen()
+    return wrapper
+
 class HtmlParser(HTMLParser):
     def __init__(self, text_ref : 'tk.Text', *pargs, **kwargs):
         # definicja tagów etc.
@@ -42,19 +55,27 @@ class HtmlText(ScrolledText):
         self.parser = HtmlParser(self)
         self.wrapped = self.parser
 
-        self.cur_sc_update_interval = 3
+        self.cur_sc_update_interval = 2
         self.last_event_time = int()
         self.last_fed_time = int()
         self.last_fed_indices = ('1.0', self.index('end'))
 
-        #for ev in '<Key>', '<FocusIn>':#, '<Motion>':
-        #    self.bind(ev, self.update_current_screen)
-
         self.conf_tags()
-        self.update_current_screen()
+        self.bind_events()
+
+    def bind_events(self):
+        self.bind('<Key>', self.update_current_screen)
+        self.bind(
+            '<<Paste>>', lambda e: self.after(3000, self.update_whole_doc))
 
     __getattr__ = getattr_wrapper()
 
+    @update_screen
+    def insert(self, *args, **kwargs):
+        print('upd screen') # debug
+        ScrolledText.insert(self, *args, **kwargs)
+
+    @update_doc
     def load_doc(self, path):
         if not path: return
         try:
@@ -91,21 +112,21 @@ class HtmlText(ScrolledText):
 
     def update_whole_doc(self, event=None):
         '''Updates tags in a whole document.'''
-       # now = time.time()
-       # if now - self.last_fed_time < self.cur_sc_update_interval:
-       #     return
+        print('update_whole_doc') # debug
 
         self.last_fed_indices = ('1.0', 'end')
         self.feed_parser()
 
-       # self.last_event_time = self.last_fed_time = now
-        
-    def update_current_screen(self):
+    def update_current_screen(self, event=None):
+        # now = time.time()
+        # if now - self.last_fed_time < self.cur_sc_update_interval:
+        #     return
+
         print('update_current_screen') # debug
         self.clear_screen()
         self.feed_parser()
-        self.after(
-            self.cur_sc_update_interval*1000, self.update_current_screen)
+
+        # self.last_event_time = self.last_fed_time = now
 
     def feed_parser(self):
         '''Feeds visible text contents of the component into the parser.'''
