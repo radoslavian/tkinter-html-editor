@@ -1,12 +1,13 @@
 import io
-import os
 import sys
 import pathlib
 import tkinter as tk
 import urllib
+from utils import *
 from urllib.request import urlopen
 from tkinter import ttk
 from tkinter import filedialog as fd
+from HtmlText import *
 from tkinter import messagebox
 from tkinter.scrolledtext import ScrolledText
 from tkSimpleDialog import Dialog
@@ -24,48 +25,9 @@ def get_ev_cb(obj, event : str):
     obj - tkinter class instance with focus_get() method'''
     return lambda: obj.focus_get().event_generate(event)
 
-def base_file_name(path : 'str, bytes, os.PathLike'):
-    try:
-        file_name = os.path.basename(path)
-    except TypeError:
-        file_name = None
-    return file_name
-
-class TextFieldModified(Exception): pass
 class UnsavedDocument(Exception): pass
 class DocumentSaveCancelled(UnsavedDocument): pass
 class BreakLoop(Exception): pass
-
-class EditField(ScrolledText):
-    def __init__(self, parent, *pargs, **kwargs):
-        ScrolledText.__init__(self, parent, undo=True, maxundo=-1,
-                              autoseparators=True, *pargs, **kwargs)
-
-    def load_doc(self, path):
-        if not path: return
-        try:
-            html_file = open(path)
-        except IOError:
-            print("Add file_not_found msg")
-            raise
-        else:
-            self.insert_if_empty(html_file.read())
-        finally:
-            html_file.close()
-
-    def is_empty(self):
-        return True if self.compare("end-1c", "==", "1.0") else False
-
-    def insert_if_empty(self, content):
-        '''Inserts text only if the text edit field is empty
-        AND unmodified.'''
-
-        if self.edit_modified() or not self.is_empty():
-            raise TextFieldModified(
-                'Text field {0} is non-empty or modified'.format(self))
-        else:
-            self.insert('1.0', content)
-            self.edit_modified(False)
 
 class HtmlPreview(tk.Frame):
     """Allows previewing html within a frame that can be embedded in a
@@ -329,7 +291,8 @@ class EditHtml(tk.Frame):
         tk.Frame.__init__(self, parent, *args, **kwargs)
 
         self.tool_tabs = ttk.Notebook(self)
-        self.edit_field = EditField(self)
+        self.edit_field = HtmlText(self)
+        self.wrapped = self.edit_field
 
         main_tools = StandardTools(self)
         font_bar = FontTools(self, self.insert_formatting_tag)
@@ -341,10 +304,7 @@ class EditHtml(tk.Frame):
         tk.Grid.columnconfigure(self, 0, weight=1)
         tk.Grid.rowconfigure(self, 1, weight=1)
 
-    def __getattr__(self, attr):
-        def wrapper(*pargs, **kwargs):
-            return getattr(self.edit_field, attr)(*pargs, **kwargs)
-        return wrapper
+    __getattr__ = getattr_wrapper()
 
     def get_selection_indices(self):
         try:
@@ -373,7 +333,7 @@ class EditHtml(tk.Frame):
             opening_tag += ' ' + opts
         opening_tag = '<' + opening_tag + '>'
         self.edit_field.insert(start_idx, opening_tag)
-
+ 
     def dialog_insert_tag(self, dialog_obj, opening_tag,
                           closing_tag : bool = False, title='Tk Dialog'):
         options = dialog_obj(self, title).result
@@ -415,6 +375,7 @@ class EditHtml(tk.Frame):
         self.edit_field.insert(idx, text)
 
     def get_contents(self) -> str:
+        # Move into HtmlText
         return self.edit_field.get('1.0', 'end-1c')
 
 class ToolBar(tk.Frame):
