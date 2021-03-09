@@ -69,11 +69,7 @@ class HtmlText(ScrolledText):
             '<<Paste>>', lambda e: self.after(3000, self.update_whole_doc))
 
     __getattr__ = getattr_wrapper()
-
-    @update_screen
-    def insert(self, *args, **kwargs):
-        print('upd screen') # debug
-        ScrolledText.insert(self, *args, **kwargs)
+    insert = update_screen(ScrolledText.insert)
 
     @update_doc
     def load_doc(self, path):
