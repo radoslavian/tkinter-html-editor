@@ -1,0 +1,40 @@
+HtmlText - opis działania:
+
+Wymogi:
++ koloruje:
+ - kolor1 (brązowy): tagi otwierające, nazwy tagów, tagi zamykające
+ - nazwy atrybutów (pomarańczowy)
+ - zawartość atrybutów (fioletowy)
+ - dane np. między znacznikami <style></style>, <script></script>
+ - komentarze - cały komentarz ma mieć jeden kolor
+ - Doctype (niebieski)
+ - tekst (dane) pozostaje bez zmian
+
+Działanie:
++ ładuję tekst do parsera (kiedy i w jakich okolicznościach?) -> opis+schemat
++ z wywoływanych metod (tych, które przetwarzają tagi i dane - metody do nadpisania) modyfikuję tagi:
+ - Co potrzebuję od każdej metody: indeksy początku/końca tekstu na jaki reaguje - jest tylko metoda getpos(), która zwraca (nr linii, offset) oraz metody handle_*(self, data), które w argumencie dostają zawartość elementu do którego się odnoszą (tag, atrybuty) - przy czym po każdym użyciu HTMLParser.parse należy obiekt zresetować, inaczej po każdym kolejnym wywołaniu getpos(), offset będzie się powiększał i nie będzie wskazywał rzeczywistej lokalizacji.
++ Widoczny obszar tekstu: przy pierwszym załadowaniu koloruję cały tekst, potem tylko wybrane fragmenty (ten który wyświetlam - w określonych odstępach czasu i w reakcji na zdarzenie modyfikacji)
+
+Przepływ kontroli i struktura:
++ w konstruktorze ustawiam tagi dla poszczególnych typów tekstu
++ wczytuję tekst html do komponentu
++ wczytany tekst ładuję do parsera
++ metody wywoływane podczas analizy tekstu zwracają indeksy i nazwę tagu: (idx1, idx2, 'tag_name')
++ Parser ma metodę, która przypisuje tagi do indeksów w komponencie tk.Text - jest wywoływana razem z metodami handle* (metody do nadpisania, analizujące tekst - za pośrednictwem dekoratora, który jest przypisywany do każdej z tych metod automatycznie w momencie utworzenia instancji klasy - przez konstruktor?)
++ W parserze mogę mieć jedną ogólniejszą funkcję, np. handle_tag do której przekierowują argumenty funkcje b. szczegółowe, np. handle_starttag (i pozostałe), i która zwraca konkretne wartości (czy to na pewno ma sens? Sprawdzić jak będą te metody wyglądały jeżeli będę je pisał osobno).
+
+Zrobić prototyp metody do testu.
+
+
+
+Uwagi:
+- Zwracane dane nie mają nawiasów < (zwraca indeks tego nawiasu) i >, rozwiązania:
+ + Prawdopodobne rozwiązanie: get_starttag_text() - ta metoda zwraca cały tekst ostatnio otwartego tagu (łącznie z nawiasami) - można użyć wewnątrz handle_starttag()
+ + nawias zamykający kolorować ręcznie
++ może zamiast co określoną ilość czasu - niech aktualizuje podświetlanie co okr. ilość uderzeń klawiatury?
++ do zdarzeń czasowych w tkinter używa się tk.after()
+
++ jeżeli prócz tagu są atrybuty - metody otrzymują je jako: <h1 class="header"> -> [('class', 'header')] - ale: metodzie Text.tag_add wystarczy tylko początkowy indeks - może wraz z dodaniem nowego tagu poprzedni osadzony (w miejscu rozpoczęcia się nowego?)
+ + jeżeli tag nie ma atrybutów: końcowy indeks - długość: "tag html+>"
++ Jeżeli ma to aktualizować tagi tylko we fragmencie tekstu (np. tym, który aktualnie widzę + jeżeli zostanie wywołane zdarzenie <Key>), to offsety które zwraca parser muszą być przeliczane na numery linii.kolumny w klasie HtmlText) - zatem: w momencie wysłania tekstu do parsera, muszę mieć zapisane indeksy (początkowy i końcowy) fragmentu który wysłałem.
