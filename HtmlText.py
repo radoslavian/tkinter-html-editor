@@ -71,15 +71,17 @@ class HtmlParser(HTMLParser):
         # [[attr1_name, (idx1, idx2, idx3)], [attr2_name, (idx1, idx2 ...)]]
 
         attributes = []
+        counter = 0
 
         for name in attr_names:
             attributes.append([name])
 
-            for attr in attributes:
-                attr.append(tuple(
-                    idx.start() for idx in re.finditer(attr[0], html_tag)))
+        for attr in attributes:
+            attr.append(tuple(
+                idx.start() for idx in re.finditer(attr[0], html_tag)))
 
             for index in attr[1]:
+                counter += 1
                 self.html_fld_ref.apply_tag(
                     pos[0], pos[1]+index, len(attr[0]), 'attr_name')
 
