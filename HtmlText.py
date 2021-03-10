@@ -8,37 +8,54 @@ def index_to_numbers(idx : 'line.col') -> '(line, col)':
     return tuple(map(lambda x: int(x), idx.split('.')))
 
 def scr_update(fn):
-    '''Decorator factory-returns decorators for HtmlText screen/document
-    view update tag highliting methods.'''
-    def decorator(meth):
-        def wrapper(self, *args, **kwargs):
-            fn(self,  *args, **kwargs)
-            return getattr(self, meth)()
-        return wrapper
-    return decorator
+    def wrapper(self, *args, **kwargs):
+        fn(self,  *args, **kwargs)
+        self.update_current_screen()
+    return wrapper
+
+def whole_scr_upd(fn):
+    def wrapper(self, *args, **kwargs):
+        fn(self,  *args, **kwargs)
+        self.update_whole_doc()
+    return wrapper
+
 
 class TextFieldModified(Exception): pass
+
 
 class HtmlParser(HTMLParser):
     def __init__(self, text_ref : 'tk.Text', *pargs, **kwargs):
         # definicja tagów etc.
         self.html_fld_ref = text_ref
         HTMLParser.__init__(self, *pargs, **kwargs)
+        self.convert_charrefs = False
+
+    def handle_comment(self, data):
+        data_len = len(data) + len('<!---->')
+        self.html_fld_ref.apply_tag(*self.getpos(), data_len, 'comment')
+
+    def handle_pi(self, data):
+        '''Handle processing instruction.'''
+        self.html_fld_ref.apply_tag(
+            *self.getpos(), len(data)+len('<?>'), 'proc_i')
+
+    def handle_decl(self, decl):
+        self.html_fld_ref.apply_tag(*self.getpos(), len(decl)+3, 'doctype')
 
     def handle_endtag(self, tag):
-        index = self.getpos()
-        self.html_fld_ref.apply_tag(*index, len(tag)+3, 'html_tag')
+        self.html_fld_ref.apply_tag(*self.getpos(), len(tag)+3, 'html_tag')
 
-    def highlight_attrs(pos, tag_text, offset=0):
-        ''''''
-        pass
+    def handle_entityref(self, name):
+        self.html_fld_ref.apply_tag(*self.getpos(), len(name)+2, 'entity')
+
+    def handle_charref(self, name):
+        self.html_fld_ref.apply_tag(*self.getpos(), len(name)+3, 'charref')
 
     def handle_starttag(self, tag, attrs):
         # position at the start of the current html tag
         init_index = self.getpos()
         tag_text = self.get_starttag_text()
 
-        # debug
         self.html_fld_ref.apply_tag(*init_index, len(tag_text), 'html_tag')
         self.highlight_attr_names(tag_text, attrs, init_index)
 
@@ -52,25 +69,20 @@ class HtmlParser(HTMLParser):
         # attribute name and initial indices of its each occurrence
         # within an html tag:
         # [[attr1_name, (idx1, idx2, idx3)], [attr2_name, (idx1, idx2 ...)]]
+
         attributes = []
 
         for name in attr_names:
             attributes.append([name])
 
-        for attr in attributes:
-            attr.append(tuple(idx.start()
-                              for idx in re.finditer(attr[0], html_tag)))
+            for attr in attributes:
+                attr.append(tuple(
+                    idx.start() for idx in re.finditer(attr[0], html_tag)))
 
-        for attribute in attributes:
-            for index in attribute[1]:
+            for index in attr[1]:
                 self.html_fld_ref.apply_tag(
-                    pos[0], pos[1]+index, len(attribute[0]), 'attr_name')
+                    pos[0], pos[1]+index, len(attr[0]), 'attr_name')
 
-
-
-    def handle_comment(self, data):
-        data_len = len(data) + len('<!---->')
-        self.html_fld_ref.apply_tag(*self.getpos(), data_len, 'comment')
 
 class HtmlText(ScrolledText):
     def __init__(self, parent, *pargs, **kwargs):
@@ -81,8 +93,7 @@ class HtmlText(ScrolledText):
         self.wrapped = self.parser
 
         self.last_event_time = int()
-        self.last_fed_time = int()
-        self.last_fed_indices = ('1.0', self.index('end'))
+        self.last_fed_indices = ('1.0', 'end')
 
         self.configure_tags()
         self.bind_events()
@@ -93,9 +104,10 @@ class HtmlText(ScrolledText):
             '<<Paste>>', lambda e: self.after(3000, self.update_whole_doc))
 
     __getattr__ = getattr_wrapper()
-    insert = scr_update(ScrolledText.insert)('update_current_screen')
 
-    @scr_update('update_whole_doc')
+    insert = scr_update(ScrolledText.insert)
+
+    @whole_scr_upd
     def load_doc(self, path):
         if not path: return
         try:
@@ -127,7 +139,10 @@ class HtmlText(ScrolledText):
             ('html_tag', {'foreground': 'brown'}),
             ('comment', {'foreground': 'blue'}),
             ('attr_name', {'foreground': 'khaki4'}),
-            ('attr_text', {'foreground': 'ivory4'}))
+            ('entity', {'foreground': 'SlateBlue2'}),
+            ('charref', {'foreground': 'CadetBlue4'}),
+            ('doctype', {'foreground': 'thistle4'}),
+            ('proc_i', {'foreground': 'sienna2'}))
 
         for t_name, t_formatting in self.tags:
             self.tag_configure(t_name, t_formatting)
@@ -170,7 +185,7 @@ class HtmlText(ScrolledText):
             self.clear_tags(tag[0])
 
     def apply_tag(self, p_line : int, p_col : int, tag_len, tk_tag):
-        '''p_line, p_col - parser lines/columns, values returned by 
+        '''p_line, p_col - parser lines/columns: values returned by 
         the html parser (lines/cols relative to
         the start of what's been fed into it).'''
 
@@ -182,10 +197,6 @@ class HtmlText(ScrolledText):
             tk_tag, new_init_idx, '{0}+{1}c'.format(new_init_idx, tag_len))
 
 if __name__ == '__main__':
-
-    html_tag = '<meta property="og:url" property="prop2" content="https://stackoverflow.com/"/>'
-    attrs = [('property', 'og:url'), ('property', 'prop2'), ('content', 'https://stackoverflow.com/')]
-
 
     import tkinter as tk
     root = tk.Tk()
