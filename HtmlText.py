@@ -19,9 +19,7 @@ def whole_scr_upd(fn):
         self.update_whole_doc()
     return wrapper
 
-
 class TextFieldModified(Exception): pass
-
 
 class HtmlParser(HTMLParser):
     def __init__(self, text_ref : 'tk.Text', *pargs, **kwargs):
@@ -30,34 +28,35 @@ class HtmlParser(HTMLParser):
         HTMLParser.__init__(self, *pargs, **kwargs)
         self.convert_charrefs = False
 
+    def apply_t(self, t_len, t_name):
+        '''Shorthand for the HtmlText.apply_tag method call.'''
+        self.html_fld_ref.apply_tag(*self.getpos(), t_len, t_name)
+
     def handle_comment(self, data):
         data_len = len(data) + len('<!---->')
-        self.html_fld_ref.apply_tag(*self.getpos(), data_len, 'comment')
+        self.apply_t(data_len, 'comment')
 
     def handle_pi(self, data):
         '''Handle processing instruction.'''
-        self.html_fld_ref.apply_tag(
-            *self.getpos(), len(data)+len('<?>'), 'proc_i')
+        self.apply_t(len(data)+len('<?>'), 'proc_i')
 
     def handle_decl(self, decl):
-        self.html_fld_ref.apply_tag(*self.getpos(), len(decl)+3, 'doctype')
+        self.apply_t(len(decl)+3, 'doctype')
 
     def handle_endtag(self, tag):
-        self.html_fld_ref.apply_tag(*self.getpos(), len(tag)+3, 'html_tag')
+        self.apply_t(len(tag)+3, 'html_tag')
 
     def handle_entityref(self, name):
-        self.html_fld_ref.apply_tag(*self.getpos(), len(name)+2, 'entity')
+        self.apply_t(len(name)+2, 'entity')
 
     def handle_charref(self, name):
-        self.html_fld_ref.apply_tag(*self.getpos(), len(name)+3, 'charref')
+        self.apply_t(len(name)+3, 'charref')
 
     def handle_starttag(self, tag, attrs):
-        # position at the start of the current html tag
-        init_index = self.getpos()
         tag_text = self.get_starttag_text()
 
-        self.html_fld_ref.apply_tag(*init_index, len(tag_text), 'html_tag')
-        self.highlight_attr_names(tag_text, attrs, init_index)
+        self.apply_t(len(tag_text), 'html_tag')
+        self.highlight_attr_names(tag_text, attrs, self.getpos())
 
     def highlight_attr_names(self, html_tag, attrs, pos):
         '''Highlights html attribute names.
@@ -71,7 +70,6 @@ class HtmlParser(HTMLParser):
         # [[attr1_name, (idx1, idx2, idx3)], [attr2_name, (idx1, idx2 ...)]]
 
         attributes = []
-        counter = 0
 
         for name in attr_names:
             attributes.append([name])
@@ -81,7 +79,6 @@ class HtmlParser(HTMLParser):
                 idx.start() for idx in re.finditer(attr[0], html_tag)))
 
             for index in attr[1]:
-                counter += 1
                 self.html_fld_ref.apply_tag(
                     pos[0], pos[1]+index, len(attr[0]), 'attr_name')
 
