@@ -1915,7 +1915,7 @@ bg=red</panel_attributes>
       <h>52</h>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;&gt;
-apply_tag(line, offset, tag_name)</panel_attributes>
+apply_tag()</panel_attributes>
     <additional_attributes>290.0;20.0;10.0;20.0</additional_attributes>
   </element>
   <element>
@@ -1927,7 +1927,7 @@ apply_tag(line, offset, tag_name)</panel_attributes>
       <h>52</h>
     </coordinates>
     <panel_attributes>lt=-&gt;&gt;&gt;
-feed(idx1, idx2)</panel_attributes>
+feed()</panel_attributes>
     <additional_attributes>10.0;20.0;300.0;20.0</additional_attributes>
   </element>
   <element>

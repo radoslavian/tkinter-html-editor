@@ -1000,12 +1000,12 @@ m2=1 parser</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1463</x>
-      <y>275</y>
+      <x>1430</x>
+      <y>253</y>
       <w>341</w>
       <h>198</h>
     </coordinates>
-    <panel_attributes>+ Zaprojektować algorytm odświeżania
+    <panel_attributes>Zaprojektować algorytm odświeżania
 kolorów tagów, np.:
  - odświeża widok jeżeli od ostatniego
  uderzenie klawisza minęło więcej
@@ -1014,6 +1014,27 @@ kolorów tagów, np.:
  -- co parę sekund wywołuje funkcję która
  sprawdza czy któryś z tych warunków
  wystąpił.
+  - wdg.after_cancel(id) - anuluje after()
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>1518</x>
+      <y>506</y>
+      <w>341</w>
+      <h>198</h>
+    </coordinates>
+    <panel_attributes>Prosty algorytm ustalania wcięć
+tagów w tekście:
++ zaprojektować z diag. sekw.
++ zapisywać w atrybucie głębokość wcięcia i
+zmniejszać je/zwiększać?
++ zaprojektować na podstawie rzeczywistego
+wpisywania tagów w dokumencie (np. piszę
+tekst z tagami i ustalać co się musi dziać,
+kiedy piszę, kasuję etc.)
 bg=red</panel_attributes>
     <additional_attributes/>
   </element>

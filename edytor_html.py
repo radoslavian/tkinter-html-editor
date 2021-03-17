@@ -537,7 +537,7 @@ class MenuBar(tk.Menu):
                 app, app.main_tabs.edit_html)),
                            ('Replace text',lambda:
                             ReplaceTextDialog(app, app.main_tabs.edit_html)),
-                           ('View in browser', lambda: 1)):
+                           ('View in browser', lambda: app.view_in_browser())):
             self.document_menu.add_command(label=label, command=cmd)
 
         self.help_menu.add_command(label='About')

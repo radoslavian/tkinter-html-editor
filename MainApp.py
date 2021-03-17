@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from edytor_html import *
+import webbrowser
 
 class MainApp(tk.Frame):
     class InnerDecorators:
@@ -95,9 +96,9 @@ class MainApp(tk.Frame):
         try:
             self._save(file_path, self.main_tabs.edit_html)
         except IOError as e:
-            messagebox.showerror(parent=self.parent, title='I/O Error',
-                                 message='Error while attempting '
-                                 'to save file: {}'.format(e))
+            messagebox.showerror(
+                parent=self.parent, title='I/O Error',
+                message='Error while attempting to save file: {}'.format(e))
         else:
             if self.html_file_path != file_path:
                 self.html_file_path = file_path
@@ -127,12 +128,31 @@ class MainApp(tk.Frame):
         else:
             raise DocumentSaveCancelled
 
+    def view_in_browser(self):
+        if self.main_tabs.edit_html.edit_modified():
+            try:
+                self.save_document()
+            except DocumentSaveCancelled:
+                messagebox.showinfo(
+                    parent=self, title='Unsaved file',
+                    message='You have to save the file first in order'
+                    ' to view it in an external browser.')
+                return
+
+        try:
+            webbrowser.open(pathlib.Path(self.html_file_path).as_uri())
+        except webbrowser.Error as err:
+            messagebox.showerror(
+                parent=self, title='Browser control error',
+                message='During the operation browser control error'
+                ' has occured: {}.'.format(err))
+
     def _quit(self):
         if self.main_tabs.edit_html.edit_modified():
             try:
                 self.ask_to_save_file()
-            except DocumentSaveCancelled as s:
-                print(s)
+            except DocumentSaveCancelled:
+                print('document save cancelled')
                 return
         self.master.destroy()
 
