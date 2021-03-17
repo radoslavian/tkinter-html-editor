@@ -707,7 +707,8 @@ class ReplaceTextDialog(SearchTextDialog):
         self.txt_field_ref.insert(idx_1, new_phrase)
 
     def replace_text(
-            self, searched_text, mode, case, replace_txt, interactive_mode=False, direction=0,):
+            self, searched_text, mode, case, replace_txt,
+            interactive_mode=False, direction=0,):
         '''Replaces text from the current cursor position to the end
         of the document (noninteractive mode is default).'''
 
@@ -773,8 +774,9 @@ class ReplaceTextDialog(SearchTextDialog):
         (search_txt, direction,
          mode, case, replace_txt) = self.get_form_values()
 
-        if not search_txt and not replace_txt:
+        if not search_txt:
             return
+
         self.clear_tags()
 
         if self.replace_all_var.get():
