@@ -20,7 +20,7 @@ class MainApp(tk.Frame):
 
         @classmethod
         def save(cls, fn):
-            def wrapper(self):
+            def wrapper(self, event=None):
                 if not self.main_tabs.edit_html.edit_modified():
                     return
                 if self.html_file_path:
@@ -41,11 +41,12 @@ class MainApp(tk.Frame):
         parent.config(menu=parent.menu)
 
         if path_to_doc:
-            self.open_document(path_to_doc)
+            self.open_document(path=path_to_doc)
         self.set_mw_title()
 
         # Event handlers:
         parent.protocol("WM_DELETE_WINDOW", self._quit)
+        self.bind_events()
 
     @classmethod
     def new_instance(cls, parent, path_to_doc=None):
@@ -56,19 +57,38 @@ class MainApp(tk.Frame):
         return app
 
     def _arrange_subframes(self):
-        self.spc_frame = SpecialCharactersFrame(self,
-                                                'Special characters:',
-                                                cols=3)
-        self.spc_frame.grid(row=0, column=0, sticky='n')
+        self.spc_frame = SpecialCharactersFrame(
+            self, 'Special characters:', cols=3)
+        self.spc_frame.grid(row=1, column=0, sticky='n')
 
         self.main_tabs = MainTabs(self)
         self.spc_frame.def_chars(self.main_tabs.edit_html.insert_text)
+        self.main_tabs.grid(row=1, column=1, sticky='nwse')
 
-        self.main_tabs.grid(row=0, column=1, sticky='nwse')
+        self.main_toolbar = MainToolBar(self)
+        self.main_toolbar.grid(row=0, column=0, columnspan=2, sticky='wn')
+
         tk.Grid.columnconfigure(self, 1, weight=1)
-        tk.Grid.rowconfigure(self, 0, weight=1)
+        tk.Grid.rowconfigure(self, 1, weight=1)
 
-    def open_document(self, path=None):
+    def bind_events(self):
+        events = (
+            ('<Control-o>', lambda ev: self.open_document(event=ev)),
+            ('<Control-s>', self.save_document),
+            ('<Control-q>', self._quit),
+            ('<Control-f>', self.find_text),
+            ('<Control-r>', self.replace_text))
+
+        for ev, fn in events:
+            self.bind_all(ev, fn)
+
+    def find_text(self, event=None):
+        SearchTextDialog(self, self.main_tabs.edit_html)
+
+    def replace_text(self, event=None):
+        ReplaceTextDialog(self, self.main_tabs.edit_html)
+
+    def open_document(self, path=None, event=None):
         if path:
             filename = path
         else:
@@ -139,6 +159,9 @@ class MainApp(tk.Frame):
                     ' to view it in an external browser.')
                 return
 
+        if not self.html_file_path:
+            return
+
         try:
             webbrowser.open(pathlib.Path(self.html_file_path).as_uri())
         except webbrowser.Error as err:
@@ -147,7 +170,7 @@ class MainApp(tk.Frame):
                 message='During the operation browser control error'
                 ' has occured: {}.'.format(err))
 
-    def _quit(self):
+    def _quit(self, event=None):
         if self.main_tabs.edit_html.edit_modified():
             try:
                 self.ask_to_save_file()
