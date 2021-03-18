@@ -350,8 +350,8 @@ class EditHtml(tk.Frame):
             closing_tag=closing_tag, opts=html_opts)
 
     def insert_startendtag(self, opening_tag, closing_tag, start_idx, end_idx):
-        self.edit_field.insert(end_idx, closing_tag)
-        self.edit_field.insert(start_idx, opening_tag)
+        for item in ((end_idx, closing_tag), (start_idx, opening_tag)):
+            self.edit_field.insert(*item)
 
     def insert_formatting_tag(self, opening_tag, closing_tag : bool = False,
                    opts : str = None):
