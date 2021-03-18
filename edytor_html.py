@@ -518,36 +518,41 @@ class MenuBar(tk.Menu):
         for menu in 'file_menu', 'edit_menu', 'document_menu', 'help_menu':
             setattr(self, menu, tk.Menu(self))
 
-        for label, cmd in zip(
-                ('Open', 'Save', 'Save as', 'Exit'),
-                (app.open_document, app.save_document,
-                 app.save_document_as, app._quit)):
-            self.file_menu.add_command(label=label, command=cmd)
+        menus = (
+            (self.file_menu,                        # parent-menu
+             ('Open', 'Save', 'Save as', 'Exit'),   # label
+             ('Ctrl+O', 'Ctrl+S', None, 'Ctrl+Q'),  # accelerator
+             (app.open_document, app.save_document, # commands
+              app.save_document_as, app._quit)),
 
-        for lbl, acc, cmd in zip(
-                ('Undo', 'Redo', 'Copy', 'Cut', 'Paste'),
-                ('Ctrl+Z', 'Shift+Ctrl+Z', 'Ctrl+C', 'Ctrl+X', 'Ctrl+V'),
-                (app.main_tabs.edit_html.edit_undo,
-                 app.main_tabs.edit_html.edit_redo,
-                 get_ev_cb(self.app, "<<Copy>>"), get_ev_cb(self.app, "<<Cut>>"),
-                 get_ev_cb(self.app, "<<Paste>>"))):
-            self.edit_menu.add_command(label=lbl, accelerator=acc, command=cmd)
+            (self.edit_menu,
+             ('Undo', 'Redo', 'Copy', 'Cut', 'Paste'),
+             ('Ctrl+Z', 'Shift+Ctrl+Z', 'Ctrl+C', 'Ctrl+X', 'Ctrl+V'),
+             (app.main_tabs.edit_html.edit_undo,
+              app.main_tabs.edit_html.edit_redo,
+              get_ev_cb(self.app, "<<Copy>>"), get_ev_cb(self.app, "<<Cut>>"),
+              get_ev_cb(self.app, "<<Paste>>"))),
 
-        for label, cmd in (('Search', lambda: SearchTextDialog(
-                app, app.main_tabs.edit_html)),
-                           ('Replace text',lambda:
-                            ReplaceTextDialog(app, app.main_tabs.edit_html)),
-                           ('View in browser', lambda: app.view_in_browser())):
-            self.document_menu.add_command(label=label, command=cmd)
+             (self.document_menu,
+              ('Find text', 'Replace text', 'View in browser'),
+              ('Ctrl+F', 'Ctrl+R', None),
+              (lambda: SearchTextDialog(app, app.main_tabs.edit_html),
+               lambda: ReplaceTextDialog(app, app.main_tabs.edit_html),
+               lambda: app.view_in_browser())))
+
+        for menu in menus:
+            for (label, acc, cmd) in zip(*menu[1:]):
+                menu[0].add_command(label=label, accelerator=acc, command=cmd)
 
         self.help_menu.add_command(label='About')
 
-        # Space for adding menus to the menubar:
+        # Adding menus to the menubar:
         for lbl, menu in zip(
                 ('File', 'Edit', 'Document', 'Help'),
                 (self.file_menu, self.edit_menu,
                  self.document_menu, self.help_menu)):
             self.add_cascade(label=lbl, menu=menu)
+
 
 class SearchTextDialog(Dialog):
     def __init__(self, master, txt_fld : tk.Text):
