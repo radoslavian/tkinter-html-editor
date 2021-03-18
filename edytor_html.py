@@ -20,7 +20,6 @@ file_types = (
 
 def get_ev_cb(obj, event : str):
     '''Get event callback
-
     Returns callback for tkinter events such as cut, copy, paste.
     obj - tkinter class instance with focus_get() method'''
     return lambda: obj.focus_get().event_generate(event)
@@ -145,7 +144,7 @@ class InsertImgDialog(Dialog):
         self.img_path = tk.StringVar()
         self.path_to_image = ''
 
-        # use loops to put it in a form:
+        # TODO: use loops to put widgets in a form:
 
         tk.Label(parent, text='Path:').grid(row=1)
         self.img_path_ent = tk.Entry(
@@ -262,7 +261,7 @@ class SpecialCharactersFrame(tk.Frame):
 
     def get_char(self, fn_obj, char : str = 'c', htm_entity : str = None):
         """Returns callbacks for buttons.
-        fn_obj - a callable that accepts string as an input."""
+        fn_obj - callable that accepts string as an input."""
         def char_callback():
             if self.entity_switch_var.get() == 0:
                 fn_obj(char)
@@ -350,12 +349,7 @@ class EditHtml(tk.Frame):
             start_idx=start_idx, end_idx=end_idx, opening_tag=opening_tag,
             closing_tag=closing_tag, opts=html_opts)
 
-    def insert_comment(self):
-        opening_tag = '<!-- '
-        closing_tag = ' -->'
-
-        start_idx, end_idx = self.get_selection_indices()
-
+    def insert_startendtag(self, opening_tag, closing_tag, start_idx, end_idx):
         self.edit_field.insert(end_idx, closing_tag)
         self.edit_field.insert(start_idx, opening_tag)
 
@@ -465,8 +459,10 @@ class StandardTools(ToolBar):
                  title = 'Insert hyperlink', dialog_obj = InsertHyperlinkDialog)
             ))
         self.separator()
-        self.add_tool_buttons(('icons/comment.png', '<!--',
-                                edit_fld.insert_comment))
+        self.add_tool_buttons(
+            ('icons/comment.png', '<!--',
+             lambda: edit_fld.insert_startendtag(
+                 '<!-- ', ' -->', *edit_fld.get_selection_indices())))
 
 class FontTools(ToolBar):
     def __init__(self, parent, format_fn, *args, **kwargs):
@@ -530,7 +526,7 @@ class MenuBar(tk.Menu):
             (self.file_menu,                        # parent-menu
              ('Open', 'Save', 'Save as', 'Exit'),   # label
              ('Ctrl+O', 'Ctrl+S', None, 'Ctrl+Q'),  # accelerator
-             (app.open_document, app.save_document, # commands
+             (app.open_document, app.save_document, # command
               app.save_document_as, app._quit)),
 
             (self.edit_menu,
