@@ -178,7 +178,7 @@ class InsertImgDialog(Dialog):
 
         tk.Grid.columnconfigure(self, 2, weight=1)
         tk.Grid.rowconfigure(self, 1, weight=1)
-
+    
     def apply(self):
         path_to_image = ''
         if self.path_to_image:
@@ -191,6 +191,23 @@ class InsertImgDialog(Dialog):
             'width'    : str(self.width_ent.get()),
             'style'    : str(self.style_ent.get())
         }
+
+
+class InsertTableDialog(Dialog):
+    def body(self, master):
+        tk.Label(master, text='Rows:').grid(row=0, column=0)
+        tk.Label(master, text='Columns:').grid(row=1, column=0)
+
+        self.rows_counter = tk.Spinbox(master, from_ = 1, to=100, increment=1)
+        self.rows_counter.grid(row=0, column=1)
+
+        self.cols_counter = tk.Spinbox(master, from_ = 1, to=100, increment=1)
+        self.cols_counter.grid(row=1, column=1)
+
+    def apply(self):
+        self.result = (int(self.rows_counter.get()),
+                       int(self.cols_counter.get()))
+
 
 class InsertHyperlinkDialog(Dialog):
     def body(self, master):
@@ -295,9 +312,11 @@ class EditHtml(tk.Frame):
 
         main_tools = StandardTools(self)
         font_bar = FontTools(self)
+        table_bar = TableBar(self)
 
         self.tool_tabs.add(main_tools, text="Main tools")
-        self.tool_tabs.add(font_bar, text="Text formatting")    
+        self.tool_tabs.add(font_bar, text="Text formatting")
+        self.tool_tabs.add(table_bar, text="Table")
 
         self.tool_tabs.grid(row=0, column=0, sticky='w')
         self.edit_field.grid(row=1, column=0, sticky='nwse')
@@ -315,24 +334,49 @@ class EditHtml(tk.Frame):
 
         return start_idx, end_idx
 
-    def insert_tag(self, start_idx, end_idx, opening_tag='tag',
+    def insert_tag(self, start_idx, end_idx, opening_tag, content='',
                    closing_tag : bool = False, opts : str = None):
         """
+        start_idx-where opening tag should start
+        end_idx-where closing tag should start
+        content-optional text put between tags only if end-tag
+        is present
+
         Should be called this way:
 
         self.insert_tag(*self.get_selection_indices(),
                         opening_tag=opening_tag,
                         [closing_tag=True,
+                        content='text',
                         opts=tag_opts])
         """
 
         if closing_tag:
             end_tag = '</' + opening_tag + '>'
             self.edit_field.insert(end_idx, end_tag)
+            if content:
+                self.edit_field.insert(end_idx, content)
         if opts:
             opening_tag += ' ' + opts
         opening_tag = '<' + opening_tag + '>'
         self.edit_field.insert(start_idx, opening_tag)
+
+    def table_creator(self):
+        table_dialog = InsertTableDialog(self)
+        if table_dialog.result:
+            self.insert_table(*table_dialog.result)
+
+    def insert_table(self, rows, cols):
+        init_idx = self.index('insert')
+
+        self.insert(init_idx, '</table>')
+
+        for _ in range(0, rows):
+            self.insert(init_idx, '</tr>\n')
+            self.insert(init_idx, '<td></td>\n'*cols)
+            self.insert(init_idx, '<tr>\n')
+
+        self.insert(init_idx, '<table id="">\n')
  
     def dialog_insert_tag(self, dialog_obj, opening_tag,
                           closing_tag : bool = False, title='Tk Dialog'):
@@ -444,11 +488,6 @@ class MainToolBar(ToolBar):
             ('icons/search.png', 'Search', self.parent.find_text),
             ('icons/globe_icon.png', 'Browser', self.parent.view_in_browser))
 
-class TableBar(ToolBar):
-    def tools(self):
-        "Table creator (dialog), tr, th, td."
-
-        #### # Yet to be done # ###############
 
 class StandardTools(ToolBar):
     def tools(self):
@@ -495,6 +534,35 @@ class StandardTools(ToolBar):
             ('icons/comment.png', '<!-',
              lambda: self.parent.insert_startendtag(
                  '<!-- ', ' -->', *self.parent.get_selection_indices())))
+
+
+class TableBar(ToolBar):
+    def tools(self):
+        "Table creator (dialog), table, tr, th, td."
+
+        self.add_tool_buttons(
+            (None, 'table_creator', self.parent.table_creator))
+
+        self.separator()
+
+        self.add_tool_buttons(
+            (None, 'table',
+             lambda: self.parent.insert_tag(
+                 *self.parent.get_selection_indices(),
+                 content='\n', opening_tag='table', closing_tag=True)),
+
+            (None, 'row',
+             lambda: self.parent.insert_formatting_tag(
+                 opening_tag='tr', closing_tag=True)),
+
+            (None, 'th',
+             lambda: self.parent.insert_formatting_tag(
+                 opening_tag='th', closing_tag=True)),
+
+            (None, 'td',
+             lambda: self.parent.insert_formatting_tag(
+                 opening_tag='td', closing_tag=True)))
+
 
 class FontTools(ToolBar):
     def tools(self):
@@ -850,8 +918,6 @@ class ReplaceTextDialog(SearchTextDialog):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    txt = ScrolledText(root)
-    txt.grid()
-    txt.insert('1.0', 'aaaaaaabbbcccdefg abcdefg abcdefg abcdefg')
-    std = ReplaceTextDialog(root, txt)
+    table_dialog = InsertTableDialog(root)
+    print(table_dialog.result)
     root.mainloop()
