@@ -204,10 +204,21 @@ class InsertTableDialog(Dialog):
         self.cols_counter = tk.Spinbox(master, from_ = 1, to=100, increment=1)
         self.cols_counter.grid(row=1, column=1)
 
-    def apply(self):
-        self.result = (int(self.rows_counter.get()),
-                       int(self.cols_counter.get()))
+    def collect_vals(self):
+        return self.rows_counter.get(), self.cols_counter.get()
 
+    def validate(self):
+        rows, cols = self.collect_vals()
+
+        for v in rows, cols:
+            if not v.isdigit():
+                print('not a digit:', v)
+                return False
+
+        return True
+
+    def apply(self):
+        self.result = tuple(int(v) for v in self.collect_vals())
 
 class InsertHyperlinkDialog(Dialog):
     def body(self, master):
@@ -322,6 +333,8 @@ class EditHtml(tk.Frame):
         self.edit_field.grid(row=1, column=0, sticky='nwse')
         tk.Grid.columnconfigure(self, 0, weight=1)
         tk.Grid.rowconfigure(self, 1, weight=1)
+
+        self.bind('Control-Key-a', )
 
     __getattr__ = getattr_wrapper()
 
@@ -651,10 +664,11 @@ class MenuBar(tk.Menu):
               app.save_document_as, app._quit)),
 
             (self.edit_menu,
-             ('Undo', 'Redo', 'Copy', 'Cut', 'Paste'),
-             ('Ctrl+Z', 'Shift+Ctrl+Z', 'Ctrl+C', 'Ctrl+X', 'Ctrl+V'),
+             ('Undo', 'Redo', 'Select all', 'Copy', 'Cut', 'Paste'),
+             ('Ctrl+Z', 'Shift+Ctrl+Z', 'Ctrl+A', 'Ctrl+C', 'Ctrl+X', 'Ctrl+V'),
              (app.main_tabs.edit_html.edit_undo,
               app.main_tabs.edit_html.edit_redo,
+              app.main_tabs.edit_html.select_all,
               get_ev_cb(self.app, "<<Copy>>"), get_ev_cb(self.app, "<<Cut>>"),
               get_ev_cb(self.app, "<<Paste>>"))),
 
