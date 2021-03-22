@@ -99,10 +99,13 @@ class HtmlText(ScrolledText):
         self.bind_events()
 
     def bind_events(self):
-        self.bind('<Key>', self.update_current_screen)
-        self.bind(
-            '<<Paste>>', lambda e: self.after(300, self.update_whole_doc))
-        self.bind('<Control-Key-a>', self.select_all)
+        events = (
+            ('<Key>', self.update_current_screen),
+            ('<<Paste>>', lambda e: self.after(300, self.update_whole_doc)),
+            ('<Control-Key-a>', self.select_all))
+
+        for ev in events:
+            self.bind(*ev)
 
     __getattr__ = getattr_wrapper()
 
