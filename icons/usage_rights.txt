@@ -1,0 +1,60 @@
+folder_open.png
+https://upload.wikimedia.org/wikipedia/commons/6/60/Simpleicons_Interface_folder-open-shape.svg
+This file is licensed under the Creative Commons Attribution 3.0 Unported license.
+Source	http://www.flaticon.com/packs/simpleicon-interface
+Author	SimpleIcon http://www.simpleicon.com/
+
+save_file.svg
+https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_save.svg
+This file is licensed under the Creative Commons Attribution 4.0 International license.	
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+
+save_as.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+undo-redo-icon
+redo_icon.png
+undo_icon.png
+<a href="https://icon-library.net/icon/undo-redo-icon-1.html">Undo Redo Icon #390999</a>
+
+browser_icon.png
+<a href="https://icon-library.net/icon/browser-icon-png-29.html">Browser Icon Png #396705</a>
+
+globe_icon.png
+Attribution: Sarang, Public domain, via Wikimedia Commons
+Page URL: https://commons.wikimedia.org/wiki/File:Globe_icon.svg
+File URL: https://upload.wikimedia.org/wikipedia/commons/c/c4/Globe_icon.svg
+
+search.png
+Page URL: https://commons.wikimedia.org/wiki/File:Search_Noun_project_15028.svg
+File URL: https://upload.wikimedia.org/wikipedia/commons/4/4c/Search_Noun_project_15028.svg
+Attribution: Fission Strategy, CC0, via Wikimedia Commons
+
+napis-160pt, po skadrowaniu do rozmiarów obrazu, płótno zwiększyć proporcjonalnie o 40px i wyśrodkować obraz
+
+exclamation.png
+Adapted and modified from:
+Page URL: https://commons.wikimedia.org/wiki/File:Exclamation_yellow_flat_icon.svg
+File URL: https://commons.wikimedia.org/wiki/File:Exclamation_yellow_flat_icon.svg
+Attribution: Tomybrz, CC0, via Wikimedia Commons
+This file is made available under the Creative Commons CC0 1.0 Universal Public Domain Dedication. The person who associated a work with this deed has dedicated the work to the public domain by waiving all of their rights to the work worldwide under copyright law, including all related and neighboring rights, to the extent allowed by law. You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission.
+
+superscript.png
+his file is licensed under the Creative Commons Attribution 4.0 International license.	
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+subscript.png
+https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_subscript.svg
+https://upload.wikimedia.org/wikipedia/commons/4/4a/Font_Awesome_5_solid_subscript.svg
+This file is licensed under the Creative Commons Attribution 4.0 International license.	
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
