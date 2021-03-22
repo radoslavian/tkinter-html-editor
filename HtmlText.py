@@ -1,4 +1,5 @@
 from utils import *
+import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 from html.parser import HTMLParser
 import re
@@ -100,11 +101,16 @@ class HtmlText(ScrolledText):
     def bind_events(self):
         self.bind('<Key>', self.update_current_screen)
         self.bind(
-            '<<Paste>>', lambda e: self.after(3000, self.update_whole_doc))
+            '<<Paste>>', lambda e: self.after(300, self.update_whole_doc))
+        self.bind('<Control-Key-a>', self.select_all)
 
     __getattr__ = getattr_wrapper()
 
     insert = scr_update(ScrolledText.insert)
+
+    def select_all(self, event):
+        self.tag_add(tk.SEL, '1.0', tk.END)
+        return 'break'
 
     @whole_scr_upd
     def load_doc(self, path):
