@@ -111,7 +111,7 @@ class HtmlText(ScrolledText):
 
     insert = scr_update(ScrolledText.insert)
 
-    def select_all(self, event):
+    def select_all(self, event=None):
         self.tag_add(tk.SEL, '1.0', tk.END)
         return 'break'
 
