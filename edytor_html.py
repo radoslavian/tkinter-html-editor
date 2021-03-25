@@ -1,6 +1,5 @@
 import io
 import sys
-import pathlib
 import tkinter as tk
 import urllib
 from utils import *
@@ -27,10 +26,10 @@ class DocumentSaveCancelled(UnsavedDocument): pass
 class BreakLoop(Exception): pass
 
 class HtmlPreview(tk.Frame):
-    """Allows previewing html within a frame that can be embedded in a
+    """Html file (very basic) preview frame that can be embedded in a
     separate tab. Requires tkhtml to work."""
 
-    # To do: hyperlinks don't work (and I probably won't  be able
+    # To do: hyperlinks don't work (and I probably won't be able
     # to fix that).
 
     def __init__(self, parent, *args, **kwargs):
@@ -68,7 +67,8 @@ class HtmlPreview(tk.Frame):
         try:
             fp = urlopen(url)
         except (ValueError, FileNotFoundError, urllib.error.URLError) as e:
-            print("Internal exception:", e, file=sys.stderr)
+            print("{0}: internal exception:".format(self.__class__.__name__),
+                  e, file=sys.stderr)
             photo = None
         else:
             data = fp.read()
@@ -152,7 +152,7 @@ class IconButton(tk.Button):
         try:
             self.icon_obj = tk.PhotoImage(file=icon_path)
         except tk.TclError as err:
-            print("Error while creating button '{0}': {1}".format(text, err))
+            #print("Error while creating button '{0}': {1}".format(text, err))
             self.icon_obj = None
         else:
             self.icon_path = icon_path
@@ -165,17 +165,32 @@ class EditHtml(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
 
+        s = ttk.Style()
+        s.configure('bottomtab.TNotebook', tabposition='se')
+
         self.tool_tabs = ttk.Notebook(self)
         self.edit_field = HtmlText(self)
         self.wrapped = self.edit_field
 
         main_tools = StandardTools(self)
+        page_struct_bar = PageStructureBar(self)
         font_bar = FontTools(self)
         table_bar = TableBar(self)
+        list_bar = ListTab(self)
+        semantic_tags = SemanticTags(self)
+        html5_tags = HTML5Tags(self)
+        form_bar = FormTab(self)
 
-        self.tool_tabs.add(main_tools, text="Main tools")
-        self.tool_tabs.add(font_bar, text="Text formatting")
-        self.tool_tabs.add(table_bar, text="Table")
+        for bar, txt in (
+                (main_tools, 'Main tools'),
+                (page_struct_bar, 'Page structure'),
+                (font_bar, 'Text formatting'),
+                (table_bar, 'Table'),
+                (list_bar, 'Lists'),
+                (semantic_tags, 'Semantic tags'),
+                (html5_tags, 'HTML5 tags'),
+                (form_bar, 'Form')):
+            self.tool_tabs.add(bar, text=txt)
 
         self.tool_tabs.grid(row=0, column=0, sticky='w')
         self.edit_field.grid(row=1, column=0, sticky='nwse')
@@ -195,37 +210,35 @@ class EditHtml(tk.Frame):
 
         return start_idx, end_idx
 
-    def insert_tag(self, start_idx, end_idx, opening_tag, content='',
-                   closing_tag : bool = False, opts : str = None):
+    def insert_tag(self, start_idx, end_idx, opening_tag,
+                   start_txt='', end_txt='', closing_tag : bool = False,
+                   opts : str = None):
         """
         start_idx-where opening tag should start
         end_idx-where closing tag should start
         content-optional text put between tags only if end-tag
         is present
+        start_txt, end_txt - text after initial/before end tag
 
         Should be called this way:
 
         self.insert_tag(*self.get_selection_indices(),
                         opening_tag=opening_tag,
                         [closing_tag=True,
-                        content='text',
                         opts=tag_opts])
         """
 
         if closing_tag:
-            end_tag = '</' + opening_tag + '>'
+            end_tag = end_txt + '</' + opening_tag + '>'
             self.edit_field.insert(end_idx, end_tag)
-            if content:
-                self.edit_field.insert(end_idx, content)
         if opts:
             opening_tag += ' ' + opts
-        opening_tag = '<' + opening_tag + '>'
+        opening_tag = '<' + opening_tag + '>' + start_txt
         self.edit_field.insert(start_idx, opening_tag)
 
     def insert_doctype(self):
         dtype_dialog = InsertDoctypeDialog(self, title='Insert doctype')
 
-        print(dtype_dialog.result) # debug
         if dtype_dialog.result:
             self.insert('1.0', dtype_dialog.result)
 
@@ -247,7 +260,7 @@ class EditHtml(tk.Frame):
         self.insert(init_idx, '<table id="">\n')
  
     def dialog_insert_tag(self, dialog_obj, opening_tag,
-                          closing_tag : bool = False, title='Tk Dialog'):
+                          closing_tag : bool=False, title='Tk Dialog', **kwargs):
         options = dialog_obj(self, title).result
         if not options: return
         html_opts = str()
@@ -255,12 +268,12 @@ class EditHtml(tk.Frame):
         for option in options.items():
             opt, val = option
             if val:
-                html_opts += "{0}='{1}' ".format(opt, val)
+                html_opts += '{0}="{1}" '.format(opt, val)
 
         start_idx, end_idx = self.get_selection_indices()
         self.insert_tag(
             start_idx=start_idx, end_idx=end_idx, opening_tag=opening_tag,
-            closing_tag=closing_tag, opts=html_opts)
+            closing_tag=closing_tag, opts=html_opts, **kwargs)
 
     def insert_startendtag(self, opening_tag, closing_tag, start_idx, end_idx):
         for item in ((end_idx, closing_tag), (start_idx, opening_tag)):
@@ -290,7 +303,7 @@ class ToolBar(tk.Frame):
 
     Icons are either labelled as free to reuse or reused
     with attribution (as noted in a licence).
-    Details in a resources module.
+    Details in the resources module.
     """
 
     def __init__(self, parent, *args, **kwargs):
@@ -302,6 +315,26 @@ class ToolBar(tk.Frame):
         self.user_widgets = list()
 
         self.tools()
+
+    def tag(self, tag_name, cnt='\n', **kwargs):
+        "opening/closing tags with two spaces between"
+
+        return lambda: self.parent.insert_tag(
+            *self.parent.get_selection_indices(), tag_name,
+            closing_tag=True, start_txt=cnt, end_txt=cnt, **kwargs)
+
+    def ctag(self, tag_name, **kwargs):
+        "inline opening and _c_losing tags"
+
+        return lambda: self.parent.insert_tag(
+            *self.parent.get_selection_indices(), tag_name,
+            closing_tag=True, **kwargs)
+
+    def stag(self, tag_name, **kwargs):
+        "inline _s_ingle closed <tag />"
+
+        return lambda: self.parent.insert_formatting_tag(
+            opening_tag=tag_name, **kwargs)
 
     def add_widget(self, widget, *pargs, padx=1, **kwargs):
         self.widgets.append(widget(self, *pargs, **kwargs))
@@ -323,8 +356,18 @@ class ToolBar(tk.Frame):
         self.add_widget(ttk.Separator, orient=tk.VERTICAL, padx=3)
 
     def tools(self):
-        "To be implemented in derived classes."
+        "implemented in derived classes"
         pass
+
+class PageStructureBar(ToolBar):
+    def tools(self):
+        self.add_tool_buttons(
+            (None, '!doc', self.parent.insert_doctype),
+            (None, 'html', self.tag('html')),
+            (None, 'head', self.tag('head')),
+            (None, 'style', self.tag('style', opts='type="text/css"')),
+            (None, 'title', self.ctag('title')),
+            (None, 'body', self.tag('body')))
 
 
 class MainToolBar(ToolBar):
@@ -347,8 +390,10 @@ class MainToolBar(ToolBar):
         self.separator()
 
         self.add_tool_buttons(
-            ('icons/undo_icon.png', 'Undo', self.parent.main_tabs.edit_html.edit_undo),
-            ('icons/redo_icon.png', 'Redo', self.parent.main_tabs.edit_html.edit_redo))
+            ('icons/undo_icon.png', 'Undo',
+             self.parent.main_tabs.edit_html.edit_undo),
+            ('icons/redo_icon.png', 'Redo',
+             self.parent.main_tabs.edit_html.edit_redo))
 
         self.separator()
 
@@ -359,36 +404,17 @@ class MainToolBar(ToolBar):
 
 class StandardTools(ToolBar):
     def tools(self):
-        '''par, br, img, anchor, comment'''
+        "par, br, img, anchor, comment"
 
         # ('path_to_icon', 'text', 'command')
         # better way to supply arguments: items[:4] ...
 
         self.add_tool_buttons(
-            (None, '!doc', self.parent.insert_doctype))
-
-        self.separator()
-
-        self.add_tool_buttons(
-            ('icons/paragraph.png', 'P',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='p', closing_tag=True)),
-
-            ('icons/newline.png', 'newline',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='br /')),
-
-            ('icons/div_icon.png', 'div',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='div', closing_tag=True, opts='class=""')),
-
-            ('icons/span.png', 'span',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='span', closing_tag=True, opts='class=""')),
-
-            ('icons/hr.png', 'hr',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='hr /')),
+            ('icons/paragraph.png', 'P', self.ctag('p')),
+            ('icons/newline.png', 'newline', self.stag('br /')),
+            ('icons/div_icon.png', 'div', self.ctag('div', opts='class=""')),
+            ('icons/span.png', 'span', self.ctag('span', opts='class=""')),
+            ('icons/hr.png', 'hr', self.stag('hr /')),
 
             ('icons/insert_img.png', 'img',
              lambda: self.parent.dialog_insert_tag(
@@ -419,62 +445,25 @@ class TableBar(ToolBar):
         self.separator()
 
         self.add_tool_buttons(
-            (None, 'table',
-             lambda: self.parent.insert_tag(
-                 *self.parent.get_selection_indices(),
-                 content='\n', opening_tag='table', closing_tag=True)),
-
-            (None, 'row',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='tr', closing_tag=True)),
-
-            (None, 'th',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='th', closing_tag=True)),
-
-            (None, 'td',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='td', closing_tag=True)))
+            (None, 'table', self.tag('table')),
+            (None, 'row',self.ctag('tr')),
+            (None, 'th', self.ctag('th')),
+            (None, 'td', self.ctag('td')))
 
 
 class FontTools(ToolBar):
     def tools(self):
-        """
-        b, u, i, s, font size up/down, set font size, 
-        To do: headers (as a drop-down menu).
-        """
-
         self.add_tool_buttons(
-            ('icons/bold_type.png', 'B',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='b', closing_tag=True)),
-
-            ('icons/italic_type.png', 'I',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='i', closing_tag=True)),
-
-            ('icons/strikethrough.png', 'S',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='strike', closing_tag=True)),
-
-            ('icons/underline.png', 'U',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='u', closing_tag=True)))
+            ('icons/bold_type.png',     'B',self.ctag('b')),
+            ('icons/italic_type.png',   'I',self.ctag('i')),
+            ('icons/strikethrough.png', 'S',self.ctag('strike')),
+            ('icons/underline.png',     'U',self.ctag('u')))
 
         self.separator()
 
         self.add_tool_buttons(
-            ('icons/exclamation.png', 'em',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='em', closing_tag=True)),
-
-            ('icons/superscript.png', 'sup',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='sup', closing_tag=True)),
-
-            ('icons/subscript.png', 'sub',
-             lambda: self.parent.insert_formatting_tag(
-                 opening_tag='sub', closing_tag=True)))
+            ('icons/superscript.png', 'sup',self.ctag('sup')),
+            ('icons/subscript.png', 'sub',self.ctag('sub')))
 
         # Headers (h1-h6) drop-down:
         #
@@ -486,6 +475,102 @@ class FontTools(ToolBar):
             tk.OptionMenu, option, *headers,
             command=lambda header: self.parent.insert_formatting_tag(
                 opening_tag=headers[header], closing_tag=True))
+
+
+class ListTab(ToolBar):
+    def tools(self):
+        self.add_tool_buttons(
+            (None, 'ul', self.tag('ul')),
+            (None, 'ol', self.tag('ol')),
+            (None, 'li', self.ctag('li')))
+
+        self.separator()
+
+        self.add_tool_buttons(
+            (None, 'dl', self.tag('dl')),
+            (None, 'dd', self.ctag('dd')),
+            (None, 'dt', self.ctag('dt')))
+
+class SemanticTags(ToolBar):
+    def tools(self):
+        self.add_tool_buttons(
+            (None, 'strong', self.ctag('strong')),
+            ('icons/exclamation.png', 'em',self.ctag('em')),
+
+            (None, 'blockquote', lambda:
+             self.parent.insert_tag(
+                 *self.parent.get_selection_indices(), 'blockquote',
+                 closing_tag=True, start_txt='\n<p>', end_txt='</p>\n')),
+
+            (None, 'q', self.ctag('q', opts='cite=""')),
+            (None, 'cite', self.ctag('cite')),
+            (None, 'abbr', self.ctag('abbr', opts='title=""')),
+            (None, 'dfn', self.ctag('dfn')),
+            (None, 'addr', self.ctag('address')),
+            (None, 'del', self.ctag('del')),
+            (None, 'ins', self.ctag('ins')),
+            (None, 's', self.ctag('s')))
+
+
+class FormTab(ToolBar):
+    def tools(self):
+
+        def dialog_generator(inputs, booleans, tag, title=None):
+            # The dialog is called in the following way:
+            # CollectValues(
+            # self, parent, booleans=[], inputs=[], title = None)
+
+            return (
+                None, tag,
+                lambda: self.parent.dialog_insert_tag(
+                    dialog_obj=lambda parent, title: CollectValues(
+                        parent=parent, title=title,
+                        inputs=inputs, booleans=booleans),
+
+                    title=title, opening_tag=tag,
+                    closing_tag=True, start_txt='\n', end_txt='\n'))
+
+        sel_inputs = [
+            (tk.Entry, ('form', 'name')),
+            (lambda parent: tk.Spinbox(
+                parent, from_=1, to=100, increment=1, width=6), ('size',))]
+
+        sel_booleans = ('autofocus', 'disabled', 'multiple', 'required')
+
+        self.add_tool_buttons(
+            (None, 'form',
+             lambda: self.parent.dialog_insert_tag(
+                 dialog_obj=InsertForm, opening_tag='form',
+                 closing_tag=True, title='Insert form',
+                 start_txt='\n', end_txt='\n')),
+
+            dialog_generator(
+                sel_inputs, sel_booleans, 'select', title='Insert select tag:'),
+
+            (None, 'textarea',
+             lambda: self.parent.dialog_insert_tag(
+                 dialog_obj=InsertTextarea, opening_tag='textarea',
+                 closing_tag=True, title='Insert textarea',
+                 start_txt='\n', end_txt='\n')),
+
+            dialog_generator(
+                [(tk.Entry, ('form', 'name'))], ['disabled'], 'fieldset',
+                title='Insert fieldset:'),
+
+            (None, 'legend', self.ctag('legend')),
+            (None, 'button', self.ctag('button', opts='type="button"')),
+            (None, 'option', self.ctag('option', opts='value=""')),
+            (None, 'opt_gr', self.tag('optgroup', opts='label=""')),
+            (None, 'label', self.ctag('label', opts='for=""')))
+
+class HTML5Tags(ToolBar):
+    def tools(self):
+        self.add_tool_buttons(
+            (None, 'aside', self.ctag('aside')),
+            (None, 'nav', self.ctag('nav')),
+            (None, 'article', self.ctag('article')),
+            (None, 'section', self.ctag('section')))
+
 
 class MainTabs(ttk.Notebook):
     def __init__(self, parent, *args, **kwargs):

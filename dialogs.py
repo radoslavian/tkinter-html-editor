@@ -531,10 +531,11 @@ class CollectValues(Dialog):
     "Generic dialog to collect value/boolean input."
 
     def __init__(
-            self, parent, booleans=[], inputs=[], title = None, maxlength=100):
+            self, parent, title=None, booleans=[], inputs=[], maxlength=100):
         self.fields = []
         self.inputs = inputs
         self.booleans = booleans
+        self.maxlength = maxlength
 
         Dialog.__init__(self, parent, title)
 
@@ -547,7 +548,6 @@ class CollectValues(Dialog):
 
         row = 0
         for items in self.inputs:
-            print(items[1])
             for name in items[1]:
                 tk.Label(inputs_fr, text=name+':').grid(column=0, row=row)
                 setattr(self, name+'__', items[0](inputs_fr))
@@ -597,7 +597,35 @@ class CollectValues(Dialog):
 
         self.result = {
             **{bl: bl for bl in self.booleans if getattr(self, bl+'__').get()},
-            **{attr: getattr(self, attr+'__').get() for attr in self.fields}}
+            **{attr: getattr(self, attr+'__').get()
+               for attr in self.fields
+               if type(getattr(self, attr+'__')) in (tk.Entry, tk.Spinbox)}}
+
+
+class InsertTextarea(CollectValues):
+    def __init__(self, parent, *pargs):
+        self.txarea_wrap_option = tk.StringVar()
+        self.txarea_wrap_option.set('hard')
+
+        txarea_inputs = [
+            (lambda parent: tk.Spinbox(
+                parent, from_=1, to=100, increment=1, width=6),
+             ('cols', 'maxlength', 'rows')),
+
+            (tk.Entry, ('name', 'placeholder', 'dirname', 'form')),
+
+             (lambda parent: tk.OptionMenu(
+                 parent, self.txarea_wrap_option, 'hard', 'soft'), ('wrap',))]
+
+        txarea_booleans = ('autofocus', 'disabled', 'readonly', 'required')
+
+        CollectValues.__init__(
+            self, parent, booleans=txarea_booleans,
+            inputs=txarea_inputs, *pargs)
+
+    def apply(self):
+        CollectValues.apply(self)
+        self.result.update({'wrap': self.txarea_wrap_option.get()})
 
 
 if __name__ == '__main__':

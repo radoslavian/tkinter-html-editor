@@ -320,7 +320,8 @@ m2=1 - task_bar</panel_attributes>
 + insert_tag_dialog(dialog_obj)
 + insert_text(text : Str)
 // in case the edit_field changes Class
-+ get_contents() : Str</panel_attributes>
++ get_contents() : Str
++ insert_table(rows, cols)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -1036,6 +1037,66 @@ wpisywania tagów w dokumencie (np. piszę
 tekst z tagami i ustalać co się musi dziać,
 kiedy piszę, kasuję etc.)
 bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>616</x>
+      <y>275</y>
+      <w>231</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>InsertTableDialog</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>814</x>
+      <y>297</y>
+      <w>44</w>
+      <h>308</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;260.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>649</x>
+      <y>209</y>
+      <w>187</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>/tkSimpleDialog.Dialog/</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>737</x>
+      <y>231</y>
+      <w>33</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1892</x>
+      <y>1452</y>
+      <w>165</w>
+      <h>165</h>
+    </coordinates>
+    <panel_attributes>CollectValuesDialog
+-
+validate
+apply</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>
