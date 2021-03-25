@@ -1,3 +1,10 @@
+import pathlib
+import tkinter as tk
+from tkinter import filedialog as fd
+from utils import *
+from tkinter import messagebox as msgbox
+from tkSimpleDialog import Dialog
+
 
 class InsertImgDialog(Dialog):
     def body(self, parent):
@@ -38,7 +45,7 @@ class InsertImgDialog(Dialog):
                         Image.open(self.path_to_image))
 
                 except (tk.TclError, OSError) as e:
-                    messagebox.showerror("Can't preview image file:", e)
+                    msgbox.showerror("Can't preview image file:", e)
 
                     if preview_lbl.img is not self.no_img_available:
                         preview_lbl.img = self.no_img_available
@@ -133,7 +140,7 @@ class InsertTableDialog(Dialog):
                     raise ValueError
 
         except ValueError:
-            messagebox.showerror(
+            msgbox.showerror(
                 parent=self, title='Input error', message=msg)
             return False
 
@@ -142,6 +149,7 @@ class InsertTableDialog(Dialog):
 
     def apply(self):
         self.result = tuple(int(v) for v in self.collect_vals())
+
 
 class InsertDoctypeDialog(Dialog):
     def body(self, master):
@@ -212,6 +220,7 @@ class InsertDoctypeDialog(Dialog):
                 'Unexpected value returned by self.doctype_var.get():', val)
         self.result += '\n'
 
+
 class InsertHyperlinkDialog(Dialog):
     def body(self, master):
         tk.Label(master, text='Target:').grid(row=0, column=0)
@@ -228,6 +237,7 @@ class InsertHyperlinkDialog(Dialog):
             'style'  : str(self.style_ent.get())
         }
 
+
 class SearchTextDialog(Dialog):
     def __init__(self, master, txt_fld : tk.Text):
         for attr in 'direction', 'mode', 'case':
@@ -236,7 +246,8 @@ class SearchTextDialog(Dialog):
         self.last_idx = txt_fld.index(tk.INSERT)
 
         self.txt_field_ref = txt_fld
-        txt_fld.tag_configure('highlight', background='blue', foreground='white')
+        txt_fld.tag_configure(
+            'highlight', background='blue', foreground='white')
 
         Dialog.__init__(self, master, title='Search phrase:')
 
@@ -291,7 +302,7 @@ class SearchTextDialog(Dialog):
         None otherwise.'''
 
         # Put all search code into UML diagrams.
-        # merge into search_text()
+        # merge this meth into search_text()
 
         found_text_idx = self.txt_field_ref.search(
             search_txt, start_idx, stop_idx, forwards=direction,
@@ -328,14 +339,14 @@ class SearchTextDialog(Dialog):
         if not entry_text: return
 
         start_idx, stop_idx = self.get_start_stop_idx(direction)
-        found_text_idxs = self._search_text(entry_text, direction,
-                                            mode, case, start_idx, stop_idx)
+        found_text_idxs = self._search_text(
+            entry_text, direction, mode, case, start_idx, stop_idx)
 
         if not found_text_idxs and direction == 0:
             self.ask_to_restart_search(direction)
         elif not found_text_idxs:
             print(found_text_idxs, direction)
-            messagebox.showinfo(
+            msgbox.showinfo(
                 parent=self, title='End of backward search',
                 message='You reached the beginning of the document.')
 
@@ -348,7 +359,7 @@ class SearchTextDialog(Dialog):
         Dialog.cancel(self, event)
 
     def ask_to_restart_search(self, direction):
-        decision = messagebox.askyesno(
+        decision = msgbox.askyesno(
             parent=self, title='End of search',
             message='Do you want to restart search?')
 
@@ -359,6 +370,7 @@ class SearchTextDialog(Dialog):
                 self.last_idx = tk.END
             self.ok()
 
+
 class ReplaceTextDialog(SearchTextDialog):
     def __init__(self, *pargs, **kwargs):
         SearchTextDialog.__init__(self, *pargs, **kwargs)
@@ -368,7 +380,8 @@ class ReplaceTextDialog(SearchTextDialog):
 
         tk.Label(master, text='Replace with:').grid(column=0, row=4)
         self.replace_entry = tk.StringVar()
-        replace_ent = tk.Entry(master, width=30, textvariable=self.replace_entry)
+        replace_ent = tk.Entry(
+            master, width=30, textvariable=self.replace_entry)
         replace_ent.grid(column=1, row=4, columnspan=3)
 
         self.replace_all_var = tk.IntVar()
@@ -407,7 +420,7 @@ class ReplaceTextDialog(SearchTextDialog):
             replaced_phrases_no += 1
 
         def _interactive_replace():
-            decision = messagebox.askyesnocancel(
+            decision = msgbox.askyesnocancel(
                 parent=self, title='Found phrase', message='Replace?')
 
             if decision == True:
@@ -446,7 +459,7 @@ class ReplaceTextDialog(SearchTextDialog):
         else:
             message = 'No changes have been made.'
 
-        messagebox.showinfo(
+        msgbox.showinfo(
             parent=self, title=title, message=message)
 
     def ok(self, event=None):
@@ -467,14 +480,116 @@ class ReplaceTextDialog(SearchTextDialog):
                 search_txt, mode, case,
                 replace_txt, direction=direction, interactive_mode=True)
 
+
 class InsertMetaDialog(Dialog):
     def body(self, master):
-        tk.Label(master, text='Meta-value:').grid(column=0, row=0)
+        # Może lepiej checkbuttony odblokowujące jedną z grup opcji?
+        row = 0
+        for txt in 'Meta-value:', 'Value:':
+            tk.Label(master, text=txt).grid(column=0, row=row)
+            row += 1
+
+        attr_names = ('name', 'http-equiv')
+        self.meta_attr_sel = tk.StringVar()
+        self.meta_attr_sel.set('name')
+
+        self.attr_name = tk.OptionMenu(
+            master, self.meta_attr_sel, *attr_names, command=lambda : True)
+        self.attr_name.grid(column=1, row=0)
 
     def cancel(self, ev=None):
+        # !!!
+        # Remember to remove before running in an application !!!
+        # !!!
         self.parent.destroy()
+
+class InsertForm(Dialog):
+    def body(self, master):
+        row = 0
+        for txt in 'Action:', 'Method:':
+            tk.Label(master, text=txt).grid(column=0, row=row)
+            row += 1
+
+        self.action_var = tk.StringVar()
+        action_ent = tk.Entry(master, textvariable = self.action_var)
+        action_ent.grid(column=1, row=0)
+
+        methods = ('get', 'post')
+        self.method_var = tk.StringVar()
+        self.method_var.set('get')
+
+        method_ent = tk.OptionMenu(
+            master, self.method_var, *methods)
+        method_ent.grid(column=1, row=1, sticky='w')
+
+    def apply(self):
+        self.result = dict(
+            action=self.action_var.get(), method=self.method_var.get())
+
+
+class CollectValuesDialog(Dialog):
+    "Generic dialog to collect value/boolean input."
+
+    def __init__(self, parent, booleans=[], inputs=[], title = None):
+        self.fields = []
+        self.inputs = inputs
+        self.booleans = booleans
+
+        Dialog.__init__(self, parent, title)
+
+    def body(self, master):
+        inputs_fr = tk.Frame(master)
+        booleans_fr = tk.Frame(master)
+
+        for fr in inputs_fr, booleans_fr:
+            fr.pack()
+
+        row = 0
+        for items in self.inputs:
+            print(items[1])
+            for name in items[1]:
+                tk.Label(inputs_fr, text=name+':').grid(column=0, row=row)
+                setattr(self, name+'__', items[0](inputs_fr))
+                getattr(self, name+'__').grid(
+                    column=1, row=row, columnspan=2, sticky='w')
+                row += 1
+
+            self.fields.extend(items[1])
+
+        row = 0
+        col = 0
+        for name in self.booleans:
+            if row > 1:
+                row = 0
+                col += 1
+
+            setattr(self, name+'__', tk.IntVar())
+            setattr(self, name+'_cbutton', tk.Checkbutton(
+                booleans_fr, text=name, variable=getattr(self, name+'__')))
+
+            getattr(self, name+'_cbutton').grid(
+                column=col, row=row, sticky='w')
+            row += 1
+
+    def validate(self):
+        for field in self.fields:
+            if (len(getattr(self, field+'__').get()) > 100
+                or not self.size__.get().isdigit()):
+                    msgbox.showerror(
+                        parent=self, title='Input error',
+                        message='Incorrect value(s).'
+                        +' Correct before proceeding.')
+                    return False
+        return True
+
+    def apply(self):
+
+        self.result = {
+            **{bl: bl for bl in self.booleans if getattr(self, bl+'__').get()},
+            **{attr: getattr(self, attr+'__').get() for attr in self.fields}}
+
 
 if __name__ == '__main__':
     root = tk.Tk()
-    meta = InsertMetaDialog(root)
+    insertst = InsertSelectTag(root)
     root.mainloop()
