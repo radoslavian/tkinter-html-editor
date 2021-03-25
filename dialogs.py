@@ -527,10 +527,11 @@ class InsertForm(Dialog):
             action=self.action_var.get(), method=self.method_var.get())
 
 
-class CollectValuesDialog(Dialog):
+class CollectValues(Dialog):
     "Generic dialog to collect value/boolean input."
 
-    def __init__(self, parent, booleans=[], inputs=[], title = None):
+    def __init__(
+            self, parent, booleans=[], inputs=[], title = None, maxlength=100):
         self.fields = []
         self.inputs = inputs
         self.booleans = booleans
@@ -572,15 +573,25 @@ class CollectValuesDialog(Dialog):
             row += 1
 
     def validate(self):
-        for field in self.fields:
-            if (len(getattr(self, field+'__').get()) > 100
-                or not self.size__.get().isdigit()):
-                    msgbox.showerror(
-                        parent=self, title='Input error',
-                        message='Incorrect value(s).'
-                        +' Correct before proceeding.')
-                    return False
-        return True
+        try:
+            for field in self.fields:
+                fld = getattr(self, field+'__')
+                if type(fld) is tk.Entry:
+                    if (len(fld.get())) > self.maxlength:
+                        msg = 'The text in the field "{0}" is too long.'.format(
+                            field)
+                        raise ValueError
+
+                elif type(fld) is tk.Spinbox:
+                    if not fld.get().isdigit():
+                        msg = ('The value in the field "{0}"'.format(field)
+                        +' should be numerical.')
+                        raise ValueError
+        except ValueError:
+            msgbox.showerror(parent=self, title='Input error', message=msg)
+            return False
+        else:
+            return True
 
     def apply(self):
 
