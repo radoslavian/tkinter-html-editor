@@ -5,7 +5,6 @@ from utils import *
 from tkinter import messagebox as msgbox
 from tkSimpleDialog import Dialog
 
-
 class InsertImgDialog(Dialog):
     def body(self, parent):
         def adjust_preview():
@@ -66,7 +65,7 @@ class InsertImgDialog(Dialog):
 
         # TODO: use loops to put widgets in a form:
 
-        tk.Label(parent, text='Path:').grid(row=1)
+        tk.Label(parent, text='File:').grid(row=1)
         self.img_path_ent = tk.Entry(
             parent, textvariable = self.img_path, state='readonly')
         self.img_path_ent.grid(row=1, column=1)
@@ -87,8 +86,8 @@ class InsertImgDialog(Dialog):
         self.style_ent = tk.Entry(parent)
         self.style_ent.grid(row=5, column=1)
 
-        img_browse_bt = tk.Button(parent, text='Browse',
-                                  command=img_browse_callback)
+        img_browse_bt = tk.Button(
+            parent, text='Browse', command=img_browse_callback)
         img_browse_bt.grid(row=6, column=1, sticky='we')
 
         tk.Label(parent, text='Preview:').grid(row=0, column=2)
@@ -135,6 +134,7 @@ class InsertTableDialog(Dialog):
                 if not v.isdigit():
                     msg = 'Not a valid, positive number: {}'.format(v)
                     raise ValueError
+
                 if int(v) not in range(1, 1000):
                     msg = 'Value not in 1-999 range: {}'.format(v)
                     raise ValueError
@@ -204,6 +204,7 @@ class InsertDoctypeDialog(Dialog):
 
     def on_dtype_sel(self):
         "on doctype select"
+
         {'0': lambda: self.dtype_version.configure(state='disabled'),
          '1': lambda: self.dtype_version.configure(state='normal')
         }[str(self.doctype_var.get())]()
@@ -594,12 +595,16 @@ class CollectValues(Dialog):
             return True
 
     def apply(self):
-
         self.result = {
             **{bl: bl for bl in self.booleans if getattr(self, bl+'__').get()},
+
             **{attr: getattr(self, attr+'__').get()
                for attr in self.fields
-               if type(getattr(self, attr+'__')) in (tk.Entry, tk.Spinbox)}}
+               if type(getattr(self, attr+'__')) is tk.Entry},
+
+            **{attr: getattr(self, attr+'__').get()
+               for attr in self.fields if type(getattr(self, attr+'__'))
+               is tk.Spinbox and int(getattr(self, attr+'__').get()) > 0}}
 
 
 class InsertTextarea(CollectValues):
