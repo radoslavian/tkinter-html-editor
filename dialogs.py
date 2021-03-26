@@ -596,15 +596,22 @@ class CollectValues(Dialog):
 
     def apply(self):
         self.result = {
-            **{bl: bl for bl in self.booleans if getattr(self, bl+'__').get()},
+            **{bl: bl for bl in self.booleans if getattr(self, bl+'__').get()}}
 
-            **{attr: getattr(self, attr+'__').get()
-               for attr in self.fields
-               if type(getattr(self, attr+'__')) is tk.Entry},
+        val = dict()
+        for attr_name in self.fields:
+            attr = getattr(self, attr_name+'__')
 
-            **{attr: getattr(self, attr+'__').get()
-               for attr in self.fields if type(getattr(self, attr+'__'))
-               is tk.Spinbox and int(getattr(self, attr+'__').get()) > 0}}
+            if type(attr) is tk.Entry:
+                val = {attr_name: attr.get()}
+
+            elif type(attr) is tk.Spinbox:
+                sbox_val = attr.get()
+                if int(sbox_val) > 0:
+                    val = {attr_name: attr.get()}
+            else:
+                val = {}
+            self.result.update(val)
 
 
 class InsertTextarea(CollectValues):
