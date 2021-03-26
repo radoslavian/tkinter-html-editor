@@ -232,7 +232,7 @@ class EditHtml(tk.Frame):
             end_tag = end_txt + '</' + opening_tag + '>'
             self.edit_field.insert(end_idx, end_tag)
         if opts:
-            opening_tag += ' ' + opts
+            opening_tag += ' ' + opts.rstrip()
         opening_tag = '<' + opening_tag + '>' + start_txt
         self.edit_field.insert(start_idx, opening_tag)
 
@@ -260,10 +260,14 @@ class EditHtml(tk.Frame):
         self.insert(init_idx, '<table id="">\n')
  
     def dialog_insert_tag(self, dialog_obj, opening_tag,
-                          closing_tag : bool=False, title='Tk Dialog', **kwargs):
+                          closing_tag : bool=False, title='Tk Dialog',
+                          opts=None, **kwargs):
         options = dialog_obj(self, title).result
         if not options: return
         html_opts = str()
+
+        if opts:
+            html_opts += opts
 
         for option in options.items():
             opt, val = option
@@ -316,25 +320,62 @@ class ToolBar(tk.Frame):
 
         self.tools()
 
-    def tag(self, tag_name, cnt='\n', **kwargs):
-        "opening/closing tags with two spaces between"
-
-        return lambda: self.parent.insert_tag(
+    def tag_f(self, tag_name, cnt='\n', **kwargs):
+        self.parent.insert_tag(
             *self.parent.get_selection_indices(), tag_name,
             closing_tag=True, start_txt=cnt, end_txt=cnt, **kwargs)
 
-    def ctag(self, tag_name, **kwargs):
-        "inline opening and _c_losing tags"
-
-        return lambda: self.parent.insert_tag(
+    def ctag_f(self, tag_name, closing_tag=True, **kwargs):
+        self.parent.insert_tag(
             *self.parent.get_selection_indices(), tag_name,
-            closing_tag=True, **kwargs)
+            closing_tag=closing_tag, **kwargs)
+
+    def tag(self, tag_name, **kwargs):
+        "returns callback for opening/closing tags with two spaces between"
+
+        return lambda: self.tag_f(tag_name, cnt='\n', **kwargs)
+
+    def ctag(self, tag_name, **kwargs):
+        "returns callback for inline opening and _c_losing tags"
+
+        return lambda: self.ctag_f(tag_name, **kwargs)
 
     def stag(self, tag_name, **kwargs):
-        "inline _s_ingle closed <tag />"
+        "returns callback for inline _s_ingle closed <tag />"
 
         return lambda: self.parent.insert_formatting_tag(
             opening_tag=tag_name, **kwargs)
+
+    def collect_values_dialog(
+            self, inputs, booleans, tag, **kwargs):
+
+        self.parent.dialog_insert_tag(
+            dialog_obj=lambda parent, title=None: CollectValues(
+                parent=parent, title=title,
+                inputs=inputs, booleans=booleans),
+
+            opening_tag=tag, **kwargs)
+
+    def dialog_generator(
+            self, inputs, booleans, tag, title=None,
+            start_txt='\n', end_txt='\n'):
+        '''Returns tuple that can be used as an input for add_tool_buttons.'''
+
+        # The dialog is called in the following way:
+        # CollectValues(
+        # self, parent, booleans=[], inputs=[], title = None)
+
+        return (None, tag, lambda:
+                self.collect_values_dialog(
+                    inputs, booleans, tag, title=title,
+                    start_txt='\n', end_txt='\n'))
+            # lambda: self.parent.dialog_insert_tag(
+            #     dialog_obj=lambda parent, title: CollectValues(
+            #         parent=parent, title=title,
+            #         inputs=inputs, booleans=booleans),
+
+            #     title=title, opening_tag=tag,
+            #     closing_tag=True))
 
     def add_widget(self, widget, *pargs, padx=1, **kwargs):
         self.widgets.append(widget(self, *pargs, **kwargs))
@@ -514,22 +555,6 @@ class SemanticTags(ToolBar):
 
 class FormTab(ToolBar):
     def tools(self):
-
-        def dialog_generator(inputs, booleans, tag, title=None):
-            # The dialog is called in the following way:
-            # CollectValues(
-            # self, parent, booleans=[], inputs=[], title = None)
-
-            return (
-                None, tag,
-                lambda: self.parent.dialog_insert_tag(
-                    dialog_obj=lambda parent, title: CollectValues(
-                        parent=parent, title=title,
-                        inputs=inputs, booleans=booleans),
-
-                    title=title, opening_tag=tag,
-                    closing_tag=True, start_txt='\n', end_txt='\n'))
-
         sel_inputs = [
             (tk.Entry, ('form', 'name')),
             (lambda parent: tk.Spinbox(
@@ -544,7 +569,7 @@ class FormTab(ToolBar):
                  closing_tag=True, title='Insert form',
                  start_txt='\n', end_txt='\n')),
 
-            dialog_generator(
+            self.dialog_generator(
                 sel_inputs, sel_booleans, 'select', title='Insert select tag:'),
 
             (None, 'textarea',
@@ -553,7 +578,7 @@ class FormTab(ToolBar):
                  closing_tag=True, title='Insert textarea',
                  start_txt='\n', end_txt='\n')),
 
-            dialog_generator(
+            self.dialog_generator(
                 [(tk.Entry, ('form', 'name'))], ['disabled'], 'fieldset',
                 title='Insert fieldset:'),
 
@@ -562,6 +587,76 @@ class FormTab(ToolBar):
             (None, 'option', self.ctag('option', opts='value=""')),
             (None, 'opt_gr', self.tag('optgroup', opts='label=""')),
             (None, 'label', self.ctag('label', opts='for=""')))
+
+        self.add_html_inputs()
+
+    def add_html_inputs(self):
+        self.input_std_opts_vals = [(tk.Entry, ('name', 'id', 'value'))]
+        self.input_std_opts_vals_bools = ('disabled', 'readonly')
+
+        self.input_list_dialog = {
+            'file': {'booleans': ('accept', 'multiple')},
+            'image': {'booleans': ('formaction',),
+                      'inputs': [(tk.Entry, ('formmethod', # should be get/post
+                                             'formtarget'))]},
+            'submit': {'booleans': ('formnovalidate',),
+                       'inputs': [
+                           (tk.Entry, (
+                               'formaction', 'formmethod',
+                               'formtarget'))]}, # should be _blank ... etc.
+            'tel': {'inputs': [(tk.Entry, ('list', 'pattern', 'placeholder')),
+                               (lambda parent: tk.Spinbox(
+                                   parent, from_=0, to=30),
+                                ('maxlength', 'minlength'))]},
+            'url': {'inputs': [(tk.Entry, ('list', 'pattern', 'placeholder')),
+                               #(tk.OptionMenu, ('spellcheck',)), # true/false/no value
+                               (lambda parent: tk.Spinbox(
+                                   parent, from_=0, to=100),
+                                ('maxlength', 'minlength', 'size'))]}}
+        
+        inputs = ['Insert input', 'text', 'button', 'checkbox', 'color', 'date',
+                  'datetime-local', 'email', 'hidden','month', 'number', 'week',
+                  'password', 'radio', 'range', 'reset', 'search', 'time']
+        inputs.extend(self.input_list_dialog.keys())
+
+        self.input_list = tuple(sorted(inputs))
+
+        self.input_option = tk.StringVar()
+        self.input_option.set('Insert input')
+
+        self.add_widget(
+            tk.OptionMenu, self.input_option, *self.input_list,
+            command=self.html_input)
+
+    def html_input(self, type_):
+        if type_ == 'Insert input':
+            return
+
+        elif type_ in self.input_list_dialog:
+            values = []
+            for std_vals, vals_name in (
+                    (self.input_std_opts_vals, 'inputs'),
+                    (self.input_std_opts_vals_bools, 'booleans')):
+
+                if vals_name in self.input_list_dialog[type_]:
+                    val = std_vals + self.input_list_dialog[type_][vals_name]
+                else:
+                    val = std_vals
+                values.append(val)
+
+            inputs, booleans = values
+
+            self.collect_values_dialog(
+                inputs, booleans, 'input', opts='type="{}" '.format(type_),
+                title='Insert input "{0}":'.format(type_))
+
+        elif type_ in self.input_list:
+            self.ctag_f(
+                'input', opts='type="{0}" name="" id="" value=""'.format(type_),
+                closing_tag=False)
+
+        self.input_option.set('Insert input')
+
 
 class HTML5Tags(ToolBar):
     def tools(self):
