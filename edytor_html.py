@@ -243,9 +243,15 @@ class EditHtml(tk.Frame):
             self.insert('1.0', dtype_dialog.result)
 
     def table_creator(self):
-        table_dialog = InsertTableDialog(self)
-        if table_dialog.result:
-            self.insert_table(*table_dialog.result)
+        fields = ('rows', 'columns')
+
+        table = CollectValues(
+            self, 'Insert table:', inputs=[
+                (lambda parent:
+                 tk.Spinbox(parent, from_=1, to=300), fields)])
+
+        if table.result:
+            self.insert_table(*(int(table.result[v]) for v in fields))
 
     def insert_table(self, rows, cols):
         init_idx = self.index('insert')
@@ -358,7 +364,7 @@ class ToolBar(tk.Frame):
 
     def dialog_generator(
             self, inputs, booleans, tag, title=None,
-            start_txt='\n', end_txt='\n'):
+            start_txt='\n', end_txt='\n', **kwargs):
         '''Returns tuple that can be used as an input for add_tool_buttons.'''
 
         # The dialog is called in the following way:
@@ -368,14 +374,7 @@ class ToolBar(tk.Frame):
         return (None, tag, lambda:
                 self.collect_values_dialog(
                     inputs, booleans, tag, title=title,
-                    start_txt='\n', end_txt='\n'))
-            # lambda: self.parent.dialog_insert_tag(
-            #     dialog_obj=lambda parent, title: CollectValues(
-            #         parent=parent, title=title,
-            #         inputs=inputs, booleans=booleans),
-
-            #     title=title, opening_tag=tag,
-            #     closing_tag=True))
+                    start_txt='\n', end_txt='\n', **kwargs))
 
     def add_widget(self, widget, *pargs, padx=1, **kwargs):
         self.widgets.append(widget(self, *pargs, **kwargs))
@@ -570,7 +569,8 @@ class FormTab(ToolBar):
                  start_txt='\n', end_txt='\n')),
 
             self.dialog_generator(
-                sel_inputs, sel_booleans, 'select', title='Insert select tag:'),
+                sel_inputs, sel_booleans, 'select', title='Insert select tag:',
+                closing_tag=True),
 
             (None, 'textarea',
              lambda: self.parent.dialog_insert_tag(
@@ -580,7 +580,7 @@ class FormTab(ToolBar):
 
             self.dialog_generator(
                 [(tk.Entry, ('form', 'name'))], ['disabled'], 'fieldset',
-                title='Insert fieldset:'),
+                title='Insert fieldset:', closing_tag=True),
 
             (None, 'legend', self.ctag('legend')),
             (None, 'button', self.ctag('button', opts='type="button"')),
