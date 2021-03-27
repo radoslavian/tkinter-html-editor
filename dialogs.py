@@ -112,45 +112,6 @@ class InsertImgDialog(Dialog):
         }
 
 
-class InsertTableDialog(Dialog):
-    def body(self, master):
-        tk.Label(master, text='Rows:').grid(row=0, column=0)
-        tk.Label(master, text='Columns:').grid(row=1, column=0)
-
-        self.rows_counter = tk.Spinbox(master, from_ = 1, to=100, increment=1)
-        self.rows_counter.grid(row=0, column=1)
-
-        self.cols_counter = tk.Spinbox(master, from_ = 1, to=100, increment=1)
-        self.cols_counter.grid(row=1, column=1)
-
-    def collect_vals(self):
-        return self.rows_counter.get(), self.cols_counter.get()
-
-    def validate(self):
-        rows, cols = self.collect_vals()
-
-        try:
-            for v in rows, cols:
-                if not v.isdigit():
-                    msg = 'Not a valid, positive number: {}'.format(v)
-                    raise ValueError
-
-                if int(v) not in range(1, 1000):
-                    msg = 'Value not in 1-999 range: {}'.format(v)
-                    raise ValueError
-
-        except ValueError:
-            msgbox.showerror(
-                parent=self, title='Input error', message=msg)
-            return False
-
-        else:
-            return True
-
-    def apply(self):
-        self.result = tuple(int(v) for v in self.collect_vals())
-
-
 class InsertDoctypeDialog(Dialog):
     def body(self, master):
         self.doctype_var = tk.IntVar(0)
@@ -541,23 +502,27 @@ class CollectValues(Dialog):
         Dialog.__init__(self, parent, title)
 
     def body(self, master):
-        inputs_fr = tk.Frame(master)
-        booleans_fr = tk.Frame(master)
+        if self.inputs:
+            self.inputs_fr(tk.Frame(master))
 
-        for fr in inputs_fr, booleans_fr:
-            fr.pack()
+        if self.booleans:
+            self.booleans_fr(tk.Frame(master))
 
+    def inputs_fr(self, frame):
+        frame.pack()
         row = 0
         for items in self.inputs:
             for name in items[1]:
-                tk.Label(inputs_fr, text=name+':').grid(column=0, row=row)
-                setattr(self, name+'__', items[0](inputs_fr))
+                tk.Label(frame, text=name+':').grid(column=0, row=row)
+                setattr(self, name+'__', items[0](frame))
                 getattr(self, name+'__').grid(
                     column=1, row=row, columnspan=2, sticky='w')
                 row += 1
 
             self.fields.extend(items[1])
 
+    def booleans_fr(self, frame):
+        frame.pack()
         row = 0
         col = 0
         for name in self.booleans:
@@ -567,7 +532,7 @@ class CollectValues(Dialog):
 
             setattr(self, name+'__', tk.IntVar())
             setattr(self, name+'_cbutton', tk.Checkbutton(
-                booleans_fr, text=name, variable=getattr(self, name+'__')))
+                frame, text=name, variable=getattr(self, name+'__')))
 
             getattr(self, name+'_cbutton').grid(
                 column=col, row=row, sticky='w')
