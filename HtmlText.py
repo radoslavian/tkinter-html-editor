@@ -62,27 +62,20 @@ class HtmlParser(HTMLParser):
     def highlight_attr_names(self, html_tag, attrs, pos):
         '''Highlights html attribute names.
         html_tag - whole tag (eg. <name attr="value">)
-        pos - values returned by p.getpos()'''
+        pos - value returned by p.getpos()'''
 
         attr_names = set(attr[0] for attr in attrs)
 
         # attribute name and initial indices of its each occurrence
         # within an html tag:
-        # [[attr1_name, (idx1, idx2, idx3)], [attr2_name, (idx1, idx2 ...)]]
 
-        attributes = []
+        for attr in attr_names:
+            indices = tuple(
+                idx.start() for idx in re.finditer(attr, html_tag))
 
-        for name in attr_names:
-            attributes.append([name])
-
-        for attr in attributes:
-            attr.append(tuple(
-                idx.start() for idx in re.finditer(attr[0], html_tag)))
-
-            for index in attr[1]:
+            for index in indices:
                 self.html_fld_ref.apply_tag(
-                    pos[0], pos[1]+index, len(attr[0]), 'attr_name')
-
+                    pos[0], pos[1]+index, len(attr), 'attr_name')
 
 class HtmlText(ScrolledText):
     def __init__(self, parent, *pargs, **kwargs):
