@@ -2,6 +2,7 @@ import io
 import sys
 import tkinter as tk
 import urllib
+from widgets import *
 from utils import *
 from dialogs import *
 from urllib.request import urlopen
@@ -99,9 +100,8 @@ class SpecialCharactersFrame(tk.Frame):
 
     def __setup_widgets(self):
         self.bt_frame = tk.Frame(self)
-        self.entity_switch_rb = tk.Checkbutton(self,
-                                        text='html entity',
-                                        variable=self.entity_switch_var)
+        self.entity_switch_rb = tk.Checkbutton(
+            self, text='html entity', variable=self.entity_switch_var)
 
         tk.Label(self, text=self.header).grid(row=0, column=0)
         self.bt_frame.grid(row=1, column=0)
@@ -145,20 +145,6 @@ class SpecialCharactersFrame(tk.Frame):
                 fn_obj(htm_entity)
         return char_callback
 
-class IconButton(tk.Button):
-    def __init__(self, parent, icon_path, text=None,
-                 command=None, *args, **kwargs):
-        self.parent = parent
-        try:
-            self.icon_obj = tk.PhotoImage(file=icon_path)
-        except tk.TclError as err:
-            #print("Error while creating button '{0}': {1}".format(text, err))
-            self.icon_obj = None
-        else:
-            self.icon_path = icon_path
-        tk.Button.__init__(self, parent, command=command,
-                           relief='solid', text=text,
-                           image=self.icon_obj, *args, **kwargs)
 
 class EditHtml(tk.Frame):
     """Main editing tools and edit display-widget."""
@@ -564,7 +550,13 @@ class FormTab(ToolBar):
         self.add_tool_buttons(
             (None, 'form',
              lambda: self.parent.dialog_insert_tag(
-                 dialog_obj=InsertForm, opening_tag='form',
+                 dialog_obj=lambda parent, title:
+                 CollectValues(parent, title=title, inputs=[
+                     (tk.Entry, ['action']),
+                     (lambda parent:
+                      SelectMenu(parent, 'get', 'post'), ['method'])]),
+
+                 opening_tag='form',
                  closing_tag=True, title='Insert form',
                  start_txt='\n', end_txt='\n')),
 
@@ -594,22 +586,38 @@ class FormTab(ToolBar):
         self.input_std_opts_vals = [(tk.Entry, ('name', 'id', 'value'))]
         self.input_std_opts_vals_bools = ('disabled', 'readonly')
 
+        def formmethod(parent):
+            return SelectMenu(parent, 'get', 'post')
+
+        def spellcheck(parent):
+            # enumeratory type:
+            # explicit true/false/no value
+            return SelectMenu(parent, 'true', 'false', '')
+
+        def formtarget(parent):
+            return SelectMenu(parent, '_self', '_blank', '_parent', '_top')
+
         self.input_list_dialog = {
             'file': {'booleans': ('accept', 'multiple')},
-            'image': {'booleans': ('formaction',),
-                      'inputs': [(tk.Entry, ('formmethod', # should be get/post
-                                             'formtarget'))]},
+
+            'image': {'inputs': [
+                (tk.Entry, ('formaction',)),
+                (formtarget, ('formtarget',)),
+                (formmethod, ('formmethod',))]},
+
             'submit': {'booleans': ('formnovalidate',),
                        'inputs': [
-                           (tk.Entry, (
-                               'formaction', 'formmethod',
-                               'formtarget'))]}, # should be _blank ... etc.
+                           (tk.Entry, ('formaction',)),
+                           (formtarget, ('formtarget',)),
+                           (formmethod, ('formmethod',))]},
+
             'tel': {'inputs': [(tk.Entry, ('list', 'pattern', 'placeholder')),
                                (lambda parent: tk.Spinbox(
                                    parent, from_=0, to=30),
                                 ('maxlength', 'minlength'))]},
+
             'url': {'inputs': [(tk.Entry, ('list', 'pattern', 'placeholder')),
-                               #(tk.OptionMenu, ('spellcheck',)), # true/false/no value
+                               (spellcheck, ('spellcheck',)),
                                (lambda parent: tk.Spinbox(
                                    parent, from_=0, to=100),
                                 ('maxlength', 'minlength', 'size'))]}}

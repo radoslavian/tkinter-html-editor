@@ -2,6 +2,7 @@ import pathlib
 import tkinter as tk
 from tkinter import filedialog as fd
 from utils import *
+from widgets import *
 from tkinter import messagebox as msgbox
 from tkSimpleDialog import Dialog
 
@@ -465,29 +466,6 @@ class InsertMetaDialog(Dialog):
         # !!!
         self.parent.destroy()
 
-class InsertForm(Dialog):
-    def body(self, master):
-        row = 0
-        for txt in 'Action:', 'Method:':
-            tk.Label(master, text=txt).grid(column=0, row=row)
-            row += 1
-
-        self.action_var = tk.StringVar()
-        action_ent = tk.Entry(master, textvariable = self.action_var)
-        action_ent.grid(column=1, row=0)
-
-        methods = ('get', 'post')
-        self.method_var = tk.StringVar()
-        self.method_var.set('get')
-
-        method_ent = tk.OptionMenu(
-            master, self.method_var, *methods)
-        method_ent.grid(column=1, row=1, sticky='w')
-
-    def apply(self):
-        self.result = dict(
-            action=self.action_var.get(), method=self.method_var.get())
-
 
 class CollectValues(Dialog):
     "Generic dialog to collect value/boolean input."
@@ -567,16 +545,16 @@ class CollectValues(Dialog):
         for attr_name in self.fields:
             attr = getattr(self, attr_name+'__')
 
-            if type(attr) is tk.Entry:
+            if type(attr) in (tk.Entry, SelectMenu):
                 val = {attr_name: attr.get()}
 
             elif type(attr) is tk.Spinbox:
                 sbox_val = attr.get()
                 if int(sbox_val) > 0:
                     val = {attr_name: attr.get()}
-            else:
-                val = {}
+
             self.result.update(val)
+            val = {}
 
 
 class InsertTextarea(CollectValues):
@@ -607,5 +585,8 @@ class InsertTextarea(CollectValues):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    insertst = InsertSelectTag(root)
-    root.mainloop()
+    cv = CollectValues(root, inputs=[
+        (lambda parent: SelectMenu(parent, 'l', 'i'), ('hero',))])
+    print(cv.result)
+    #tk.mainloop()
+    

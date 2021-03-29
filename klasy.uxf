@@ -1089,14 +1089,84 @@ m2=*</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>1892</x>
-      <y>1452</y>
+      <y>1683</y>
       <w>165</w>
-      <h>165</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>CollectValuesDialog
 -
 validate
 apply</panel_attributes>
     <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1540</x>
+      <y>1683</y>
+      <w>220</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>Optionmenu
+-
++ get() : tk.StringVar()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1584</x>
+      <y>1595</y>
+      <w>110</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>SelectMenu</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1628</x>
+      <y>1617</y>
+      <w>33</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1749</x>
+      <y>1727</y>
+      <w>165</w>
+      <h>44</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>130.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1914</x>
+      <y>1595</y>
+      <w>110</w>
+      <h>33</h>
+    </coordinates>
+    <panel_attributes>Dialog</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1947</x>
+      <y>1617</y>
+      <w>33</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
   </element>
 </diagram>
