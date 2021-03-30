@@ -184,23 +184,6 @@ class InsertDoctypeDialog(Dialog):
         self.result += '\n'
 
 
-class InsertHyperlinkDialog(Dialog):
-    def body(self, master):
-        tk.Label(master, text='Target:').grid(row=0, column=0)
-        self.target_ent = tk.Entry(master)
-        self.target_ent.grid(row=0, column=1)
-
-        tk.Label(master, text='Style:').grid(row=1, column=0)
-        self.style_ent = tk.Entry(master)
-        self.style_ent.grid(row=1, column=1)
-
-    def apply(self):
-        self.result = {
-            'target' : str(self.target_ent.get()),
-            'style'  : str(self.style_ent.get())
-        }
-
-
 class SearchTextDialog(Dialog):
     def __init__(self, master, txt_fld : tk.Text):
         for attr in 'direction', 'mode', 'case':
@@ -444,29 +427,6 @@ class ReplaceTextDialog(SearchTextDialog):
                 replace_txt, direction=direction, interactive_mode=True)
 
 
-class InsertMetaDialog(Dialog):
-    def body(self, master):
-        # Może lepiej checkbuttony odblokowujące jedną z grup opcji?
-        row = 0
-        for txt in 'Meta-value:', 'Value:':
-            tk.Label(master, text=txt).grid(column=0, row=row)
-            row += 1
-
-        attr_names = ('name', 'http-equiv')
-        self.meta_attr_sel = tk.StringVar()
-        self.meta_attr_sel.set('name')
-
-        self.attr_name = tk.OptionMenu(
-            master, self.meta_attr_sel, *attr_names, command=lambda : True)
-        self.attr_name.grid(column=1, row=0)
-
-    def cancel(self, ev=None):
-        # !!!
-        # Remember to remove before running in an application !!!
-        # !!!
-        self.parent.destroy()
-
-
 class CollectValues(Dialog):
     "Generic dialog to collect value/boolean input."
 
@@ -481,9 +441,11 @@ class CollectValues(Dialog):
 
     def body(self, master):
         if self.inputs:
-            self.inputs_fr(tk.Frame(master))
+            self.inputs_frame = tk.Frame(master)
+            self.inputs_fr(self.inputs_frame)
 
         if self.booleans:
+            self.booleans_frame = tk.Frame(master)
             self.booleans_fr(tk.Frame(master))
 
     def inputs_fr(self, frame):
@@ -494,7 +456,7 @@ class CollectValues(Dialog):
                 tk.Label(frame, text=name+':').grid(column=0, row=row)
                 setattr(self, name+'__', items[0](frame))
                 getattr(self, name+'__').grid(
-                    column=1, row=row, columnspan=2, sticky='w')
+                    column=1, row=row, columnspan=2, sticky='we')
                 row += 1
 
             self.fields.extend(items[1])
@@ -524,13 +486,13 @@ class CollectValues(Dialog):
                     if (len(fld.get())) > self.maxlength:
                         msg = 'The text in the field "{0}" is too long.'.format(
                             field)
-                        raise ValueError
+                        raise ValueError(msg)
 
                 elif type(fld) is tk.Spinbox:
                     if not fld.get().isdigit():
                         msg = ('The value in the field "{0}"'.format(field)
                         +' should be numerical.')
-                        raise ValueError
+                        raise ValueError(msg)
         except ValueError:
             msgbox.showerror(parent=self, title='Input error', message=msg)
             return False
@@ -545,48 +507,77 @@ class CollectValues(Dialog):
         for attr_name in self.fields:
             attr = getattr(self, attr_name+'__')
 
-            if type(attr) in (tk.Entry, SelectMenu):
-                val = {attr_name: attr.get()}
+            if attr.cget('state') == 'disabled':
+                continue
 
-            elif type(attr) is tk.Spinbox:
+            if type(attr) is tk.Spinbox:
                 sbox_val = attr.get()
                 if int(sbox_val) > 0:
                     val = {attr_name: attr.get()}
+            else:
+                val = {attr_name: attr.get()}
 
-            self.result.update(val)
-            val = {}
+            if val:
+                self.result.update(val)
+                val = {}
 
 
-class InsertTextarea(CollectValues):
-    def __init__(self, parent, *pargs):
-        self.txarea_wrap_option = tk.StringVar()
-        self.txarea_wrap_option.set('hard')
-
-        txarea_inputs = [
-            (lambda parent: tk.Spinbox(
-                parent, from_=1, to=100, increment=1, width=6),
-             ('cols', 'maxlength', 'rows')),
-
-            (tk.Entry, ('name', 'placeholder', 'dirname', 'form')),
-
-             (lambda parent: tk.OptionMenu(
-                 parent, self.txarea_wrap_option, 'hard', 'soft'), ('wrap',))]
-
-        txarea_booleans = ('autofocus', 'disabled', 'readonly', 'required')
+class HttpEquivDialog(CollectValues):
+    def __init__(self, parent, *pargs, **kwargs):
+        options = ('content-type', 'content-security-policy', 'default-style',
+                   'refresh', 'x-ua-compatible')
 
         CollectValues.__init__(
-            self, parent, booleans=txarea_booleans,
-            inputs=txarea_inputs, *pargs)
+            self, parent, *pargs, inputs=[
+                (lambda parent: SelectMenu(
+                    parent, *options, command=self.mtag_cb), ('http-equiv',)),
+                (tk.Entry, ('content',))],
+            **kwargs)
+
+    def body(self, master):
+        CollectValues.body(self, master)
+        filetypes = [('CSS Stylesheets', '.css'), ('All files', '*')]
+
+        # had to add it manually:
+        #
+        self.css_fc = FileChooser(
+            self.inputs_frame, filetypes=filetypes)
+        self.css_fc.grid(column=1, row=3)
+        self.mtag_cb('content-type')
+
+    def mtag_cb(self, val):
+        self.content__.configure(state='normal')
+        self.css_fc.disable(True)
+
+        if val == 'content-type':
+            self.set_text('text/html; charset=utf-8')
+
+        elif val == 'default-style':
+            self.content__.configure(state='disabled')
+            self.css_fc.disable(False)
+
+        elif val == 'x-ua-compatible':
+            self.set_text('IE=edge')
+
+        else:
+            self.set_text()
+
+    def set_text(self, text=''):
+        "set text in self.content__"
+
+        self.content__.delete(0, tk.END)
+        self.content__.insert(0, text)
 
     def apply(self):
         CollectValues.apply(self)
-        self.result.update({'wrap': self.txarea_wrap_option.get()})
+
+        if not self.css_fc.disabled():
+            self.result.update({'content': self.css_fc.get()})
 
 
 if __name__ == '__main__':
     root = tk.Tk()
-    cv = CollectValues(root, inputs=[
-        (lambda parent: SelectMenu(parent, 'l', 'i'), ('hero',))])
-    print(cv.result)
-    #tk.mainloop()
+    hed = HttpEquivDialog(root)
+    #print(cv.result)
+    tk.mainloop()
     

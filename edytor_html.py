@@ -223,7 +223,7 @@ class EditHtml(tk.Frame):
         self.edit_field.insert(start_idx, opening_tag)
 
     def insert_doctype(self):
-        dtype_dialog = InsertDoctypeDialog(self, title='Insert doctype')
+        dtype_dialog = InsertDoctypeDialog(self, title='doctype')
 
         if dtype_dialog.result:
             self.insert('1.0', dtype_dialog.result)
@@ -252,7 +252,7 @@ class EditHtml(tk.Frame):
         self.insert(init_idx, '<table id="">\n')
  
     def dialog_insert_tag(self, dialog_obj, opening_tag,
-                          closing_tag : bool=False, title='Tk Dialog',
+                          closing_tag : bool=False, title='Insert html tag:',
                           opts=None, **kwargs):
         options = dialog_obj(self, title).result
         if not options: return
@@ -312,6 +312,16 @@ class ToolBar(tk.Frame):
 
         self.tools()
 
+    def sel_menu_target(self, parent):
+        '''Returns predefined SelectMenu (tk.OptionMenu)
+        to be used for dynamic created dialogs.'''
+
+        return SelectMenu(parent, '', '_self', '_blank', '_parent', '_top')
+
+    def formmethod(self, parent):
+        "Predefined SelectMenu to be used for eg. in form dialog."
+        return SelectMenu(parent, '', 'get', 'post')
+
     def tag_f(self, tag_name, cnt='\n', **kwargs):
         self.parent.insert_tag(
             *self.parent.get_selection_indices(), tag_name,
@@ -351,7 +361,7 @@ class ToolBar(tk.Frame):
     def dialog_generator(
             self, inputs, booleans, tag, title=None,
             start_txt='\n', end_txt='\n', **kwargs):
-        '''Returns tuple that can be used as an input for add_tool_buttons.'''
+        '''Returns tuple to be used as an input for add_tool_buttons.'''
 
         # The dialog is called in the following way:
         # CollectValues(
@@ -387,13 +397,97 @@ class ToolBar(tk.Frame):
 
 class PageStructureBar(ToolBar):
     def tools(self):
+        media_types = ('', 'all', 'print', 'screen', 'speech')
+
+        referrer_policy_list = (
+            '', 'no-referrer', 'no-referrer-when-downgrade',
+            'origin', 'origin-when-cross-origin', 'unsafe-url')
+
+        referrer_policy = (lambda parent: SelectMenu(
+            parent, *referrer_policy_list), ('referrerpolicy',))
+
+        crossorigin = (lambda parent: SelectMenu(
+            parent, '', 'anonymous', 'use-credentials'), ('crossorigin',))
+
+        link_rel = ('alternate', 'author', 'dns-prefetch', 'help',
+                    'icon', 'license', 'next', 'pingback', 'preconnect',
+                    'prefetch', 'preload', 'prerender', 'prev', 'search',
+                    'stylesheet')
+
+        script_inputs = (
+            crossorigin, referrer_policy,
+            (lambda parent: SelectMenu(
+                parent, '', 'True', 'False'), ('nomodule',)),
+            (tk.Entry, ('type', 'src')))
+
+        script_bools = ('async', 'defer')
+
+        link_inputs = [
+            crossorigin,
+            (lambda parent: SelectMenu(
+                parent, *media_types), ('media',)),
+            referrer_policy,
+
+            (lambda parent: SelectMenu(
+                parent, *link_rel), ('rel',)),
+
+            (tk.Entry, ('sizes', 'title', 'type', 'hreflang')),
+
+            (lambda parent: FileChooser(
+                parent, filetypes=[
+                    ('Css stylesheets', '*css'),
+                    ('All files', '*')]), ('href',))]
+
         self.add_tool_buttons(
             (None, '!doc', self.parent.insert_doctype),
             (None, 'html', self.tag('html')),
             (None, 'head', self.tag('head')),
+
+            (None, 'link', lambda: self.collect_values_dialog(
+                inputs=link_inputs, booleans=[], tag='link')),
+
             (None, 'style', self.tag('style', opts='type="text/css"')),
+
+            (None, 'script', lambda: self.collect_values_dialog(
+                inputs=script_inputs, booleans=script_bools, tag='script',
+                closing_tag=True)),
+
             (None, 'title', self.ctag('title')),
             (None, 'body', self.tag('body')))
+
+        self.separator()
+
+        self.add_widget(lambda parent: tk.Label(parent, text='Meta:'))
+        self.add_meta_menu()
+
+    def add_meta_menu(self):
+        self.meta_types = ('charset', 'http-equiv', 'name')
+        input_option = tk.StringVar()
+        input_option.set(self.meta_types[0])
+
+        self.add_widget(
+            tk.OptionMenu, input_option, *self.meta_types,
+            command=self.meta_http_equiv_cb)
+
+        self.meta_names = ['application-name', 'author', 'description',
+             'generator', 'keywords', 'viewport']
+
+    def meta_http_equiv_cb(self, val):
+        if val == 'name':
+            inputs = [
+                (lambda parent: SelectMenu(parent, *self.meta_names),
+                 ('name',)), (tk.Entry, ('content',))]
+
+            self.collect_values_dialog(
+                inputs=inputs, booleans=[], tag='meta')
+
+        elif val == 'http-equiv':
+            self.parent.dialog_insert_tag(
+                opening_tag='meta', dialog_obj=HttpEquivDialog,
+                title='Insert meta tag:')
+
+        elif val == 'charset':
+            self.parent.insert_formatting_tag('meta', opts='charset="utf-8"')
 
 
 class MainToolBar(ToolBar):
@@ -444,14 +538,14 @@ class StandardTools(ToolBar):
 
             ('icons/insert_img.png', 'img',
              lambda: self.parent.dialog_insert_tag(
-                 opening_tag = 'img', title = 'Insert image',
-                 dialog_obj = InsertImgDialog)),
+                 opening_tag='img', title ='Insert image',
+                 dialog_obj=InsertImgDialog)),
 
             ('icons/insert_hyperlink.png', 'anchor',
-             lambda: self.parent.dialog_insert_tag(
-                 opening_tag = 'a', closing_tag = True,
-                 title = 'Insert hyperlink',
-                 dialog_obj = InsertHyperlinkDialog)))
+             lambda: self.collect_values_dialog(
+                 inputs=[(tk.Entry, ('href', 'rel')),
+                         (self.sel_menu_target, ('target',))],
+                 booleans=[], tag='a')))
 
         self.separator()
 
@@ -547,6 +641,23 @@ class FormTab(ToolBar):
 
         sel_booleans = ('autofocus', 'disabled', 'multiple', 'required')
 
+        def insert_textarea(parent, title):
+            txarea_inputs = [
+                (lambda parent: tk.Spinbox(
+                    parent, from_=0, to=100, increment=1, width=6),
+                 ('cols', 'maxlength', 'rows')),
+
+                (tk.Entry, ('name', 'placeholder', 'dirname', 'form')),
+
+                (lambda parent: SelectMenu(
+                    parent, '', 'hard', 'soft'), ('wrap',))]
+
+            txarea_booleans = ('autofocus', 'disabled', 'readonly', 'required')
+
+            return CollectValues(
+                parent, title, inputs=txarea_inputs, booleans=txarea_booleans)
+
+
         self.add_tool_buttons(
             (None, 'form',
              lambda: self.parent.dialog_insert_tag(
@@ -554,7 +665,7 @@ class FormTab(ToolBar):
                  CollectValues(parent, title=title, inputs=[
                      (tk.Entry, ['action']),
                      (lambda parent:
-                      SelectMenu(parent, 'get', 'post'), ['method'])]),
+                      SelectMenu(parent, '', 'get', 'post'), ['method'])]),
 
                  opening_tag='form',
                  closing_tag=True, title='Insert form',
@@ -566,7 +677,7 @@ class FormTab(ToolBar):
 
             (None, 'textarea',
              lambda: self.parent.dialog_insert_tag(
-                 dialog_obj=InsertTextarea, opening_tag='textarea',
+                 dialog_obj=insert_textarea, opening_tag='textarea',
                  closing_tag=True, title='Insert textarea',
                  start_txt='\n', end_txt='\n')),
 
@@ -586,30 +697,31 @@ class FormTab(ToolBar):
         self.input_std_opts_vals = [(tk.Entry, ('name', 'id', 'value'))]
         self.input_std_opts_vals_bools = ('disabled', 'readonly')
 
-        def formmethod(parent):
-            return SelectMenu(parent, 'get', 'post')
-
         def spellcheck(parent):
             # enumeratory type:
             # explicit true/false/no value
             return SelectMenu(parent, 'true', 'false', '')
 
-        def formtarget(parent):
-            return SelectMenu(parent, '_self', '_blank', '_parent', '_top')
 
         self.input_list_dialog = {
             'file': {'booleans': ('accept', 'multiple')},
 
             'image': {'inputs': [
                 (tk.Entry, ('formaction',)),
-                (formtarget, ('formtarget',)),
-                (formmethod, ('formmethod',))]},
+                (lambda parent:
+                 FileChooser(parent, filetypes=(
+                     ('Images', ('.jpg','.jpeg', '.png', '.gif')),
+                     ('All files', '*')
+                 )), ('src',)),
+
+                (self.sel_menu_target, ('formtarget',)),
+                (self.formmethod, ('formmethod',))]},
 
             'submit': {'booleans': ('formnovalidate',),
                        'inputs': [
                            (tk.Entry, ('formaction',)),
-                           (formtarget, ('formtarget',)),
-                           (formmethod, ('formmethod',))]},
+                           (self.sel_menu_target, ('formtarget',)),
+                           (self.formmethod, ('formmethod',))]},
 
             'tel': {'inputs': [(tk.Entry, ('list', 'pattern', 'placeholder')),
                                (lambda parent: tk.Spinbox(

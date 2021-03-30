@@ -102,12 +102,12 @@ class MainApp(tk.Frame):
         except TextFieldModified:
             MainApp.new_instance(tk.Toplevel(), filename)
         except IOError as e:
-            messagebox.showerror(parent=self.parent,
-                                 title='I/O Error',
-                                 message='Error while attempting ' 
-                                 'to load file: {}'.format(e))
+            messagebox.showerror(
+                parent=self.parent, title='I/O Error',
+                message='Error while attempting to load file: {}'.format(e))
         else:
             self.html_file_path = filename
+            os.chdir(os.path.dirname(filename))
 
     def _save(self, file_path, txt_fld : tk.Text):
         with open(file_path, 'w') as file:
