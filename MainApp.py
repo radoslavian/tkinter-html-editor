@@ -3,7 +3,7 @@ from tkinter import messagebox
 from edytor_html import *
 import webbrowser
 
-class MainApp(tk.Frame):
+class MainApp(tk.Toplevel):
     class InnerDecorators:
         @classmethod
         def save_as(cls, fn):
@@ -30,31 +30,30 @@ class MainApp(tk.Frame):
                     self.save_document_as()
             return wrapper
 
-    def __init__(self, parent, path_to_doc = None):
-        tk.Frame.__init__(self, parent)
-        self.parent = parent
+    def __init__(self, root, path_to_doc = None):
+        tk.Toplevel.__init__(self, root)
+
+        self.root = root
         self.html_file_path = None
         self.app_name = 'Basic HTML Editor'
 
         self._arrange_subframes()
 
-        parent.menu = MenuBar(parent, self)
-        parent.config(menu=parent.menu)
+        self.menu = MenuBar(self)
+        self.config(menu=self.menu)
 
         if path_to_doc:
             self.open_document(path=path_to_doc)
-        self.set_mw_title()
 
         # Event handlers:
-        parent.protocol("WM_DELETE_WINDOW", self._quit)
+        self.protocol("WM_DELETE_WINDOW", self.quit)
         self.bind_events()
 
-    @classmethod
-    def new_instance(cls, parent, path_to_doc=None):
-        app = MainApp(parent, path_to_doc)
-        app.grid(column=0, row=0, sticky='nwse')
-        tk.Grid.columnconfigure(parent, 0, weight=1)
-        tk.Grid.rowconfigure(parent, 0, weight=1)
+        self.set_mw_title()
+        self.main_tabs.edit_html.edit_field.focus_set()
+
+    def _new_instance(self, path_to_doc=None):
+        app = MainApp(self.root, path_to_doc)
         return app
 
     def _arrange_subframes(self):
@@ -76,7 +75,7 @@ class MainApp(tk.Frame):
         events = (
             ('<Control-o>', lambda ev: self.open_document(event=ev)),
             ('<Control-s>', self.save_document),
-            ('<Control-q>', self._quit),
+            ('<Control-q>', self.quit),
             ('<Control-f>', self.find_text),
             ('<Control-r>', self.replace_text))
 
@@ -94,20 +93,39 @@ class MainApp(tk.Frame):
             filename = path
         else:
             filename = fd.askopenfilename(
-                initialdir='./test',
-                title='Select file',
+                parent=self, initialdir='./test', title='Select file',
                 filetypes=file_types)
+
+            if not filename:
+                return
+
+            # This is actually senseless:
+            # if the file is already opened (let's assume in the second window)
+            # and I try to load it once again from the first one,
+            # it will load even though it shouldn't.
+
+            elif filename == self.html_file_path:
+                messagebox.showerror(
+                    parent=self, title='File already opened',
+                    message='The file is already opened in the current '
+                    + 'window.')
+                return
+
         try:
             self.main_tabs.edit_html.load_doc(filename)
+
         except TextFieldModified:
-            MainApp.new_instance(tk.Toplevel(), filename)
+            self._new_instance(filename)
+
         except IOError as e:
             messagebox.showerror(
-                parent=self.parent, title='I/O Error',
+                parent=self, title='I/O Error',
                 message='Error while attempting to load file: {}'.format(e))
+
         else:
             self.html_file_path = filename
             os.chdir(os.path.dirname(filename))
+            self.set_mw_title()
 
     def _save(self, file_path, txt_fld : tk.Text):
         with open(file_path, 'w') as file:
@@ -116,14 +134,17 @@ class MainApp(tk.Frame):
     def save_doc(self, file_path):
         try:
             self._save(file_path, self.main_tabs.edit_html)
+
         except IOError as e:
             messagebox.showerror(
-                parent=self.parent, title='I/O Error',
+                parent=self, title='I/O Error',
                 message='Error while attempting to save file: {}'.format(e))
+
         else:
             if self.html_file_path != file_path:
                 self.html_file_path = file_path
                 self.set_mw_title()
+
             self.main_tabs.edit_html.edit_modified(False)
 
     save_document_as = InnerDecorators.save_as(save_doc)
@@ -134,10 +155,10 @@ class MainApp(tk.Frame):
             title_addon = ' - ' + base_file_name(self.html_file_path)
         else:
             title_addon = ' - new document'
-        self.parent.title(self.app_name + title_addon)
+        self.title(self.app_name + title_addon)
 
     def ask_to_save_file(self):
-        result = messagebox.askyesnocancel(parent=self.parent,
+        result = messagebox.askyesnocancel(parent=self,
             title='unsaved document',
             message="The document '{}' was modified but wasn't saved. ".format(
                 base_file_name(self.html_file_path)) +
@@ -171,16 +192,53 @@ class MainApp(tk.Frame):
                 message='During the operation browser control error'
                 ' has occured: {}.'.format(err))
 
-    def _quit(self, event=None):
+    def quit(self, event=None):
         if self.main_tabs.edit_html.edit_modified():
             try:
                 self.ask_to_save_file()
             except DocumentSaveCancelled:
                 print('document save cancelled')
                 return
-        self.master.destroy()
+
+        self.destroy()
+
+        # Following is the call to RootWin's quit()
+        # method, which in turn counts
+        # number of remaining instances of the MainApp,
+        # The tkinter application is terminated
+        # only if the number drops to 0.
+
+        self.root.quit()
+
+
+class RootWin(tk.Tk):
+    '''Every MainApp instance should be child window of the RootWin and
+    there should only be a single instance of RootWin.
+
+    This is what I invented for making multiple MainApp windows within
+    a single Python process.'''
+
+    instance_count = 0
+
+    def __init__(self, *pargs, **kwargs):
+        if RootWin.instance_count > 1:
+            raise RuntimeError(
+                'Only one instance of this class is allowed.')
+
+        RootWin.instance_count += 1
+
+        tk.Tk.__init__(self, *pargs, **kwargs)
+        self.withdraw()
+
+    def __del__(self, *pargs, **kwargs):
+        RootWin.instance_count -= 1
+        tk.Tk.__del__(self, *pargs, **kwargs)
+
+    def quit(self):
+        if len(self.winfo_children()) < 1:
+            tk.Tk.quit(self)
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    MainApp.new_instance(root)
+    root = RootWin()
+    mapp = MainApp(root)
     tk.mainloop()

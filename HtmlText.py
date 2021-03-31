@@ -103,6 +103,8 @@ class HtmlText(ScrolledText):
     __getattr__ = getattr_wrapper()
 
     insert = scr_update(ScrolledText.insert)
+    edit_undo = whole_scr_upd(ScrolledText.edit_undo)
+    edit_redo = whole_scr_upd(ScrolledText.edit_redo)
 
     def select_all(self, event=None):
         self.tag_add(tk.SEL, '1.0', tk.END)
@@ -119,6 +121,7 @@ class HtmlText(ScrolledText):
         else:
             self.insert_if_empty(html_file.read())
         finally:
+            self.edit_reset()
             html_file.close()
 
     def is_empty(self):
@@ -186,7 +189,9 @@ class HtmlText(ScrolledText):
             self.clear_tags(tag[0])
 
     def apply_tag(self, p_line : int, p_col : int, tag_len, tk_tag):
-        '''p_line, p_col - parser lines/columns: values returned by 
+        '''Apply tkinter.Text tag
+
+        p_line, p_col - parser lines/columns: values returned by 
         the html parser (lines/cols relative to
         the start of what's been fed into it).'''
 

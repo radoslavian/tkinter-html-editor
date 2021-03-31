@@ -545,7 +545,7 @@ class StandardTools(ToolBar):
              lambda: self.collect_values_dialog(
                  inputs=[(tk.Entry, ('href', 'rel')),
                          (self.sel_menu_target, ('target',))],
-                 booleans=[], tag='a')))
+                 booleans=[], tag='a', closing_tag=True)))
 
         self.separator()
 
@@ -807,9 +807,8 @@ class MainTabs(ttk.Notebook):
             self.html_view.preview(self.edit_html.get_contents())
 
 class MenuBar(tk.Menu):
-    def __init__(self, parent, app):
-        tk.Menu.__init__(self, parent)
-        self.parent = parent
+    def __init__(self, app):
+        tk.Menu.__init__(self, app)
         self.app = app
 
         # Space for defining menus:
@@ -821,7 +820,7 @@ class MenuBar(tk.Menu):
              ('Open', 'Save', 'Save as', 'Exit'),   # label
              ('Ctrl+O', 'Ctrl+S', None, 'Ctrl+Q'),  # accelerator
              (app.open_document, app.save_document, # command
-              app.save_document_as, app._quit)),
+              app.save_document_as, app.quit)),
 
             (self.edit_menu,
              ('Undo', 'Redo', 'Select all', 'Copy', 'Cut', 'Paste'),
