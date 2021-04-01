@@ -57,9 +57,9 @@ class HtmlParser(HTMLParser):
         tag_text = self.get_starttag_text()
 
         self.apply_t(len(tag_text), 'html_tag')
-        self.highlight_attr_names(tag_text, attrs, self.getpos())
+        self.highlight_attributes(tag_text, attrs, self.getpos())
 
-    def highlight_attr_names(self, html_tag, attrs, pos):
+    def highlight_attributes(self, html_tag, attrs, pos):
         '''Highlights html attribute names.
         html_tag - whole tag (eg. <name attr="value">)
         pos - value returned by p.getpos()'''
