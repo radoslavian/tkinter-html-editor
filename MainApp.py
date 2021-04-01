@@ -195,14 +195,16 @@ class MainApp(tk.Toplevel):
                 print('document save cancelled')
                 return
 
-        self.root.opened_files.remove(self.html_file_path)
+        if self.html_file_path:
+            self.root.opened_files.remove(self.html_file_path)
+
         self.destroy()
 
         # Following is the call to RootWin's quit()
         # method, which in turn counts
-        # number of remaining instances of the MainApp,
-        # The tkinter application is terminated
-        # only if the number drops to 0.
+        # the number of remaining instances of the MainApp
+        # and terminates the application only if
+        # the counter drops to 0.
 
         self.root.quit()
 
@@ -211,7 +213,7 @@ class RootWin(tk.Tk):
     '''Every MainApp instance should be child window of the RootWin and
     there should only be a single instance of RootWin.
 
-    This is what I invented for making multiple MainApp windows within
+    Thus we can have multiple MainApp windows within
     a single Python process.'''
 
     instance_count = 0
@@ -238,4 +240,4 @@ class RootWin(tk.Tk):
 if __name__ == '__main__':
     root = RootWin()
     mapp = MainApp(root)
-    tk.mainloop()
+    root.mainloop()
