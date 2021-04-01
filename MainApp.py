@@ -35,7 +35,7 @@ class MainApp(tk.Toplevel):
 
         self.root = root
         self.html_file_path = None
-        self.app_name = 'Basic HTML Editor'
+        self.app_name = 'Basic tkinter HTML Editor'
 
         self._arrange_subframes()
 
@@ -99,16 +99,10 @@ class MainApp(tk.Toplevel):
             if not filename:
                 return
 
-            # This is actually senseless:
-            # if the file is already opened (let's assume in the second window)
-            # and I try to load it once again from the first one,
-            # it will load even though it shouldn't.
-
-            elif filename == self.html_file_path:
+            elif filename in self.root.opened_files:
                 messagebox.showerror(
                     parent=self, title='File already opened',
-                    message='The file is already opened in the current '
-                    + 'window.')
+                    message='The file is already opened')
                 return
 
         try:
@@ -125,6 +119,7 @@ class MainApp(tk.Toplevel):
         else:
             self.html_file_path = filename
             os.chdir(os.path.dirname(filename))
+            self.root.opened_files.append(filename)
             self.set_mw_title()
 
     def _save(self, file_path, txt_fld : tk.Text):
@@ -200,6 +195,7 @@ class MainApp(tk.Toplevel):
                 print('document save cancelled')
                 return
 
+        self.root.opened_files.remove(self.html_file_path)
         self.destroy()
 
         # Following is the call to RootWin's quit()
@@ -226,6 +222,7 @@ class RootWin(tk.Tk):
                 'Only one instance of this class is allowed.')
 
         RootWin.instance_count += 1
+        self.opened_files = []
 
         tk.Tk.__init__(self, *pargs, **kwargs)
         self.withdraw()
