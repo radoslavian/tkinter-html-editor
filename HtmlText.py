@@ -77,6 +77,18 @@ class HtmlParser(HTMLParser):
                 self.html_fld_ref.apply_tag(
                     pos[0], pos[1]+index, len(attr), 'attr_name')
 
+        # attr values
+
+        attr_reg = r'["\'](.*?)["\']'
+        attr_values_indices = tuple(
+            (idx.start(), idx.end()) for idx in re.finditer(
+            attr_reg, html_tag))
+
+        for idx in attr_values_indices:
+            self.html_fld_ref.apply_tag(
+                pos[0], pos[1]+idx[0], idx[1]-idx[0], 'attr_value')
+
+
 class HtmlText(ScrolledText):
     def __init__(self, parent, *pargs, **kwargs):
         ScrolledText.__init__(self, parent, undo=True, maxundo=-1,
@@ -143,6 +155,7 @@ class HtmlText(ScrolledText):
             ('html_tag', {'foreground': 'brown'}),
             ('comment', {'foreground': 'blue'}),
             ('attr_name', {'foreground': 'khaki4'}),
+            ('attr_value', {'foreground': 'red'}),
             ('entity', {'foreground': 'SlateBlue2'}),
             ('charref', {'foreground': 'CadetBlue4'}),
             ('doctype', {'foreground': 'thistle4'}),
@@ -203,11 +216,14 @@ class HtmlText(ScrolledText):
             tk_tag, new_init_idx, '{0}+{1}c'.format(new_init_idx, tag_len))
 
 if __name__ == '__main__':
-
-    import tkinter as tk
     root = tk.Tk()
     text = HtmlText(root)
     text.grid()
     text.insert('1.0', '''<meta property="og:url" 
-property="prop2" content="https://stackoverflow.com/"/>''')
+property="prcontentop2" content="httpsproperty://stackoverflow.com/"/>
+<![CDATA[
+      <message> Welcome to TutorialsPoint </message>
+   ]] >''')
+    text.update_whole_doc()
+    text.focus_set()
     root.mainloop()
