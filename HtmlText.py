@@ -97,8 +97,9 @@ class HtmlText(ScrolledText):
         self.parser = HtmlParser(self)
         self.wrapped = self.parser
 
-        self.last_event_time = int()
         self.last_fed_indices = ('1.0', 'end')
+        self.scr_update_time = 400
+        self.update_after_id = self.after_idle(self.update_current_screen)
 
         self.configure_tags()
         self.bind_events()
@@ -172,10 +173,14 @@ class HtmlText(ScrolledText):
         self.feed_parser()
 
     def update_current_screen(self, event=None):
-        self.clear_screen()
-        self.feed_parser()
-
-        # self.last_event_time = self.last_fed_time = now
+        if event:
+            self.after_cancel(self.update_after_id)
+            self.update_after_id = self.after(
+                self.scr_update_time, self.update_current_screen)
+        else:
+            print('Update screen:')
+            self.clear_screen()
+            self.feed_parser()
 
     def feed_parser(self):
         '''Feeds visible text contents of the component into the parser.'''

@@ -84,6 +84,7 @@ class FileChooser(tk.Frame):
 
     def disabled(self):
         "returns state in a True (disabled)/False(normal) format"
+
         return {'disabled': True, 'normal': False}[self._state]
 
     def disable(self, state=True):

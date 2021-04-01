@@ -203,14 +203,14 @@ class MainApp(tk.Toplevel):
         # Following is the call to RootWin's quit()
         # method, which in turn counts
         # the number of remaining instances of the MainApp
-        # and terminates the application only if
+        # class and terminates the application only if
         # the counter drops to 0.
 
         self.root.quit()
 
 
 class RootWin(tk.Tk):
-    '''Every MainApp instance should be child window of the RootWin and
+    '''Every MainApp instance should be a child window of the RootWin and
     there should only be a single instance of RootWin.
 
     Thus we can have multiple MainApp windows within
@@ -219,9 +219,10 @@ class RootWin(tk.Tk):
     instance_count = 0
 
     def __init__(self, *pargs, **kwargs):
-        if RootWin.instance_count > 1:
+        if RootWin.instance_count > 0:
             raise RuntimeError(
-                'Only one instance of this class is allowed.')
+                'Only one instance of this class is allowed to be created'
+                + ' at the same time.')
 
         RootWin.instance_count += 1
         self.opened_files = []
@@ -229,13 +230,15 @@ class RootWin(tk.Tk):
         tk.Tk.__init__(self, *pargs, **kwargs)
         self.withdraw()
 
-    def __del__(self, *pargs, **kwargs):
+    def __del__(self):
+        '''Tkinter application runs as long as Tk root window exists,
+        so this is only for the reason of cohesiveness.'''
+
         RootWin.instance_count -= 1
-        tk.Tk.__del__(self, *pargs, **kwargs)
 
     def quit(self):
         if len(self.winfo_children()) < 1:
-            tk.Tk.quit(self)
+            super().quit()
 
 if __name__ == '__main__':
     root = RootWin()
