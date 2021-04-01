@@ -154,8 +154,9 @@ class HtmlText(ScrolledText):
         self.tags = (
             ('html_tag', {'foreground': 'brown'}),
             ('comment', {'foreground': 'blue'}),
-            ('attr_name', {'foreground': 'khaki4'}),
-            ('attr_value', {'foreground': 'red'}),
+            ('attr_name', {'foreground': 'medium violet red'}),
+            ('attr_value', {'foreground': 'aquamarine4',
+                            'background': 'ghost white'}),
             ('entity', {'foreground': 'SlateBlue2'}),
             ('charref', {'foreground': 'CadetBlue4'}),
             ('doctype', {'foreground': 'thistle4'}),
