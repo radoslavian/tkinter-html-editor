@@ -3,7 +3,7 @@ import re
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 from html.parser import HTMLParser
-import re
+
 
 def scr_update_scheduler(fn):
     '''Decorator associated with the HtmlText class to be used with
@@ -83,17 +83,25 @@ class HtmlParser(HTMLParser):
 
     def highlight_attributes(self, html_tag, attrs, pos):
         '''Highlights html attribute names.
-        html_tag - whole tag (eg. <name attr="value">)
+        htmltag - whole tag (eg. <name attr="value">)
         pos - value returned by p.getpos()'''
 
         attr_names = set(attr[0] for attr in attrs)
+
+        # tag name with left <
+        tag_name_match = re.match('^<\w*\s', html_tag)
+        if tag_name_match:
+            start_idx = tag_name_match.end()
+        else:
+            start_idx = 0
 
         # attribute name and initial indices of its each occurrence
         # within an html tag:
 
         for attr in attr_names:
             indices = tuple(
-                idx.start() for idx in re.finditer(attr, html_tag))
+                idx.start()+start_idx for idx in re.finditer(
+                    attr, html_tag[start_idx:]))
 
             for index in indices:
                 self.html_fld_ref.apply_tag(
@@ -168,8 +176,7 @@ class HtmlText(ScrolledText):
             ('<<Paste>>', lambda e: self.after(300, self.update_whole_doc)),
             ('<Control-Key-a>', self.select_all),
             ('<KeyRelease-Return>', self.return_press_cb),
-            ('<KeyRelease-F2>', self.return_press_cb),
-            ('<KeyRelease-Tab>', self.tab_press_cb))
+            ('<KeyRelease-F2>', self.return_press_cb))
 
         for ev in events:
             self.bind(*ev)
@@ -260,15 +267,11 @@ class HtmlText(ScrolledText):
                 if cur_line_indent:
                     if prev_line_indent == cur_line_indent: return
 
-                    cur_indent = prev_line_indent# - self.indent_depth
+                    cur_indent = prev_line_indent
 
                     print('prevline, indent:', prev_line_indent, self.indent_depth)
                     print('cur_line_indent, cur_indent:', cur_line_indent, cur_indent)
 
-                    #if cur_indent < 0:
-                    #    cur_indent = self.indent_depth
-
-                    # wpisać na diagram:
                     print('cur_indent:', cur_indent)
                     self.delete(
                         'insert linestart', 'insert linestart+{0}c'.format(
@@ -297,7 +300,6 @@ class HtmlText(ScrolledText):
             if prev_line_indent:
                 self.insert(
                     'insert linestart', self.indent_mark*prev_line_indent)
-
 
     __getattr__ = getattr_wrapper()
 
@@ -368,7 +370,8 @@ class HtmlText(ScrolledText):
         self.feed_parser()
 
     def feed_parser(self):
-        "Feeds text contents of the component into the parser."
+        '''Feeds text contents (portion of or whole document)
+        of the component into the parser.'''
 
         self.reset()
         indices = self.last_fed_indices
