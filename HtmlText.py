@@ -1,4 +1,5 @@
 from utils import *
+import re
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 from html.parser import HTMLParser
@@ -130,6 +131,37 @@ class HtmlText(ScrolledText):
         self.configure_tags()
         self.bind_events()
 
+        self.line_parser = HtmlText.ParseLine()
+
+
+    class ParseLine(HTMLParser):
+        '''
+        This class instance when called like a function and given
+        html-formatted text as an argument returns opening/closing etc.
+        tags in the form of the list:
+        [('starttag', init_offset), ('endtag', init_offset)]
+        '''
+
+        def __init__(self):
+            HTMLParser.__init__(self)
+            self.data = []
+
+        def handle_starttag(self, tag, attrs):
+            self.data.append(['starttag',tag, self.getpos()])
+
+        def handle_startendtag(self, tag, attrs):
+            self.data.append(['startendtag', tag, self.getpos()])
+
+        def handle_endtag(self, tag):
+            self.data.append(['endtag', tag, self.getpos()])
+
+        def __call__(self, data):
+            self.data = []
+            self.feed(data)
+
+            return self.data
+
+
     def bind_events(self):
         events = (
             ('<Key>', self.update_current_screen),
@@ -146,31 +178,6 @@ class HtmlText(ScrolledText):
         if not self.indent:
             return
 
-        import re
-
-        class ParseLine(HTMLParser):
-            "Class instance returns only last tag it encounters."
-
-            def __init__(self):
-                HTMLParser.__init__(self)
-                self.data = []
-
-            def handle_starttag(self, tag, attrs):
-                #if tag in # tagi nie otw. bloków
-                self.data.append(['starttag',tag, self.getpos()])
-
-            def handle_startendtag(self, tag, attrs):
-                self.data.append(['startendtag', tag, self.getpos()])
-
-            def handle_endtag(self, tag):
-                self.data.append(['endtag', tag, self.getpos()])
-
-            def __call__(self, data):
-                self.data = []
-                self.feed(data)
-
-                return self.data
-
         def check_if_opened_on_the_same_line(tags):
             if not tags: return
 
@@ -183,34 +190,53 @@ class HtmlText(ScrolledText):
 
             for tag in tags[0:-1]:
                 if tag[1] == closing_tag:
-                    return True
+                    return True                    
             return False
 
         cur_line_idx = self.index('insert linestart')
         cur_line = self.get(cur_line_idx, cur_line_idx+' lineend')
                 
-        prev_line_idx = self.index('insert linestart-1c')
-        prev_line = self.get(
-            prev_line_idx+' linestart', prev_line_idx+' lineend')
+        cur_tag = self.line_parser(cur_line)
 
-        parse = ParseLine()
-
-        prev_tag = parse(prev_line)
-        cur_tag = parse(cur_line)
-
-        # prev. line white characters:
-        white_chars = re.match('^\s+', prev_line)
         cur_l_white_chars = re.match('^\s+', cur_line)
 
         cur_line_indent = 0
         prev_line_indent = 0
 
-        if white_chars:
-            prev_line_indent = white_chars.end() - white_chars.start()
-
         if cur_l_white_chars:
             cur_line_indent = (cur_l_white_chars.end()
                                - cur_l_white_chars.start())
+
+        # endtag in current (insert) line:
+        # update diagram with that
+
+        if (cur_tag and cur_tag[-1][0] == 'endtag' and cur_line_indent
+            and not check_if_opened_on_the_same_line(cur_tag)):
+
+            new_indent = cur_line_indent - self.indent_depth
+
+            if new_indent < 0:
+                new_indent = 0
+
+            self.delete(
+                'insert linestart', 'insert linestart+{0}c'.format(
+                    cur_line_indent))
+
+            self.insert(
+                'insert linestart', self.indent_mark*new_indent)
+
+            return
+
+        prev_line_idx = self.index('insert linestart-1c')
+        prev_line = self.get(
+            prev_line_idx+' linestart', prev_line_idx+' lineend')
+        prev_tag = self.line_parser(prev_line)
+
+        # prev. line white characters:
+        white_chars = re.match('^\s+', prev_line)
+
+        if white_chars:
+            prev_line_indent = white_chars.end() - white_chars.start()
 
         if prev_tag and not check_if_opened_on_the_same_line(prev_tag):
             if prev_tag[-1][0] == 'starttag':
@@ -232,12 +258,15 @@ class HtmlText(ScrolledText):
             elif prev_tag[-1][0] == 'endtag':
 
                 if cur_line_indent:
-                    cur_indent = prev_line_indent - self.indent_depth
+                    if prev_line_indent == cur_line_indent: return
+
+                    cur_indent = prev_line_indent# - self.indent_depth
+
                     print('prevline, indent:', prev_line_indent, self.indent_depth)
                     print('cur_line_indent, cur_indent:', cur_line_indent, cur_indent)
 
-                    if cur_indent < 0:
-                        cur_indent = self.indent_depth
+                    #if cur_indent < 0:
+                    #    cur_indent = self.indent_depth
 
                     # wpisać na diagram:
                     print('cur_indent:', cur_indent)
@@ -258,7 +287,7 @@ class HtmlText(ScrolledText):
         elif re.match('^\s+$', prev_line):
             print('white chars')
 
-        elif re.match('^$', prev_line): # Check if works
+        elif re.match('^$', prev_line):
             print('newline only')
 
         else: # data - letters etc.
@@ -269,28 +298,6 @@ class HtmlText(ScrolledText):
                 self.insert(
                     'insert linestart', self.indent_mark*prev_line_indent)
 
-        # endtag in current (insert) line:
-
-        print('cur_tag:', cur_tag)
-        print('cur_tag[-1][0]:', cur_tag[-1][0])
-        print('cur_line_indent:', cur_line_indent)
-        print('check_if...:', check_if_opened_on_the_same_line(cur_tag))
-
-        if (cur_tag and cur_tag[-1][0] == 'endtag' and cur_line_indent
-            and not check_if_opened_on_the_same_line(cur_tag)):
-            print('entering')
-
-            new_indent = cur_line_indent - self.indent_depth
-
-            if new_indent < 0:
-                new_indent = 0
-
-            self.delete(
-                'insert linestart', 'insert linestart+{0}c'.format(
-                    cur_line_indent))
-
-            self.insert(
-                'insert linestart', self.indent_mark*new_indent)
 
     __getattr__ = getattr_wrapper()
 
