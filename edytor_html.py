@@ -439,7 +439,8 @@ class PageStructureBar(ToolBar):
                     ('All files', '*')]), ('href',))]
 
         self.add_tool_buttons(
-            ('icons/doctype.png', '!doc', self.parent.insert_doctype),
+            #('icons/doctype.png', '!doc', self.parent.insert_doctype),
+            (icon('doctype.png'), '!doc', self.parent.insert_doctype),
             ('icons/html.png', 'html', self.tag('html')),
             ('icons/head.png', 'head', self.tag('head')),
 
@@ -691,8 +692,6 @@ class FormTab(ToolBar):
                 closing_tag=True),
 
             ('icons/legend.png', 'legend', self.ctag('legend')),
-            #('icons/button.png', 'button',
-            #self.ctag('button', opts='type="submit"')),
             (icon('button.png'), 'button',
              self.ctag('button', opts='type="submit"')),
             ('icons/option.png', 'option',
