@@ -271,6 +271,7 @@ class SearchTextDialog(Dialog):
     def get_start_stop_idx(self, direction):
         '''Returns indexes needed by search methods
         for seeking through contents of the tk.Text.'''
+
         if direction == 0: # forward search
             start_idx = self.last_idx
             stop_idx = tk.END
@@ -384,6 +385,7 @@ class ReplaceTextDialog(SearchTextDialog):
 
             end_text_idx = self.get_word_end_index(
                     found_text_init_idx, found_text_len.get())
+
             if interactive_mode:
                 self.highlight_make_visible(found_text_init_idx, end_text_idx)
                 try:
@@ -482,11 +484,11 @@ class CollectValues(Dialog):
         try:
             for field in self.fields:
                 fld = getattr(self, field+'__')
-                if type(fld) is tk.Entry:
-                    if (len(fld.get())) > self.maxlength:
-                        msg = 'The text in the field "{0}" is too long.'.format(
-                            field)
-                        raise ValueError(msg)
+                if (type(fld) is tk.Entry
+                    and (len(fld.get())) > self.maxlength):
+                    msg = 'The text in the field "{0}" is too long.'.format(
+                        field)
+                    raise ValueError(msg)
 
                 elif type(fld) is tk.Spinbox:
                     if not fld.get().isdigit():
@@ -513,7 +515,7 @@ class CollectValues(Dialog):
             if type(attr) is tk.Spinbox:
                 sbox_val = attr.get()
                 if int(sbox_val) > 0:
-                    val = {attr_name: attr.get()}
+                    val = {attr_name: sbox_val}
             else:
                 val = {attr_name: attr.get()}
 
@@ -572,7 +574,7 @@ class HttpEquivDialog(CollectValues):
         CollectValues.apply(self)
 
         if not self.css_fc.disabled():
-            self.result.update({'content': self.css_fc.get()})
+            self.result += {'content': self.css_fc.get()}
 
 
 if __name__ == '__main__':

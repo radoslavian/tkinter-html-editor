@@ -73,6 +73,7 @@ class MainApp(tk.Toplevel):
 
     def bind_events(self):
         events = (
+            ('<Control-n>', lambda ev: self._new_instance()),
             ('<Control-o>', lambda ev: self.open_document(event=ev)),
             ('<Control-s>', self.save_document),
             ('<Control-q>', self.quit),
@@ -101,8 +102,8 @@ class MainApp(tk.Toplevel):
 
             elif filename in self.root.opened_files:
                 messagebox.showerror(
-                    parent=self, title='File already opened',
-                    message='The file is already opened')
+                    parent=self, title='File already opened.',
+                    message='The file is already opened.')
                 return
 
         try:
@@ -138,6 +139,7 @@ class MainApp(tk.Toplevel):
         else:
             if self.html_file_path != file_path:
                 self.html_file_path = file_path
+                self.root.opened_files.append(file_path)
                 self.set_mw_title()
 
             self.main_tabs.edit_html.edit_modified(False)

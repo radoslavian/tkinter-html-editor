@@ -79,17 +79,19 @@ class HtmlParser(HTMLParser):
         tag_text = self.get_starttag_text()
 
         self.apply_t(len(tag_text), 'html_tag')
-        self.highlight_attributes(tag_text, attrs, self.getpos())
+        self.highlight_attributes(
+            tag_text, tag, attrs, self.getpos())
 
-    def highlight_attributes(self, html_tag, attrs, pos):
+    def highlight_attributes(self, html_tag, tag_name, attrs, pos):
         '''Highlights html attribute names.
         htmltag - whole tag (eg. <name attr="value">)
         pos - value returned by p.getpos()'''
 
         attr_names = set(attr[0] for attr in attrs)
 
-        # tag name with left <
-        tag_name_match = re.match('^<\w*\s', html_tag)
+        # tag name with left < position within the html_tag:
+
+        tag_name_match = re.match('^<{0}\s'.format(tag_name), html_tag)
         if tag_name_match:
             start_idx = tag_name_match.end()
         else:
@@ -144,8 +146,8 @@ class HtmlText(ScrolledText):
 
     class ParseLine(HTMLParser):
         '''
-        This class instance when called like a function and given
-        html-formatted text as an argument returns opening/closing etc.
+        This class instance, when called like a function and given
+        html-formatted text as an argument, returns opening/closing etc.
         tags in the form of the list:
         [('starttag', init_offset), ('endtag', init_offset)]
         '''

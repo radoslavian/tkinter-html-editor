@@ -1,25 +1,46 @@
 "Customized tkinter widgets for the basic tkinter HTML Editor App"
 
 import os
+import sys
 import tkinter as tk
 import pathlib
 from tkinter import filedialog as fd
 from utils import *
+from PIL import ImageTk, Image
 
 class IconButton(tk.Button):
-    def __init__(self, parent, icon_path, text=None,
-                 command=None, *args, **kwargs):
+    def __init__(
+            self, parent, icon_path, text=None, command=None, *args, **kwargs):
+
         self.parent = parent
         try:
-            self.icon_obj = tk.PhotoImage(file=icon_path)
-        except tk.TclError as err:
-            #print("Error while creating button '{0}': {1}".format(text, err))
+            if not icon_path: raise tk.TclError
+
+            img = Image.open(icon_path)
+            img = self.resize_image(img, 28, 0.6)
+            self.icon_obj = ImageTk.PhotoImage(img)
+
+        except (FileNotFoundError, tk.TclError) as err:
+            # print("Error while creating button '{0}' - {1}".format(
+            #     text, err), file=sys.stderr)
             self.icon_obj = None
+
         else:
             self.icon_path = icon_path
+
         tk.Button.__init__(
-            self, parent, command=command, relief='solid', text=text,
+            self, parent, command=command, relief='raised', text=text,
             image=self.icon_obj, *args, **kwargs)
+
+    def resize_image(self, img, thld, ratio):
+        '''Returns resized image if either width or height
+        is beyond threshold.'''
+
+        height, width = img.size
+        if height > thld or width > thld:
+            img = img.resize(
+                (round(height*ratio), round(width*ratio)), Image.ANTIALIAS)
+        return img
 
 
 class SelectMenu(tk.OptionMenu):
@@ -109,10 +130,13 @@ class FileChooser(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    fc = FileChooser(root)
-    fc.disabled(True)
-    print(fc.disabled())
-    fc.grid(column=0, sticky='we')
-    tk.Grid.columnconfigure(root, 0, weight=1)
+    # fc = FileChooser(root)
+    # fc.disabled(True)
+    # print(fc.disabled())
+    # fc.grid(column=0, sticky='we')
+    # tk.Grid.columnconfigure(root, 0, weight=1)
+
+    from icons import icon
+    IconButton(root, icon('button.png')).grid()
     
     tk.mainloop()

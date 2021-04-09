@@ -1,8 +1,413 @@
+bold_type.png
+source: https://fontawesome.com, https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_bold.svg
+This file is licensed under the Creative Commons Attribution 4.0 International license.	
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+
+
+article.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+
+section.png
+source: https://www.svgrepo.com/svg/23718/document-interface-symbol-with-an-image-and-text-lines
+The content created by transformation or remix of Public Domain and Open source vectors and icons by SVG Repo or by our users automatically falls under this license. Also some users can choose to release their work under this default license.
+You don't need to give attribution to SVGRepo or any author for this licensed content.
+But we would very much appreciate if you add an "Icons by svgrepo.com" with a link in your webpage, about section of your app etc.
+You are free:
+to share – to copy, distribute with limitation and transmit the work
+to remix – to adapt the work
+Under the following terms:
+attribution – there is no author or author waived their right, no attribution required but appreciated
+share alike – If you remix, transform, or build upon the material, you can distribute your work under any license.
+redistribution - You can't redistribute material in a similar way to SVG Repo website as it is
+reselling - You can't resell the material for money as it is, but you can use as part of a commercial project
+Unless in the single pages of icons indexed on this website indicates differently, all icons and vectors distributed on this website is subject to this license.
+
+
+
+select_form.png
+https://www.svgrepo.com/svg/13161/select-object
+The content created by transformation or remix of Public Domain and Open source vectors and icons by SVG Repo or by our users automatically falls under this license. Also some users can choose to release their work under this default license.
+You don't need to give attribution to SVGRepo or any author for this licensed content.
+But we would very much appreciate if you add an "Icons by svgrepo.com" with a link in your webpage, about section of your app etc.
+You are free:
+to share – to copy, distribute with limitation and transmit the work
+to remix – to adapt the work
+Under the following terms:
+attribution – there is no author or author waived their right, no attribution required but appreciated
+share alike – If you remix, transform, or build upon the material, you can distribute your work under any license.
+redistribution - You can't redistribute material in a similar way to SVG Repo website as it is
+reselling - You can't resell the material for money as it is, but you can use as part of a commercial project
+Unless in the single pages of icons indexed on this website indicates differently, all icons and vectors distributed on this website is subject to this license.
+
+
+fieldset.svg, fieldset.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+text_cursor.png
+(used in textarea.png)
+source: https://www.svgrepo.com/svg/76278/cursor
+The content created by transformation or remix of Public Domain and Open source vectors and icons by SVG Repo or by our users automatically falls under this license. Also some users can choose to release their work under this default license.
+You don't need to give attribution to SVGRepo or any author for this licensed content.
+But we would very much appreciate if you add an "Icons by svgrepo.com" with a link in your webpage, about section of your app etc.
+You are free:
+to share – to copy, distribute with limitation and transmit the work
+to remix – to adapt the work
+Under the following terms:
+attribution – there is no author or author waived their right, no attribution required but appreciated
+share alike – If you remix, transform, or build upon the material, you can distribute your work under any license.
+redistribution - You can't redistribute material in a similar way to SVG Repo website as it is
+reselling - You can't resell the material for money as it is, but you can use as part of a commercial project
+Unless in the single pages of icons indexed on this website indicates differently, all icons and vectors distributed on this website is subject to this license.
+
+
+
+navigation.png
+source: https://www.svgrepo.com/svg/261425/navigation-boat
+The content created by transformation or remix of Public Domain and Open source vectors and icons by SVG Repo or by our users automatically falls under this license. Also some users can choose to release their work under this default license.
+You don't need to give attribution to SVGRepo or any author for this licensed content.
+But we would very much appreciate if you add an "Icons by svgrepo.com" with a link in your webpage, about section of your app etc.
+You are free:
+to share – to copy, distribute with limitation and transmit the work
+to remix – to adapt the work
+Under the following terms:
+attribution – there is no author or author waived their right, no attribution required but appreciated
+share alike – If you remix, transform, or build upon the material, you can distribute your work under any license.
+redistribution - You can't redistribute material in a similar way to SVG Repo website as it is
+reselling - You can't resell the material for money as it is, but you can use as part of a commercial project
+Unless in the single pages of icons indexed on this website indicates differently, all icons and vectors distributed on this website is subject to this license.
+
+
+address_book.png
+source: https://www.svgrepo.com/svg/154950/address-book
+The content created by transformation or remix of Public Domain and Open source vectors and icons by SVG Repo or by our users automatically falls under this license. Also some users can choose to release their work under this default license.
+You don't need to give attribution to SVGRepo or any author for this licensed content.
+But we would very much appreciate if you add an "Icons by svgrepo.com" with a link in your webpage, about section of your app etc.
+You are free:
+to share – to copy, distribute with limitation and transmit the work
+to remix – to adapt the work
+Under the following terms:
+attribution – there is no author or author waived their right, no attribution required but appreciated
+share alike – If you remix, transform, or build upon the material, you can distribute your work under any license.
+redistribution - You can't redistribute material in a similar way to SVG Repo website as it is
+reselling - You can't resell the material for money as it is, but you can use as part of a commercial project
+Unless in the single pages of icons indexed on this website indicates differently, all icons and vectors distributed on this website is subject to this license.
+
+
+insert.png
+<div>Icons made by <a href="https://www.flaticon.com/authors/kirill-kazachek" title="Kirill Kazachek">Kirill Kazachek</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+s_incorrect.png
+<div>Icons made by <a href="https://www.flaticon.com/authors/itim2101" title="itim2101">itim2101</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+erase.png
+https://www.svgrepo.com/svg/253394/erase
+The content created by transformation or remix of Public Domain and Open source vectors and icons by SVG Repo or by our users automatically falls under this license. Also some users can choose to release their work under this default license.
+You don't need to give attribution to SVGRepo or any author for this licensed content.
+But we would very much appreciate if you add an "Icons by svgrepo.com" with a link in your webpage, about section of your app etc.
+You are free:
+to share – to copy, distribute with limitation and transmit the work
+to remix – to adapt the work
+Under the following terms:
+attribution – there is no author or author waived their right, no attribution required but appreciated
+share alike – If you remix, transform, or build upon the material, you can distribute your work under any license.
+redistribution - You can't redistribute material in a similar way to SVG Repo website as it is
+reselling - You can't resell the material for money as it is, but you can use as part of a commercial project
+Unless in the single pages of icons indexed on this website indicates differently, all icons and vectors distributed on this website is subject to this license.
+
+
+
+strong.png, strong.svg, strong_icon.svg
+adapted from: https://www.svgrepo.com/svg/3395/underline
+SVG Repo License
+(As source code, visual or creative work) This is the default license for our website.
+The content created by transformation or remix of Public Domain and Open source vectors and icons by SVG Repo or by our users automatically falls under this license. Also some users can choose to release their work under this default license.
+You don't need to give attribution to SVGRepo or any author for this licensed content.
+But we would very much appreciate if you add an "Icons by svgrepo.com" with a link in your webpage, about section of your app etc.
+You are free:
+to share – to copy, distribute with limitation and transmit the work
+to remix – to adapt the work
+Under the following terms:
+attribution – there is no author or author waived their right, no attribution required but appreciated
+share alike – If you remix, transform, or build upon the material, you can distribute your work under any license.
+redistribution - You can't redistribute material in a similar way to SVG Repo website as it is
+reselling - You can't resell the material for money as it is, but you can use as part of a commercial project
+
+
+external_link.png
+source: https://commons.wikimedia.org/wiki/File:OOjs_UI_icon_external-link-ltr.svg	
+This file is licensed under the Expat License, sometimes known as the MIT License:
+Copyright © 2011–2017 OOjs UI Team and other contributors
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The Software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the Software or the use or other dealings in the Software.
+To uploader: MIT License has various versions, you may want to specify the license more precisely. Click {{MIT}} to see details.
+
+
+cite_art.png
+source: https://commons.wikimedia.org/wiki/File:OOjs_UI_icon_citeArticle-ltr.svg
+I, the copyright holder of this work, hereby publish it under the following license:
+Creative Commons
+attribution share alike
+This file is licensed under the Creative Commons Attribution-Share Alike 4.0 International license.	
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+share alike – If you remix, transform, or build upon the material, you must distribute your contributions under the same or compatible license as the original.
+
+
+label.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+opt_group.png
+<div>Icons made by <a href="" title="Wichai.wi">Wichai.wi</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+
+<div>Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+html.svg, html.png and derived:
+doctype.png, css.svg, css.png, body.png, abbr.png, dfn.png, aside.png, legend.png, option.svg
+<div>Icons made by <a href="https://www.flaticon.com/authors/smartline" title="Smartline">Smartline</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+html.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+quote.png
+Description	A solid-weight icon from Font Awesome, a free web icon font.
+Date	23 July 2018
+Source	https://fontawesome.com, https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_quote-right.svg
+Author	Font Awesome
+This file is licensed under the Creative Commons Attribution 4.0 International license.	
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+
+blockquote.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+definition.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+defined_term.png
+<div>Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+list_item.png
+<div>Icons made by <a href="https://www.flaticon.com/authors/icongeek26" title="Icongeek26">Icongeek26</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+definition_list.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+unordered_list.png
+<div>Icons made by <a href="https://www.flaticon.com/authors/catalin-fertu" title="Catalin Fertu">Catalin Fertu</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+ordered_list.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+table_cell.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+table_header.png
+<div>Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+insert_row.png
+<div>Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+insert_table.png
+<div>Icons made by <a href="https://www.flaticon.com/authors/nhor-phai" title="Nhor Phai">Nhor Phai</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+body.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+title.png
+<div>Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+script.png
+<div>Icons made by <a href="https://smashicons.com/" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+insert_hyperlink.png
+source: https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_link.svg, https://fontawesome.com
+This file is licensed under the Creative Commons Attribution 4.0 International license.	
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+
+strikethrough.png
+This file is licensed under the Creative Commons Attribution 4.0 International license.	
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+Description	A solid-weight icon from Font Awesome, a free web icon font.
+Date	23 July 2018
+Source	https://fontawesome.com
+Author	Font Awesome
+
+
+copy.png
+source: https://commons.wikimedia.org/wiki/File:Copy_-_The_Noun_Project.svg
+This file is made available under the Creative Commons CC0 1.0 Universal Public Domain Dedication.
+The person who associated a work with this deed has dedicated the work to the public domain by waiving all of their rights to the work worldwide under copyright law, including all related and neighboring rights, to the extent allowed by law. You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission.
+Description	
+English: Copy - The Noun Project.svg icon from the Noun Project
+Date	29 December 2017
+Source	Noun Project - https://thenounproject.com/icon/61603, https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_strikethrough.svg
+Author	Icons8
+
+
+cut.png
+This file is licensed under the Creative Commons Attribution 4.0 International license.	
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+Description	A solid-weight icon from Font Awesome, a free web icon font.
+Date	23 July 2018
+Source	https://fontawesome.com, https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_cut.svg
+Author	Font Awesome
+
+
+paste.png
+This file is licensed under the Creative Commons Attribution 4.0 International license.	
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+Description	A solid-weight icon from Font Awesome, a free web icon font.
+Date	23 July 2018
+Source	https://fontawesome.com, https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_paste.svg
+Author	Font Awesome
+
+div.png
+Attribution: <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+paragraph.png
+This file is licensed under the Creative Commons Attribution 4.0 International license.	
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+Description	A solid-weight icon from Font Awesome, a free web icon font.
+Date	23 July 2018
+Source	https://fontawesome.com, https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_paragraph.svg
+Author	Font Awesome
+
+
+insert_image.png
+Description	
+Antü Plasma Suite
+Elegant Alternative Suite for Plasma 5.
+Original parts, changes, mixes, re-mixes and re-designs by Fabián Alexis <fabian.alexis@openmailbox.org> <github.com/fabianalexisinostroza/Antu> <pinguinosyuncafe.wordpress.com>
+Some elementes of icon theme are part of Breeze icon Theme. <github.com/NitruxSA/breeze-icon-theme>
+The Plasma theme was created using the base of Midna-dark Theme. <github.com/KaOSx/midna> from Mcder3 (creator of Maia and Hellium too) and the Caledonia plasma theme by Malcer
+Antü Plasma-KDE Theme are licensed under the CREATIVE COMMONS BY-SA 3.0.
+All Antü suite components are licensed Creative Commons or compatible (look at the licensing of external components)
+Date	1 April 2016
+Source	https://github.com/fabianalexisinostroza/Antu
+Author	Fabián Alexis
+emph.png
+source: https://pixabay.com/vectors/highlighter-shade-highlight-carpet-27381/
+Licence: https://pixabay.com/service/license/
+Free for commercial use
+No attribution required
+
+font_italic.png
+Description	A solid-weight icon from Font Awesome, a free web icon font.
+Date	23 July 2018
+Source	https://fontawesome.com, https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_italic.svg
+Author	Font Awesome
+
+
+webform.png
+<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+newline.png
+This file is licensed under the Expat License, sometimes known as the MIT License:
+Copyright © 2011–2017 OOjs UI Team and other contributors
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The Software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the Software or the use or other dealings in the Software.
+To uploader: MIT License has various versions, you may want to specify the license more precisely. Click {{MIT}} to see details.
+
+
+no_image_available.png
+source: https://upload.wikimedia.org/wikipedia/commons/f/f8/No-image-available-4X3.png
+I, the copyright holder of this work, hereby publish it under the following license:
+w:en:Creative Commons
+attribution share alike
+This file is licensed under the Creative Commons Attribution-Share Alike 4.0 International license.	
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+share alike – If you remix, transform, or build upon the material, you must distribute your contributions under the same or compatible license as the original.
+
+
+comment.png
+source: https://commons.wikimedia.org/wiki/File:Antu_insert-image.svg
+This file is licensed under the Creative Commons Attribution 4.0 International license.	
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+You are free:
+to share – to copy, distribute and transmit the work
+to remix – to adapt the work
+Under the following conditions:
+attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+
 folder_open.png
 https://upload.wikimedia.org/wikipedia/commons/6/60/Simpleicons_Interface_folder-open-shape.svg
 This file is licensed under the Creative Commons Attribution 3.0 Unported license.
 Source	http://www.flaticon.com/packs/simpleicon-interface
 Author	SimpleIcon http://www.simpleicon.com/
+
 
 save_file.svg
 https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_save.svg
@@ -19,6 +424,7 @@ undo_icon.png
 
 browser_icon.png
 <a href="https://icon-library.net/icon/browser-icon-png-29.html">Browser Icon Png #396705</a>
+Attribution: <a href="https://icon-library.net/icon/browser-icon-png-29.html">Browser Icon Png #396705</a>
 
 globe_icon.png
 Attribution: Sarang, Public domain, via Wikimedia Commons
@@ -30,7 +436,6 @@ Page URL: https://commons.wikimedia.org/wiki/File:Search_Noun_project_15028.svg
 File URL: https://upload.wikimedia.org/wikipedia/commons/4/4c/Search_Noun_project_15028.svg
 Attribution: Fission Strategy, CC0, via Wikimedia Commons
 
-napis-160pt, po skadrowaniu do rozmiarów obrazu, płótno zwiększyć proporcjonalnie o 40px i wyśrodkować obraz
 
 exclamation.png
 Adapted and modified from:
@@ -39,14 +444,31 @@ File URL: https://commons.wikimedia.org/wiki/File:Exclamation_yellow_flat_icon.s
 Attribution: Tomybrz, CC0, via Wikimedia Commons
 This file is made available under the Creative Commons CC0 1.0 Universal Public Domain Dedication. The person who associated a work with this deed has dedicated the work to the public domain by waiving all of their rights to the work worldwide under copyright law, including all related and neighboring rights, to the extent allowed by law. You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission.
 
+
 superscript.png
 his file is licensed under the Creative Commons Attribution 4.0 International license.	
-Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com
+Attribution: Font Awesome Free 5.2.0 by @fontawesome - https://fontawesome.com, https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_superscript.svg
 You are free:
 to share – to copy, distribute and transmit the work
 to remix – to adapt the work
 Under the following conditions:
 attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+
+underline.png
+Description	
+English: An icon from the OOjs UI MediaWiki lib.
+Source	lib/oojs-ui/themes/mediawiki/images/icons/, https://commons.wikimedia.org/wiki/File:OOjs_UI_icon_underline-u.svg
+Author	https://phabricator.wikimedia.org/diffusion/GOJU/browse/master/AUTHORS.txt
+Permission
+(Reusing this file)	https://phabricator.wikimedia.org/diffusion/GOJU/browse/master/LICENSE-MIT
+This file is licensed under the Expat License, sometimes known as the MIT License:
+Copyright © 2011–2017 OOjs UI Team and other contributors
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The Software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the Software or the use or other dealings in the Software.
+To uploader: MIT License has various versions, you may want to specify the license more precisely. Click {{MIT}} to see details.
+
 
 subscript.png
 https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_subscript.svg

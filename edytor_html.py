@@ -4,12 +4,14 @@ import tkinter as tk
 import urllib
 from widgets import *
 from utils import *
+from icons import icon
 from dialogs import *
 from urllib.request import urlopen
 from tkinter import ttk
 from HtmlText import *
 from tkinter.scrolledtext import ScrolledText
 from PIL import Image, ImageTk
+
 
 file_types = (
     ('Html files', ('.htm', '.html')),
@@ -187,10 +189,14 @@ class EditHtml(tk.Frame):
 
     __getattr__ = getattr_wrapper()
 
+    def focus_set(self):
+        self.edit_field.focus_set()
+
     def get_selection_indices(self):
         try:
             start_idx = self.edit_field.index('sel.first')
             end_idx = self.edit_field.index('sel.last')
+
         except tk.TclError:
             start_idx = end_idx = self.edit_field.index('insert')
 
@@ -333,7 +339,7 @@ class ToolBar(tk.Frame):
             closing_tag=closing_tag, **kwargs)
 
     def tag(self, tag_name, **kwargs):
-        "returns callback for opening/closing tags with two spaces between"
+        "returns callback for opening/closing tags with two newlines between"
 
         return lambda: self.tag_f(tag_name, cnt='\n', **kwargs)
 
@@ -359,15 +365,15 @@ class ToolBar(tk.Frame):
             opening_tag=tag, **kwargs)
 
     def dialog_generator(
-            self, inputs, booleans, tag, title=None,
-            start_txt='\n', end_txt='\n', **kwargs):
+            self, inputs, booleans, tag, *args, title=None,
+            start_txt='\n', end_txt='\n', icon=None, **kwargs):
         '''Returns tuple to be used as an input for add_tool_buttons.'''
 
         # The dialog is called in the following way:
         # CollectValues(
         # self, parent, booleans=[], inputs=[], title = None)
 
-        return (None, tag, lambda:
+        return (icon, tag, lambda:
                 self.collect_values_dialog(
                     inputs, booleans, tag, title=title,
                     start_txt='\n', end_txt='\n', **kwargs))
@@ -377,12 +383,6 @@ class ToolBar(tk.Frame):
         self.widgets[-1].grid(
             row=0, column=self.cur_widgets_col, sticky='nwse', padx=padx)
         self.cur_widgets_col += 1
-
-    def print_widgets_info(self):
-        for wdg in self.widgets:
-            #print('Wdg name:', wdg.__name__)
-            print('Wdg height:', wdg.winfo_height())
-            print('-'*30)
 
     def add_tool_buttons(self, *tools):
         for tool in tools:
@@ -439,21 +439,21 @@ class PageStructureBar(ToolBar):
                     ('All files', '*')]), ('href',))]
 
         self.add_tool_buttons(
-            (None, '!doc', self.parent.insert_doctype),
-            (None, 'html', self.tag('html')),
-            (None, 'head', self.tag('head')),
+            ('icons/doctype.png', '!doc', self.parent.insert_doctype),
+            ('icons/html.png', 'html', self.tag('html')),
+            ('icons/head.png', 'head', self.tag('head')),
 
-            (None, 'link', lambda: self.collect_values_dialog(
+            ('icons/external_link.png', 'link', lambda: self.collect_values_dialog(
                 inputs=link_inputs, booleans=[], tag='link')),
 
-            (None, 'style', self.tag('style', opts='type="text/css"')),
+            ('icons/css.png', 'style', self.tag('style', opts='type="text/css"')),
 
-            (None, 'script', lambda: self.collect_values_dialog(
+            ('icons/script.png', 'script', lambda: self.collect_values_dialog(
                 inputs=script_inputs, booleans=script_bools, tag='script',
                 closing_tag=True)),
 
-            (None, 'title', self.ctag('title')),
-            (None, 'body', self.tag('body')))
+            ('icons/title.png', 'title', self.ctag('title')),
+            ('icons/body.png', 'body', self.tag('body')))
 
         self.separator()
 
@@ -532,11 +532,11 @@ class StandardTools(ToolBar):
         self.add_tool_buttons(
             ('icons/paragraph.png', 'P', self.ctag('p')),
             ('icons/newline.png', 'newline', self.stag('br /')),
-            ('icons/div_icon.png', 'div', self.ctag('div', opts='class=""')),
+            ('icons/div.png', 'div', self.ctag('div', opts='class=""')),
             ('icons/span.png', 'span', self.ctag('span', opts='class=""')),
             ('icons/hr.png', 'hr', self.stag('hr /')),
 
-            ('icons/insert_img.png', 'img',
+            ('icons/insert_image.png', 'img',
              lambda: self.parent.dialog_insert_tag(
                  opening_tag='img', title ='Insert image',
                  dialog_obj=InsertImgDialog)),
@@ -560,22 +560,23 @@ class TableBar(ToolBar):
         "Table creator (dialog), table, tr, th, td."
 
         self.add_tool_buttons(
-            (None, 'table_creator', self.parent.table_creator))
+            ('icons/insert_table.png', 'table_creator',
+             self.parent.table_creator))
 
         self.separator()
 
         self.add_tool_buttons(
-            (None, 'table', self.tag('table')),
-            (None, 'row',self.ctag('tr')),
-            (None, 'th', self.ctag('th')),
-            (None, 'td', self.ctag('td')))
+            ('icons/table.png', 'table', self.tag('table')),
+            ('icons/insert_row.png', 'row',self.ctag('tr')),
+            ('icons/table_header.png', 'th', self.ctag('th')),
+            ('icons/table_cell.png', 'td', self.ctag('td')))
 
 
 class FontTools(ToolBar):
     def tools(self):
         self.add_tool_buttons(
             ('icons/bold_type.png',     'B',self.ctag('b')),
-            ('icons/italic_type.png',   'I',self.ctag('i')),
+            ('icons/font_italic.png',   'I',self.ctag('i')),
             ('icons/strikethrough.png', 'S',self.ctag('strike')),
             ('icons/underline.png',     'U',self.ctag('u')))
 
@@ -584,6 +585,8 @@ class FontTools(ToolBar):
         self.add_tool_buttons(
             ('icons/superscript.png', 'sup',self.ctag('sup')),
             ('icons/subscript.png', 'sub',self.ctag('sub')))
+
+        self.separator()
 
         # Headers (h1-h6) drop-down:
         #
@@ -600,36 +603,36 @@ class FontTools(ToolBar):
 class ListTab(ToolBar):
     def tools(self):
         self.add_tool_buttons(
-            (None, 'ul', self.tag('ul')),
-            (None, 'ol', self.tag('ol')),
-            (None, 'li', self.ctag('li')))
+            ('icons/unordered_list.png', 'ul', self.tag('ul')),
+            ('icons/ordered_list.png', 'ol', self.tag('ol')),
+            ('icons/list_item.png', 'li', self.ctag('li')))
 
         self.separator()
 
         self.add_tool_buttons(
-            (None, 'dl', self.tag('dl')),
-            (None, 'dd', self.ctag('dd')),
-            (None, 'dt', self.ctag('dt')))
+            ('icons/definition_list.png', 'dl', self.tag('dl')),
+            ('icons/defined_term.png', 'dt', self.ctag('dt')),
+            ('icons/definition.png', 'dd', self.ctag('dd')))
 
 class SemanticTags(ToolBar):
     def tools(self):
         self.add_tool_buttons(
-            (None, 'strong', self.ctag('strong')),
-            ('icons/exclamation.png', 'em',self.ctag('em')),
+            ('icons/strong.png', 'strong', self.ctag('strong')),
+            ('icons/emph.png', 'em',self.ctag('em')),
 
-            (None, 'blockquote', lambda:
+            ('icons/blockquote.png', 'blockquote', lambda:
              self.parent.insert_tag(
                  *self.parent.get_selection_indices(), 'blockquote',
                  closing_tag=True, start_txt='\n<p>', end_txt='</p>\n')),
 
-            (None, 'q', self.ctag('q', opts='cite=""')),
-            (None, 'cite', self.ctag('cite')),
-            (None, 'abbr', self.ctag('abbr', opts='title=""')),
-            (None, 'dfn', self.ctag('dfn')),
-            (None, 'addr', self.ctag('address')),
-            (None, 'del', self.ctag('del')),
-            (None, 'ins', self.ctag('ins')),
-            (None, 's', self.ctag('s')))
+            ('icons/quote.png', 'q', self.ctag('q', opts='cite=""')),
+            ('icons/cite_art.png', 'cite', self.ctag('cite')),
+            ('icons/abbr.png', 'abbr', self.ctag('abbr', opts='title=""')),
+            ('icons/dfn.png', 'dfn', self.ctag('dfn')),
+            ('icons/address_book.png', 'addr', self.ctag('address')),
+            ('icons/erase.png', 'del', self.ctag('del')),
+            ('icons/insert.png', 'ins', self.ctag('ins')),
+            ('icons/s_incorrect.png', 's', self.ctag('s')))
 
 
 class FormTab(ToolBar):
@@ -659,7 +662,7 @@ class FormTab(ToolBar):
 
 
         self.add_tool_buttons(
-            (None, 'form',
+            ('icons/webform.png', 'form',
              lambda: self.parent.dialog_insert_tag(
                  dialog_obj=lambda parent, title:
                  CollectValues(parent, title=title, inputs=[
@@ -672,10 +675,11 @@ class FormTab(ToolBar):
                  start_txt='\n', end_txt='\n')),
 
             self.dialog_generator(
-                sel_inputs, sel_booleans, 'select', title='Insert select tag:',
+                sel_inputs, sel_booleans, 'select',
+                icon='icons/select_form.png', title='Insert select tag:',
                 closing_tag=True),
 
-            (None, 'textarea',
+            ('icons/textarea.png', 'textarea',
              lambda: self.parent.dialog_insert_tag(
                  dialog_obj=insert_textarea, opening_tag='textarea',
                  closing_tag=True, title='Insert textarea',
@@ -683,13 +687,19 @@ class FormTab(ToolBar):
 
             self.dialog_generator(
                 [(tk.Entry, ('form', 'name'))], ['disabled'], 'fieldset',
-                title='Insert fieldset:', closing_tag=True),
+                icon='icons/fieldset.png', title='Insert fieldset:',
+                closing_tag=True),
 
-            (None, 'legend', self.ctag('legend')),
-            (None, 'button', self.ctag('button', opts='type="button"')),
-            (None, 'option', self.ctag('option', opts='value=""')),
-            (None, 'opt_gr', self.tag('optgroup', opts='label=""')),
-            (None, 'label', self.ctag('label', opts='for=""')))
+            ('icons/legend.png', 'legend', self.ctag('legend')),
+            #('icons/button.png', 'button',
+            #self.ctag('button', opts='type="submit"')),
+            (icon('button.png'), 'button',
+             self.ctag('button', opts='type="submit"')),
+            ('icons/option.png', 'option',
+             self.ctag('option', opts='value=""')),
+            ('icons/opt_group.png', 'opt_gr',
+             self.tag('optgroup', opts='label=""')),
+            ('icons/label.png', 'label', self.ctag('label', opts='for=""')))
 
         self.add_html_inputs()
 
@@ -781,10 +791,10 @@ class FormTab(ToolBar):
 class HTML5Tags(ToolBar):
     def tools(self):
         self.add_tool_buttons(
-            (None, 'aside', self.ctag('aside')),
-            (None, 'nav', self.ctag('nav')),
-            (None, 'article', self.ctag('article')),
-            (None, 'section', self.ctag('section')))
+            ('icons/aside.png', 'aside', self.ctag('aside')),
+            ('icons/navigation.png', 'nav', self.ctag('nav')),
+            ('icons/article.png', 'article', self.ctag('article')),
+            ('icons/section.png', 'section', self.ctag('section')))
 
 
 class MainTabs(ttk.Notebook):
@@ -816,11 +826,11 @@ class MenuBar(tk.Menu):
             setattr(self, menu, tk.Menu(self))
 
         menus = (
-            (self.file_menu,                        # parent-menu
-             ('Open', 'Save', 'Save as', 'Exit'),   # label
-             ('Ctrl+O', 'Ctrl+S', None, 'Ctrl+Q'),  # accelerator
-             (app.open_document, app.save_document, # command
-              app.save_document_as, app.quit)),
+            (self.file_menu,                                    # parent-menu
+             ('New window', 'Open', 'Save', 'Save as', 'Exit'), # label
+             ('Ctrl+N', 'Ctrl+O', 'Ctrl+S', None, 'Ctrl+Q'),    # accelerator
+             (app._new_instance, app.open_document,             # command
+              app.save_document, app.save_document_as, app.quit)),
 
             (self.edit_menu,
              ('Undo', 'Redo', 'Select all', 'Copy', 'Cut', 'Paste'),
