@@ -17,9 +17,11 @@ def list_files(directory : str, f_ext : str) -> [] or None:
 def getattr_wrapper():
     '''Redirects calls for non-existent attributes to
     another object-referenced by self.wrapped.'''
+
     def wrapper(self, attr):
         return lambda *pargs, **kwargs: getattr(
             self.wrapped, attr)(*pargs, **kwargs)
+
     return wrapper
 
 

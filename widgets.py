@@ -21,12 +21,9 @@ class IconButton(tk.Button):
             self.icon_obj = ImageTk.PhotoImage(img)
 
         except (FileNotFoundError, tk.TclError) as err:
-            # print("Error while creating button '{0}' - {1}".format(
-            #     text, err), file=sys.stderr)
+            print("Error while creating button '{0}' - {1}".format(
+                text, err), file=sys.stderr)
             self.icon_obj = None
-
-        else:
-            self.icon_path = icon_path
 
         tk.Button.__init__(
             self, parent, command=command, relief='raised', text=text,

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from tkinter import messagebox
-from edytor_html import *
+from html_editor import *
 import webbrowser
 
 class MainApp(tk.Toplevel):

@@ -22,6 +22,7 @@ def get_ev_cb(obj, event : str):
     '''Get event callback
     Returns callback for tkinter events such as cut, copy, paste.
     obj - tkinter class instance with focus_get() method'''
+
     return lambda: obj.focus_get().event_generate(event)
 
 class UnsavedDocument(Exception): pass

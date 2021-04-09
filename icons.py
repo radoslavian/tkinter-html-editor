@@ -16,7 +16,7 @@ def load_icons(directory, file_list):
 #
 # icons = {
 #     'icon.png': {
-#         'data': b'data',      # compressed binary data strings
+#         'data': b'data',      # compressed binary data string
 #         'description': 'description', # to be added later
 #         'filename_rel_path': 'icons/icon.png'
 #     },
