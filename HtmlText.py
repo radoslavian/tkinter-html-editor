@@ -133,6 +133,10 @@ class HtmlText(ScrolledText):
         self.indent = True
         self.indent_depth = 2
         self.indent_mark = ' ' # indenting with spaces
+
+        # starttags that shouldn't be followed by
+        # an additional line indentation:
+        self.non_ind_stags = 'meta', 'br', 'hr', 'img'
         
         self.last_fed_indices = ('1.0', 'end')
         self.scr_update_time = 400
@@ -252,17 +256,24 @@ class HtmlText(ScrolledText):
                 if cur_line_indent:
                     if cur_line_indent == prev_line_indent + self.indent_depth:
                         return
+
                     else:
-                        # del cur line indent
+                    # del cur line indent
                         print('deleting:', cur_line_idx)
                         self.delete(
                             cur_line_idx, '{0}+{1}c'.format(
                                 cur_line_idx, len(cur_l_white_chars.group(0))))
 
-                print('indenting:{}'.format(self.indent_depth+prev_line_indent))
+                if prev_tag[-1][1] in self.non_ind_stags:
+                    new_indent = prev_line_indent
+                else:
+                    new_indent = self.indent_depth + prev_line_indent
+
+                print('indenting: {}'.format(
+                    self.indent_depth+prev_line_indent)) # debug
                 self.insert(
                     'insert linestart',
-                    self.indent_mark*(self.indent_depth+prev_line_indent))
+                    self.indent_mark*(new_indent))
 
             elif prev_tag[-1][0] == 'endtag':
 
