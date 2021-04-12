@@ -223,6 +223,8 @@ class HtmlText(ScrolledText):
         # endtag in current (insert) line:
         # update diagram with that
 
+        new_indent = 0
+
         if (cur_tag and cur_tag[-1][0] == 'endtag' and cur_line_indent
             and not check_if_opened_on_the_same_line(cur_tag)):
 
@@ -240,64 +242,61 @@ class HtmlText(ScrolledText):
 
             return
 
-        prev_line_idx = self.index('insert linestart-1c')
-        prev_line = self.get(
-            prev_line_idx+' linestart', prev_line_idx+' lineend')
-        prev_tag = self.line_parser(prev_line)
+        if index_to_numbers(cur_line_idx)[0] > 1:
+            prev_line_idx = self.index('insert linestart-1c')
+            prev_line = self.get(
+                prev_line_idx+' linestart', prev_line_idx+' lineend')
+            prev_tag = self.line_parser(prev_line)
 
-        # prev. line white characters:
-        white_chars = re.match('^\s+', prev_line)
+            # prev. line white characters:
+            white_chars = re.match('^\s+', prev_line)
+
+        else:
+            prev_tag = white_chars = None
+            prev_line = ''
 
         if white_chars:
             prev_line_indent = white_chars.end() - white_chars.start()
 
         if prev_tag and not check_if_opened_on_the_same_line(prev_tag):
+
+            if prev_tag[-1][1] in self.non_ind_stags:
+                new_indent = prev_line_indent
+            else:
+                new_indent = self.indent_depth + prev_line_indent
+
             if prev_tag[-1][0] == 'starttag':
                 if cur_line_indent:
-                    if cur_line_indent == prev_line_indent + self.indent_depth:
+                    if cur_line_indent == new_indent:
                         return
 
                     else:
-                    # del cur line indent
+                        # del cur line indent
                         print('deleting:', cur_line_idx)
                         self.delete(
                             cur_line_idx, '{0}+{1}c'.format(
                                 cur_line_idx, len(cur_l_white_chars.group(0))))
 
-                if prev_tag[-1][1] in self.non_ind_stags:
-                    new_indent = prev_line_indent
-                else:
-                    new_indent = self.indent_depth + prev_line_indent
-
+                print(prev_tag)
                 print('indenting: {}'.format(
                     self.indent_depth+prev_line_indent)) # debug
-                self.insert(
-                    'insert linestart',
-                    self.indent_mark*(new_indent))
 
             elif prev_tag[-1][0] == 'endtag':
 
                 if cur_line_indent:
                     if prev_line_indent == cur_line_indent: return
 
-                    cur_indent = prev_line_indent
+                    new_indent = prev_line_indent
 
                     print('prevline, indent:', prev_line_indent, self.indent_depth)
-                    print('cur_line_indent, cur_indent:', cur_line_indent, cur_indent)
+                    print('cur_line_indent, cur_indent:', cur_line_indent, new_indent)
 
-                    print('cur_indent:', cur_indent)
                     self.delete(
                         'insert linestart', 'insert linestart+{0}c'.format(
                             cur_line_indent))
-                    self.insert(
-                        'insert linestart', self.indent_mark*cur_indent)
-
                 else:
                     if (prev_line_indent - self.indent_depth) > 0:
-                        self.insert(
-                            'insert linestart',
-                            self.indent_mark*(
-                                prev_line_indent-self.indent_depth))
+                        new_indent = prev_line_indent-self.indent_depth
 
         # line with white characters only
         elif re.match('^\s+$', prev_line):
@@ -311,8 +310,11 @@ class HtmlText(ScrolledText):
                 return
 
             if prev_line_indent:
-                self.insert(
-                    'insert linestart', self.indent_mark*prev_line_indent)
+                new_indent = self.indent_mark*prev_line_indent
+
+        if new_indent:
+            self.insert(
+                'insert linestart', self.indent_mark*new_indent)
 
     __getattr__ = getattr_wrapper()
 
