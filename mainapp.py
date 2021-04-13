@@ -13,6 +13,7 @@ class MainApp(tk.Toplevel):
                     title='Save as a new file:',
                     initialdir='./test',
                     filetypes=file_types)
+
                 if file_path:
                     self.root.opened_files.remove(self.html_file_path)
                     fn(self, file_path)
@@ -20,7 +21,6 @@ class MainApp(tk.Toplevel):
                     if self.html_file_path != file_path:
                         self.update_work_state(file_path)
 
-                    self.main_tabs.edit_html.edit_modified(False)
                 else:
                     raise DocumentSaveCancelled('The document is unsaved - '
                             'cancelled while selecting a file.')
@@ -139,6 +139,8 @@ class MainApp(tk.Toplevel):
             messagebox.showerror(
                 parent=self, title='I/O Error',
                 message='Error while attempting to save file: {}'.format(e))
+        else:
+            self.main_tabs.edit_html.edit_modified(False)
 
     save_document_as = InnerDecorators.save_as(save_doc)
     save_document = InnerDecorators.save(save_doc)
