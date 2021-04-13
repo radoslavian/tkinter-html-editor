@@ -136,7 +136,7 @@ class HtmlText(ScrolledText):
 
         # starttags that shouldn't be followed by
         # an additional line indentation:
-        self.non_ind_stags = 'meta', 'br', 'hr', 'img'
+        self.non_ind_stags = 'meta', 'br', 'hr', 'img', 'link'
         
         self.last_fed_indices = ('1.0', 'end')
         self.scr_update_time = 400
