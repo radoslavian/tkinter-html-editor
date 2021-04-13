@@ -15,8 +15,8 @@ def list_files(directory : str, f_ext : str) -> [] or None:
 
 
 def getattr_wrapper():
-    '''Redirects calls for non-existent attributes to
-    another object-referenced by self.wrapped.'''
+    '''Redirects calls for attributes not present in an instance to
+    an embedded object-referenced by self.wrapped.'''
 
     def wrapper(self, attr):
         return lambda *pargs, **kwargs: getattr(

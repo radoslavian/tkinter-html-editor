@@ -88,7 +88,7 @@ class MainApp(tk.Toplevel):
             ('<Control-r>', self.replace_text))
 
         for ev, fn in events:
-            self.bind_all(ev, fn)
+            self.bind(ev, fn)
 
     def find_text(self, event=None):
         SearchTextDialog(self, self.main_tabs.edit_html)

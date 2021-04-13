@@ -75,9 +75,10 @@ class HtmlPreview(tk.Frame):
                   e, file=sys.stderr)
             photo = None
         else:
-            data = fp.read()
-            image = Image.open(io.BytesIO(data))
-            photo = ImageTk.PhotoImage(image)
+            data   = fp.read()
+            image  = Image.open(io.BytesIO(data))
+            photo  = ImageTk.PhotoImage(image)
+
             self.images[url] = photo
             fp.close()
 
@@ -157,28 +158,28 @@ class EditHtml(tk.Frame):
         s = ttk.Style()
         s.configure('bottomtab.TNotebook', tabposition='se')
 
-        self.tool_tabs = ttk.Notebook(self)
-        self.edit_field = HtmlText(self)
-        self.wrapped = self.edit_field
+        self.tool_tabs   = ttk.Notebook(self)
+        self.edit_field  = HtmlText(self)
+        self.wrapped     = self.edit_field
 
-        main_tools = StandardTools(self)
-        page_struct_bar = PageStructureBar(self)
-        font_bar = FontTools(self)
-        table_bar = TableBar(self)
-        list_bar = ListTab(self)
-        semantic_tags = SemanticTags(self)
-        html5_tags = HTML5Tags(self)
-        form_bar = FormTab(self)
+        main_tools       = StandardTools(self)
+        page_struct_bar  = PageStructureBar(self)
+        font_bar         = FontTools(self)
+        table_bar        = TableBar(self)
+        list_bar         = ListTab(self)
+        semantic_tags    = SemanticTags(self)
+        html5_tags       = HTML5Tags(self)
+        form_bar         = FormTab(self)
 
         for bar, txt in (
-                (main_tools, 'Main tools'),
-                (page_struct_bar, 'Page structure'),
-                (font_bar, 'Text formatting'),
-                (table_bar, 'Table'),
-                (list_bar, 'Lists'),
-                (semantic_tags, 'Semantic tags'),
-                (html5_tags, 'HTML5 tags'),
-                (form_bar, 'Form')):
+                (main_tools,       'Main tools'),
+                (page_struct_bar,  'Page structure'),
+                (font_bar,         'Text formatting'),
+                (table_bar,        'Table'),
+                (list_bar,         'Lists'),
+                (semantic_tags,    'Semantic tags'),
+                (html5_tags,       'HTML5 tags'),
+                (form_bar,         'Form')):
             self.tool_tabs.add(bar, text=txt)
 
         self.tool_tabs.grid(row=0, column=0, sticky='w')
@@ -187,6 +188,10 @@ class EditHtml(tk.Frame):
         tk.Grid.rowconfigure(self, 1, weight=1)
 
         self.bind('Control-Key-a', )
+
+    # def __getattr__(self, attr):
+    #     return lambda *pargs, **kwargs: getattr(
+    #         self.wrapped, attr)(*pargs, **kwargs)   
 
     __getattr__ = getattr_wrapper()
 
@@ -440,11 +445,12 @@ class PageStructureBar(ToolBar):
                     ('All files', '*')]), ('href',))]
 
         self.add_tool_buttons(
-            (icon('doctype.png'), '!doc', self.parent.insert_doctype),
-            (icon('html.png'), 'html', self.tag('html')),
-            (icon('head.png'), 'head', self.tag('head')),
+            (icon('doctype.png' ), '!doc', self.parent.insert_doctype),
+            (icon('html.png'    ), 'html', self.tag('html')),
+            (icon('head.png'    ), 'head', self.tag('head')),
 
-            (icon('external_link.png'), 'link', lambda: self.collect_values_dialog(
+            (icon('external_link.png'), 'link',
+             lambda: self.collect_values_dialog(
                 inputs=link_inputs, booleans=[], tag='link')),
 
             (icon('css.png'), 'style', self.tag('style', opts='type="text/css"')),

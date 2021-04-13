@@ -310,7 +310,7 @@ class HtmlText(ScrolledText):
                 return
 
             if prev_line_indent:
-                new_indent = self.indent_mark*prev_line_indent
+                new_indent = prev_line_indent
 
         if new_indent:
             self.insert(

@@ -17,7 +17,7 @@ class IconButton(tk.Button):
             if not icon_path: raise tk.TclError
 
             img = Image.open(icon_path)
-            img = self.resize_image(img, 28, 0.6)
+            img = self.resize_image(img, 28, 0.55)
             self.icon_obj = ImageTk.PhotoImage(img)
 
         except (FileNotFoundError, tk.TclError) as err:
