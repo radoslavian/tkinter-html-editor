@@ -3,6 +3,7 @@ from tkinter import messagebox
 from html_editor import *
 import webbrowser
 
+
 class MainApp(tk.Toplevel):
     class InnerDecorators:
         @classmethod
@@ -103,7 +104,7 @@ class MainApp(tk.Toplevel):
             elif filename in self.root.opened_files:
                 messagebox.showerror(
                     parent=self, title='File already opened.',
-                    message='The file is already opened.')
+                    message='The file is already opened in another window.')
                 return
 
         try:
@@ -118,10 +119,7 @@ class MainApp(tk.Toplevel):
                 message='Error while attempting to load file: {}'.format(e))
 
         else:
-            self.html_file_path = filename
-            os.chdir(os.path.dirname(filename))
-            self.root.opened_files.append(filename)
-            self.set_mw_title()
+            self.update_work_state(filename)
 
     def _save(self, file_path, txt_fld : tk.Text):
         with open(file_path, 'w') as file:
@@ -138,14 +136,21 @@ class MainApp(tk.Toplevel):
 
         else:
             if self.html_file_path != file_path:
-                self.html_file_path = file_path
-                self.root.opened_files.append(file_path)
-                self.set_mw_title()
+                self.update_work_state(file_path)
 
             self.main_tabs.edit_html.edit_modified(False)
 
     save_document_as = InnerDecorators.save_as(save_doc)
     save_document = InnerDecorators.save(save_doc)
+
+    def update_work_state(self, file_path):
+        '''Sets current: window title, working directory and appends opened/saved
+        file(name) to the list of the currently opened files (root.opened_files).'''
+
+        self.html_file_path = file_path
+        os.chdir(os.path.dirname(file_path))
+        self.root.opened_files.append(file_path)
+        self.set_mw_title()
 
     def set_mw_title(self):
         if self.html_file_path:
@@ -160,6 +165,7 @@ class MainApp(tk.Toplevel):
             message="The document '{}' was modified but wasn't saved. ".format(
                 base_file_name(self.html_file_path)) +
             "Do you want to save it now?")
+
         if result:
             self.save_document()
         elif result == False:
@@ -171,6 +177,7 @@ class MainApp(tk.Toplevel):
         if self.main_tabs.edit_html.edit_modified():
             try:
                 self.save_document()
+
             except DocumentSaveCancelled:
                 messagebox.showinfo(
                     parent=self, title='Unsaved file',
@@ -183,6 +190,7 @@ class MainApp(tk.Toplevel):
 
         try:
             webbrowser.open(pathlib.Path(self.html_file_path).as_uri())
+
         except webbrowser.Error as err:
             messagebox.showerror(
                 parent=self, title='Browser control error',
@@ -233,7 +241,7 @@ class RootWin(tk.Tk):
         self.withdraw()
 
     def __del__(self):
-        '''Tkinter application runs as long as Tk root window exists,
+        '''Tkinter application runs only as long as the Tk root window exists,
         so this is only for the reason of cohesiveness.'''
 
         RootWin.instance_count -= 1
@@ -241,6 +249,7 @@ class RootWin(tk.Tk):
     def quit(self):
         if len(self.winfo_children()) < 1:
             super().quit()
+
 
 if __name__ == '__main__':
     root = RootWin()
