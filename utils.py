@@ -14,16 +14,6 @@ def list_files(directory : str, f_ext : str) -> [] or None:
         filenames))
 
 
-# def getattr_wrapper():
-#     '''Redirects calls for attributes not present in an instance to
-#     an embedded object-referenced by self.wrapped.'''
-
-#     def wrapper(self, attr):
-#         return lambda *pargs, **kwargs: getattr(
-#             self.wrapped, attr)(*pargs, **kwargs)
-
-#     return wrapper
-
 def getattr_redirect(self, attr_name, *pargs, **kwargs):
     '''Redirects calls for attributes not present in an instance to
     an embedded object-referenced by self.wrapped.
@@ -41,9 +31,6 @@ def getattr_redirect(self, attr_name, *pargs, **kwargs):
                 "{} is not a callable.".format(attr)) from ValueError
 
     return wrapper
-
-    # return lambda *pargs, **kwargs: getattr(
-    #     self.wrapped, attr)(*pargs, **kwargs)
 
 
 def base_file_name(path : 'str, bytes, os.PathLike'):
