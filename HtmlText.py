@@ -316,7 +316,7 @@ class HtmlText(ScrolledText):
             self.insert(
                 'insert linestart', self.indent_mark*new_indent)
 
-    __getattr__ = getattr_wrapper()
+    __getattr__ = getattr_redirect
 
     insert = scr_update(ScrolledText.insert)
     edit_undo = whole_scr_upd(ScrolledText.edit_undo)

@@ -189,11 +189,7 @@ class EditHtml(tk.Frame):
 
         self.bind('Control-Key-a', )
 
-    # def __getattr__(self, attr):
-    #     return lambda *pargs, **kwargs: getattr(
-    #         self.wrapped, attr)(*pargs, **kwargs)   
-
-    __getattr__ = getattr_wrapper()
+    __getattr__ = getattr_redirect
 
     def focus_set(self):
         self.edit_field.focus_set()

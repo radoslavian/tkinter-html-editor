@@ -14,15 +14,22 @@ def list_files(directory : str, f_ext : str) -> [] or None:
         filenames))
 
 
-def getattr_wrapper():
+# def getattr_wrapper():
+#     '''Redirects calls for attributes not present in an instance to
+#     an embedded object-referenced by self.wrapped.'''
+
+#     def wrapper(self, attr):
+#         return lambda *pargs, **kwargs: getattr(
+#             self.wrapped, attr)(*pargs, **kwargs)
+
+#     return wrapper
+
+def getattr_redirect(self, attr, *pargs, **kwargs):
     '''Redirects calls for attributes not present in an instance to
     an embedded object-referenced by self.wrapped.'''
 
-    def wrapper(self, attr):
-        return lambda *pargs, **kwargs: getattr(
-            self.wrapped, attr)(*pargs, **kwargs)
-
-    return wrapper
+    return lambda *pargs, **kwargs: getattr(
+        self.wrapped, attr)(*pargs, **kwargs)
 
 
 def base_file_name(path : 'str, bytes, os.PathLike'):
