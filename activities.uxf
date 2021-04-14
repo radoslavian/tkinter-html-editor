@@ -2745,8 +2745,8 @@ m2=preview_lbl.img is not self.no_img_available</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>2650</x>
-      <y>260</y>
+      <x>2450</x>
+      <y>730</y>
       <w>340</w>
       <h>40</h>
     </coordinates>
@@ -2760,11 +2760,11 @@ bg=red</panel_attributes>
       <x>2550</x>
       <y>190</y>
       <w>170</w>
-      <h>90</h>
+      <h>200</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m2=[file_path]</panel_attributes>
-    <additional_attributes>150.0;70.0;150.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>150.0;180.0;150.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
@@ -2776,17 +2776,6 @@ m2=[file_path]</panel_attributes>
     </coordinates>
     <panel_attributes>self._save(file_path, txt_fld)</panel_attributes>
     <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>2690</x>
-      <y>290</y>
-      <w>30</w>
-      <h>100</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLNote</id>
@@ -2909,7 +2898,7 @@ m2=[else]</panel_attributes>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>2580</x>
-      <y>740</y>
+      <y>800</y>
       <w>40</w>
       <h>40</h>
     </coordinates>
@@ -2922,16 +2911,16 @@ m2=[else]</panel_attributes>
       <x>2590</x>
       <y>640</y>
       <w>30</w>
-      <h>120</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
       <x>2790</x>
-      <y>830</y>
+      <y>890</y>
       <w>190</w>
       <h>40</h>
     </coordinates>
@@ -2942,12 +2931,12 @@ m2=[else]</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>2610</x>
-      <y>750</y>
+      <y>810</y>
       <w>250</w>
       <h>100</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
-m2=html_file_path &lt;&gt; file_path</panel_attributes>
+m2=[self.html_file_path &lt;&gt; file_path]</panel_attributes>
     <additional_attributes>230.0;80.0;230.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
@@ -2966,7 +2955,7 @@ update_work_state(file_path)</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>2790</x>
-      <y>910</y>
+      <y>970</y>
       <w>240</w>
       <h>40</h>
     </coordinates>
@@ -2977,7 +2966,7 @@ update_work_state(file_path)</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>2870</x>
-      <y>860</y>
+      <y>920</y>
       <w>30</w>
       <h>70</h>
     </coordinates>
@@ -2987,19 +2976,19 @@ update_work_state(file_path)</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>2810</x>
-      <y>990</y>
-      <w>140</w>
+      <x>2760</x>
+      <y>1050</y>
+      <w>270</w>
       <h>40</h>
     </coordinates>
-    <panel_attributes>set_mw_title()</panel_attributes>
+    <panel_attributes>self.root.opened_files.append(file_path)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>2870</x>
-      <y>940</y>
+      <y>1000</y>
       <w>30</w>
       <h>70</h>
     </coordinates>
@@ -3010,12 +2999,12 @@ update_work_state(file_path)</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>2970</x>
-      <y>840</y>
+      <y>870</y>
       <w>150</w>
-      <h>50</h>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;10.0;130.0;30.0</additional_attributes>
+    <additional_attributes>10.0;40.0;130.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -3023,27 +3012,27 @@ update_work_state(file_path)</panel_attributes>
       <x>3020</x>
       <y>880</y>
       <w>100</w>
-      <h>70</h>
+      <h>130</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;50.0;80.0;10.0</additional_attributes>
+    <additional_attributes>10.0;110.0;80.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2940</x>
+      <x>3010</x>
       <y>890</y>
-      <w>270</w>
-      <h>140</h>
+      <w>190</w>
+      <h>180</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;120.0;250.0;10.0</additional_attributes>
+    <additional_attributes>10.0;160.0;170.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
       <x>2260</x>
-      <y>820</y>
+      <y>880</y>
       <w>220</w>
       <h>40</h>
     </coordinates>
@@ -3056,11 +3045,11 @@ update_work_state(file_path)</panel_attributes>
       <x>2390</x>
       <y>190</y>
       <w>150</w>
-      <h>650</h>
+      <h>710</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m2=[else]</panel_attributes>
-    <additional_attributes>10.0;630.0;10.0;10.0;130.0;10.0</additional_attributes>
+    <additional_attributes>10.0;690.0;10.0;10.0;130.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -3078,7 +3067,7 @@ save_doc(file_path)</panel_attributes>
     <id>UMLSpecialState</id>
     <coordinates>
       <x>2590</x>
-      <y>880</y>
+      <y>940</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -3089,7 +3078,7 @@ save_doc(file_path)</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>2390</x>
-      <y>850</y>
+      <y>910</y>
       <w>220</w>
       <h>60</h>
     </coordinates>
@@ -3100,7 +3089,7 @@ save_doc(file_path)</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>2590</x>
-      <y>770</y>
+      <y>830</y>
       <w>30</w>
       <h>130</h>
     </coordinates>
@@ -3121,14 +3110,47 @@ html_file_path jest puste.</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>2810</x>
+      <y>1120</y>
+      <w>140</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>set_mw_title()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
     <id>Relation</id>
     <coordinates>
       <x>2940</x>
-      <y>190</y>
-      <w>60</w>
-      <h>90</h>
+      <y>890</y>
+      <w>360</w>
+      <h>270</h>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>10.0;70.0;40.0;10.0</additional_attributes>
+    <additional_attributes>10.0;250.0;340.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>2870</x>
+      <y>1080</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>2590</x>
+      <y>760</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
   </element>
 </diagram>

@@ -5,38 +5,6 @@ import webbrowser
 
 
 class MainApp(tk.Toplevel):
-    class InnerDecorators:
-        @classmethod
-        def save_as(cls, fn):
-            def wrapper(self):
-                file_path = fd.asksaveasfilename(
-                    title='Save as a new file:',
-                    initialdir='./test',
-                    filetypes=file_types)
-
-                if file_path:
-                    self.root.opened_files.remove(self.html_file_path)
-                    fn(self, file_path)
-
-                    if self.html_file_path != file_path:
-                        self.update_work_state(file_path)
-
-                else:
-                    raise DocumentSaveCancelled('The document is unsaved - '
-                            'cancelled while selecting a file.')
-            return wrapper
-
-        @classmethod
-        def save(cls, fn):
-            def wrapper(self, event=None):
-                if not self.main_tabs.edit_html.edit_modified():
-                    return
-                if self.html_file_path:
-                    fn(self, file_path=self.html_file_path)
-                else:
-                    self.save_document_as()
-            return wrapper
-
     def __init__(self, root, path_to_doc = None):
         tk.Toplevel.__init__(self, root)
 
@@ -127,6 +95,42 @@ class MainApp(tk.Toplevel):
 
         else:
             self.update_work_state(filename)
+
+
+    class InnerDecorators:
+        @classmethod
+        def save_as(cls, fn):
+            def wrapper(self):
+                file_path = fd.asksaveasfilename(
+                    title='Save as a new file:',
+                    initialdir='./test',
+                    filetypes=file_types)
+
+                if file_path:
+                    fn(self, file_path)
+
+                    if self.html_file_path:
+                        self.root.opened_files.remove(self.html_file_path)
+
+                    if self.html_file_path != file_path:
+                        self.update_work_state(file_path)
+
+                else:
+                    raise DocumentSaveCancelled('The document is unsaved - '
+                            'cancelled while selecting a file.')
+            return wrapper
+
+        @classmethod
+        def save(cls, fn):
+            def wrapper(self, event=None):
+                if not self.main_tabs.edit_html.edit_modified():
+                    return
+                if self.html_file_path:
+                    fn(self, file_path=self.html_file_path)
+                else:
+                    self.save_document_as()
+            return wrapper
+
 
     def _save(self, file_path, txt_fld : tk.Text):
         with open(file_path, 'w') as file:

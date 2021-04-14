@@ -192,7 +192,6 @@ class EditHtml(tk.Frame):
     __getattr__ = getattr_redirect
 
     def focus_set(self):
-        print('setting focus')
         self.edit_field.focus_set()
 
     def get_selection_indices(self):
