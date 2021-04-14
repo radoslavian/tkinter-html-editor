@@ -91,10 +91,11 @@ class MainApp(tk.Toplevel):
             self.bind(ev, fn)
 
     def find_text(self, event=None):
-        SearchTextDialog(self, self.main_tabs.edit_html)
+        SearchTextDialog(self.main_tabs.edit_html, self.main_tabs.edit_html)
 
     def replace_text(self, event=None):
-        ReplaceTextDialog(self, self.main_tabs.edit_html)
+        ReplaceTextDialog(
+            self.main_tabs.edit_html, self.main_tabs.edit_html)
 
     def open_document(self, path=None, event=None):
         if path:

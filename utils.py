@@ -25,7 +25,7 @@ def getattr_redirect(self, attr_name, *pargs, **kwargs):
         attribute = getattr(self.wrapped, attr_name)
 
         if callable(attribute):
-            attribute(*pargs, **kwargs)
+            return attribute(*pargs, **kwargs)
         else:
             raise AttributeError(
                 "{} is not a callable.".format(attr)) from ValueError
