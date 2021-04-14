@@ -24,12 +24,26 @@ def list_files(directory : str, f_ext : str) -> [] or None:
 
 #     return wrapper
 
-def getattr_redirect(self, attr, *pargs, **kwargs):
+def getattr_redirect(self, attr_name, *pargs, **kwargs):
     '''Redirects calls for attributes not present in an instance to
-    an embedded object-referenced by self.wrapped.'''
+    an embedded object-referenced by self.wrapped.
 
-    return lambda *pargs, **kwargs: getattr(
-        self.wrapped, attr)(*pargs, **kwargs)
+    Function has to be assigned to the __getattr__ method of an 
+    instance. Only method calls are redirected.'''
+
+    def wrapper(*pargs, **kwargs):
+        attribute = getattr(self.wrapped, attr_name)
+
+        if callable(attribute):
+            attribute(*pargs, **kwargs)
+        else:
+            raise AttributeError(
+                "{} is not a callable.".format(attr)) from ValueError
+
+    return wrapper
+
+    # return lambda *pargs, **kwargs: getattr(
+    #     self.wrapped, attr)(*pargs, **kwargs)
 
 
 def base_file_name(path : 'str, bytes, os.PathLike'):
