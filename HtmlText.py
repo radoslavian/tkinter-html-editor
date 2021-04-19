@@ -136,7 +136,7 @@ class HtmlText(ScrolledText):
 
         # starttags that shouldn't be followed by
         # an additional line indentation:
-        self.non_ind_stags = 'meta', 'br', 'hr', 'img', 'link'
+        self.non_ind_stags = 'meta', 'br', 'hr', 'img', 'link', 'input'
         
         self.last_fed_indices = ('1.0', 'end')
         self.scr_update_time = 400
@@ -288,9 +288,6 @@ class HtmlText(ScrolledText):
 
                     new_indent = prev_line_indent
 
-                    print('prevline, indent:', prev_line_indent, self.indent_depth)
-                    print('cur_line_indent, cur_indent:', cur_line_indent, new_indent)
-
                     self.delete(
                         'insert linestart', 'insert linestart+{0}c'.format(
                             cur_line_indent))
@@ -331,15 +328,14 @@ class HtmlText(ScrolledText):
         if not path: return
         try:
             html_file = open(path)
-        except IOError:
-            print("Add file_not_found msg")
+        except IOError as err:
+            print('Could not open file: {}'.format(err))
             raise
         else:
-            self.insert_if_empty(html_file.read())
-        finally:
+            with html_file:
+                self.insert_if_empty(html_file.read())
             self.edit_reset()
-            html_file.close()
-
+                
     def is_empty(self):
         return True if self.compare("end-1c", "==", "1.0") else False
 
@@ -352,7 +348,7 @@ class HtmlText(ScrolledText):
                 'Text field {0} is non-empty or modified'.format(self))
         else:
             self.insert('1.0', content)
-            self.edit_modified(False)
+            self.edit_modified(False) # to chyba nie powinno tu być
 
     def configure_tags(self):
         self.tags = (
@@ -372,7 +368,6 @@ class HtmlText(ScrolledText):
     def update_whole_doc(self, event=None):
         "Updates text colorization in a whole document."
 
-        #print('update_whole_doc') # debug
         self.last_fed_indices = ('1.0', 'end')
         self.feed_parser()
 
@@ -380,7 +375,6 @@ class HtmlText(ScrolledText):
     def update_current_screen(self, event=None):
         "Updates text colorization in a current screen."
 
-        #print('update_current_screen') # debug
         self.clear_screen()
         self.feed_parser()
 
@@ -434,12 +428,10 @@ if __name__ == '__main__':
     text.grid()
     text.insert('1.0', '''<meta property="og:url" 
 property="prcontentop2" content="httpsproperty://stackoverflow.com/"/>
-<![CDATA[
-      <message> Welcome to TutorialsPoint </message>
-   ]] >
   </a>
+<div>
 <html>
-<body>
+   <body>
 <head></head>''')
     text.update_whole_doc()
     text.focus_set()

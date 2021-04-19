@@ -120,6 +120,7 @@ class MainApp(tk.Toplevel):
                             'cancelled while selecting a file.')
             return wrapper
 
+
         @classmethod
         def save(cls, fn):
             def wrapper(self, event=None):
@@ -144,6 +145,7 @@ class MainApp(tk.Toplevel):
             messagebox.showerror(
                 parent=self, title='I/O Error',
                 message='Error while attempting to save file: {}'.format(e))
+            raise
         else:
             self.main_tabs.edit_html.edit_modified(False)
 
@@ -158,6 +160,7 @@ class MainApp(tk.Toplevel):
         os.chdir(os.path.dirname(file_path))
         self.root.opened_files.append(file_path)
         self.set_mw_title()
+
 
     def set_mw_title(self):
         if self.html_file_path:
@@ -190,7 +193,8 @@ class MainApp(tk.Toplevel):
                     parent=self, title='Unsaved file',
                     message='You have to save the file first in order'
                     ' to view it in an external browser.')
-                return
+
+                return # zamiast return powinno być raczej raise
 
         if not self.html_file_path:
             return
@@ -258,7 +262,11 @@ class RootWin(tk.Tk):
             super().quit()
 
 
-if __name__ == '__main__':
+def main():
     root = RootWin()
     mapp = MainApp(root)
     root.mainloop()
+
+
+if __name__ == '__main__':
+    main()

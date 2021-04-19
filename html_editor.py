@@ -18,6 +18,7 @@ file_types = (
     ('Text files', '.txt'),
     ('All files', '*'))
 
+
 def get_ev_cb(obj, event : str):
     '''Get event callback
     Returns callback for tkinter events such as cut, copy, paste.
@@ -25,9 +26,11 @@ def get_ev_cb(obj, event : str):
 
     return lambda: obj.focus_get().event_generate(event)
 
+
 class UnsavedDocument(Exception): pass
 class DocumentSaveCancelled(UnsavedDocument): pass
 class BreakLoop(Exception): pass
+
 
 class HtmlPreview(tk.Frame):
     """Html file (very basic) preview frame that can be embedded in a
@@ -711,6 +714,7 @@ class FormTab(ToolBar):
         def spellcheck(parent):
             # enumeratory type:
             # explicit true/false/no value
+
             return SelectMenu(parent, 'true', 'false', '')
 
 
@@ -743,9 +747,13 @@ class FormTab(ToolBar):
                                (spellcheck, ('spellcheck',)),
                                (lambda parent: tk.Spinbox(
                                    parent, from_=0, to=100),
-                                ('maxlength', 'minlength', 'size'))]}}
+                                ('maxlength', 'minlength', 'size'))]},
+            'text': {'inputs': [(tk.Entry, ('placeholder',)),
+                                (spellcheck, ('spellcheck',)),
+            ]}
+        }
         
-        inputs = ['Insert input', 'text', 'button', 'checkbox', 'color', 'date',
+        inputs = ['Insert input', 'button', 'checkbox', 'color', 'date',
                   'datetime-local', 'email', 'hidden','month', 'number', 'week',
                   'password', 'radio', 'range', 'reset', 'search', 'time']
         inputs.extend(self.input_list_dialog.keys())
