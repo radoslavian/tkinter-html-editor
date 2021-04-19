@@ -115,6 +115,8 @@ class SpecialCharactersFrame(tk.Frame):
         self.entity_switch_rb.grid(row=2, column=0)
 
     def def_chars(self, fn_obj):
+        "Special characters."
+
         for c, e in (
                 ('←', '&#8592;'  ), ('↑', '&#8593;'),
                 ('→', '&#8594;'  ), ('↓', '&#8595;'),
