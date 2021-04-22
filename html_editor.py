@@ -430,7 +430,13 @@ class PageStructureBar(ToolBar):
             crossorigin, referrer_policy,
             (lambda parent: SelectMenu(
                 parent, '', 'True', 'False'), ('nomodule',)),
-            (tk.Entry, ('type', 'src')))
+
+            (lambda parent: FileChooser(
+                parent, filetypes=[
+                    ('Javascript files', '.js'),
+                    (('All files', '*'))]), ('src',)),
+
+            (tk.Entry, ('type',)))
 
         script_bools = ('async', 'defer')
 
