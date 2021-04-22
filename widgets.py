@@ -4,6 +4,7 @@ import os
 import sys
 import tkinter as tk
 import pathlib
+from tkinter import messagebox as msgbox
 from tkinter import filedialog as fd
 from utils import *
 from PIL import ImageTk, Image
@@ -90,18 +91,28 @@ class FileChooser(tk.Frame):
         self.file_name.set(file_name)
 
     def get(self):
-        "Returns absolute url or relative path to a file."
+        "Returns absolute url or a relative path to a file."
 
         if self.disabled(): return
 
         if self.path_to_file:
-            return {
-                '0': lambda: pathlib.Path(self.path_to_file).as_uri(),
-                '1': lambda: os.path.relpath(self.path_to_file)
-            }[str(self.rel_path.get())]()
+            try:
+                result = {
+                    '0': lambda: pathlib.Path(self.path_to_file).as_uri(),
+                    '1': lambda: pathlib.Path(
+                        os.path.relpath(self.path_to_file)).as_posix()
+                }[str(self.rel_path.get())]()
+
+            except ValueError as err:
+                msgbox.showerror(
+                    parent=self, title='Error while determining a file path:',
+                    message=err)
+                result = None
+
+        return result
 
     def disabled(self):
-        "returns state in a True (disabled)/False(normal) format"
+        "Returns state in a True (disabled)/False(normal) format."
 
         return {'disabled': True, 'normal': False}[self._state]
 

@@ -810,7 +810,8 @@ class HTML5Tags(ToolBar):
             (icon('aside.png'), 'aside', self.ctag('aside')),
             (icon('navigation.png'), 'nav', self.ctag('nav')),
             (icon('article.png'), 'article', self.ctag('article')),
-            (icon('section.png'), 'section', self.ctag('section')))
+            (icon('section.png'), 'section', self.ctag('section')),
+            (icon('footer.png'), 'footer', self.ctag('footer')))
 
 
 class MainTabs(ttk.Notebook):
@@ -832,6 +833,7 @@ class MainTabs(ttk.Notebook):
         if self.tab(self.select())['text'] == self.preview_tab_name:
             self.html_view.preview(self.edit_html.get_contents())
 
+
 class MenuBar(tk.Menu):
     def __init__(self, app):
         tk.Menu.__init__(self, app)
@@ -850,7 +852,8 @@ class MenuBar(tk.Menu):
 
             (self.edit_menu,
              ('Undo', 'Redo', 'Select all', 'Copy', 'Cut', 'Paste'),
-             ('Ctrl+Z', 'Shift+Ctrl+Z', 'Ctrl+A', 'Ctrl+C', 'Ctrl+X', 'Ctrl+V'),
+             ('Ctrl+Z', 'Shift+Ctrl+Z', 'Ctrl+A', 'Ctrl+C', 'Ctrl+X',
+              'Ctrl+V'),
              (app.main_tabs.edit_html.edit_undo,
               app.main_tabs.edit_html.edit_redo,
               app.main_tabs.edit_html.select_all,
