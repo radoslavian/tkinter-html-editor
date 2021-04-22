@@ -49,7 +49,7 @@ class HtmlPreview(tk.Frame):
             error_message = ('The preview html tab is not working due to ' +
             'the following  error:\n\n{0}.\n\nCheck the documentation ' +
             'or try to install the required tkhtml module using the ' +
-            'pip3 command-line tool:\n\npip3 install tkinterhtml')
+            'pip command-line tool:\n\npip install tkinterhtml')
             print(e)
 
             self.preview_frame = tk.Text(self)
