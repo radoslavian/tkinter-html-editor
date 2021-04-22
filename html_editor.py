@@ -433,7 +433,7 @@ class PageStructureBar(ToolBar):
 
             (lambda parent: FileChooser(
                 parent, filetypes=[
-                    ('Javascript files', '.js'),
+                    ('Javascript files', '*js'),
                     (('All files', '*'))]), ('src',)),
 
             (tk.Entry, ('type',)))
