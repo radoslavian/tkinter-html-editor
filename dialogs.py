@@ -1,7 +1,7 @@
 import pathlib
 import tkinter as tk
 from tkinter import filedialog as fd
-from utils import *
+from utilities import *
 from widgets import *
 from tkinter import messagebox as msgbox
 from tkSimpleDialog import Dialog

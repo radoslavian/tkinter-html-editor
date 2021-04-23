@@ -1,4 +1,4 @@
-from utils import *
+from utilities import *
 import re
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText

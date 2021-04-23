@@ -6,7 +6,7 @@ import tkinter as tk
 import pathlib
 from tkinter import messagebox as msgbox
 from tkinter import filedialog as fd
-from utils import *
+from utilities import *
 from PIL import ImageTk, Image
 
 class IconButton(tk.Button):
