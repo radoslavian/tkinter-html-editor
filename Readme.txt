@@ -3,7 +3,7 @@ Description
 This is a basic/toy HTML editor written in Python and tkinter as a project after completion of a Python self-study course.
 
 Compatibility
-Current version has not yet been tested under MS Windows and may not work properly on OSs different than Linux-based. The main issue may probably be relative filepaths - the Web uses forward slashes as a separator, whereas Windows - backslashes.
+Current version has not yet been tested under MS Windows and may not work properly on OSs different than Linux-based.
 
 Components
 Editing:
@@ -36,4 +36,4 @@ How to use it:
 
 Disclaimer:
 Don't use the program with any production code (it isn't suitable for that, anyway) or with any files that you are afraid of corrupting.
-After saying that, I bear no responsibility for any dataloss that may result from using it.
+After saying that, I bear no responsibility for any data loss that may result from using the software.

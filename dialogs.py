@@ -484,20 +484,26 @@ class CollectValues(Dialog):
         try:
             for field in self.fields:
                 fld = getattr(self, field+'__')
+
                 if (type(fld) is tk.Entry
                     and (len(fld.get())) > self.maxlength):
-                    msg = 'The text in the field "{0}" is too long.'.format(
-                        field)
-                    raise ValueError(msg)
+                    raise ValueError(
+                        'The text in the field "{0}" is too long.'.format(
+                            field))
 
                 elif type(fld) is tk.Spinbox:
                     if not fld.get().isdigit():
-                        msg = ('The value in the field "{0}"'.format(field)
-                        +' should be numerical.')
-                        raise ValueError(msg)
-        except ValueError:
-            msgbox.showerror(parent=self, title='Input error', message=msg)
+                        raise ValueError(
+                            'The value in the field "{0}"'.format(field)
+                            +' should be numerical.')
+                else:
+                    if hasattr(fld, 'get'):
+                        fld.get() # getting widget's value can raise exception
+
+        except ValueError as err:
+            msgbox.showerror(parent=self, title='Input error', message=err)
             return False
+
         else:
             return True
 

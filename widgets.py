@@ -62,16 +62,19 @@ class FileChooser(tk.Frame):
         self._locked = dict(state='disabled', background='grey')
 
         self.file_name = tk.StringVar()
-        self.path_to_file = ''
+        self.clear()
         self.filetypes = filetypes
 
         self.entry = tk.Entry(
             self, textvariable=self.file_name, **self._unlocked)
-        self.entry.grid(column=0, row=0, sticky='we')
+        self.entry.grid(column=0, row=0, columnspan=2, sticky='we')
         tk.Grid.columnconfigure(self, 0, weight=1)
 
         self.browse_bt = tk.Button(self, text='Browse', command=self.browse_cb)
-        self.browse_bt.grid(column=1, row=0)
+        self.browse_bt.grid(column=0, row=1, sticky='we')
+
+        self.clear_bt = tk.Button(self, text='\u232B', command=self.clear)
+        self.clear_bt.grid(column=1, row=1, sticky='we')
 
         self.rel_path = tk.IntVar()
         self.rel_path.set(0)
@@ -90,26 +93,21 @@ class FileChooser(tk.Frame):
         file_name = base_file_name(self.path_to_file)
         self.file_name.set(file_name)
 
+    def clear(self):
+        self.path_to_file = ''
+        self.file_name.set('')
+
     def get(self):
         "Returns absolute url or a relative path to a file."
 
         if self.disabled(): return
 
         if self.path_to_file:
-            try:
-                result = {
-                    '0': lambda: pathlib.Path(self.path_to_file).as_uri(),
-                    '1': lambda: pathlib.Path(
-                        os.path.relpath(self.path_to_file)).as_posix()
-                }[str(self.rel_path.get())]()
-
-            except ValueError as err:
-                msgbox.showerror(
-                    parent=self, title='Error while determining a file path:',
-                    message=err)
-                result = None
-
-        return result
+            return {
+                '0': lambda: pathlib.Path(self.path_to_file).as_uri(),
+                '1': lambda: pathlib.Path(
+                    os.path.relpath(self.path_to_file)).as_posix()
+            }[str(self.rel_path.get())]()
 
     def disabled(self):
         "Returns state in a True (disabled)/False(normal) format."

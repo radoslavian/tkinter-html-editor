@@ -463,13 +463,15 @@ class PageStructureBar(ToolBar):
 
             (icon('external_link.png'), 'link',
              lambda: self.collect_values_dialog(
-                inputs=link_inputs, booleans=[], tag='link')),
+                 inputs=link_inputs, booleans=[], tag='link',
+                 title='Insert external link')),
 
-            (icon('css.png'), 'style', self.tag('style', opts='type="text/css"')),
+            (icon('css.png'), 'style', self.tag(
+                'style', opts='type="text/css"')),
 
             (icon('script.png'), 'script', lambda: self.collect_values_dialog(
                 inputs=script_inputs, booleans=script_bools, tag='script',
-                closing_tag=True)),
+                title='Insert script', closing_tag=True)),
 
             (icon('title.png'), 'title', self.ctag('title')),
             (icon('body.png'), 'body', self.tag('body')))
