@@ -1,6 +1,7 @@
 "Classes for generating webpage previews."
 
 import tkinter as tk
+from urllib.request import urlopen
 import pathlib
 import sys
 import os
@@ -89,15 +90,16 @@ class WebPreview(HtmlPreview, tk.Frame):
             self.preview_frame = HtmlFrame(self)
             HtmlPreview._setup_preview(self)
 
-            def preview(self, html_code):
-                # apparently bogus filename has to be added
-                # to the base url - doesn't work otherwise
+            if WebPreview.preview is not WebPreview.__preview:
+                WebPreview.preview = WebPreview.__preview
 
-                self.preview_frame.load_html(
-                    html_code,base_url=pathlib.Path(
-                        os.getcwd() + '/index.html').as_uri())
+    def __preview(self, html_code):
+        # apparently bogus filename has to be added
+        # to the base url - doesn't work otherwise
 
-            WebPreview.preview = preview
+        self.preview_frame.load_html(
+            html_code,base_url=pathlib.Path(
+                os.getcwd() + '/index.html').as_uri())
 
 
 if __name__ == '__main__':
