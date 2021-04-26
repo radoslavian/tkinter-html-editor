@@ -1,4 +1,3 @@
-import io
 import sys
 import tkinter as tk
 import urllib
@@ -6,7 +5,6 @@ from widgets import *
 from utilities import *
 from icons import icon
 from dialogs import *
-from urllib.request import urlopen
 from tkinter import ttk
 from HtmlText import *
 from htmlpreview import *

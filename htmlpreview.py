@@ -1,10 +1,13 @@
 "Classes for generating webpage previews."
 
 import tkinter as tk
-from urllib.request import urlopen
+import urllib.request
+import types
 import pathlib
 import sys
 import os
+import io
+from PIL import Image, ImageTk
 
 class HtmlPreview(tk.Frame):
     '''Html file (very basic) preview frame that can be embedded in a
@@ -50,7 +53,7 @@ class HtmlPreview(tk.Frame):
 
     def _load_image(self, url):
         try:
-            fp = urlopen(url)
+            fp = urllib.request.urlopen(url)
 
         except (ValueError, FileNotFoundError, urllib.error.URLError) as e:
             print("{0}: internal exception:".format(self.__class__.__name__),
@@ -90,8 +93,7 @@ class WebPreview(HtmlPreview, tk.Frame):
             self.preview_frame = HtmlFrame(self)
             HtmlPreview._setup_preview(self)
 
-            if WebPreview.preview is not WebPreview.__preview:
-                WebPreview.preview = WebPreview.__preview
+            self.preview = types.MethodType(WebPreview.__preview, self)
 
     def __preview(self, html_code):
         # apparently bogus filename has to be added
