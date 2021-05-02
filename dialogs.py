@@ -580,7 +580,7 @@ class HttpEquivDialog(CollectValues):
         CollectValues.apply(self)
 
         if not self.css_fc.disabled():
-            self.result += {'content': self.css_fc.get()}
+            self.result.update({'content': self.css_fc.get()})
 
 
 if __name__ == '__main__':
