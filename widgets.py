@@ -130,7 +130,7 @@ class FileChooser(tk.Frame):
         else:
             raise ValueError('state must be True or False')
 
-        for wdg in self.browse_bt, self.rel_path_cbt:
+        for wdg in self.browse_bt, self.rel_path_cbt, self.clear_bt:
             wdg.configure(state=self._state)
 
 

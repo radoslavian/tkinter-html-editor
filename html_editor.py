@@ -370,12 +370,13 @@ class PageStructureBar(ToolBar):
             (lambda parent: SelectMenu(
                 parent, '', 'True', 'False'), ('nomodule',)),
 
+            (lambda parent: SelectMenu(
+                parent, '', 'application/javascript', 'module'), ('type',)),
+
             (lambda parent: FileChooser(
                 parent, filetypes=[
                     ('Javascript files', '*js'),
-                    (('All files', '*'))]), ('src',)),
-
-            (tk.Entry, ('type',)))
+                    (('All files', '*'))]), ('src',)))
 
         script_bools = ('async', 'defer')
 
