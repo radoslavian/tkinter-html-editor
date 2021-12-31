@@ -44,6 +44,9 @@ How to use it:
 - use F2 keyboard key to change indentation level
 - click the "globe" icon (or select from the drop-down menu: Document->View in browser) to display webpage in a default web browser (keep in mind that after clicking the preview icon the file is being automatically saved).
 
+Copyright 2022, Radosław Kuzyk
+
 Disclaimer:
-Don't use the editor with any production code (it isn't suitable for that, anyway) or with any files that you are afraid of corrupting.
-After saying that, I hereby announce that I bear no responsibility for any data loss that may result from using the software.
+This software is provided by the copyright holder “as is” and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the copyright owner be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
+
+Based on/source: The 3-Clause BSD License (https://opensource.org/licenses/BSD-3-Clause)
