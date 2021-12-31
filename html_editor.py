@@ -71,7 +71,7 @@ class SpecialCharactersFrame(tk.Frame):
                 ('␣', '&nbsp;'   ), ('<', '&lt;'),
                 ('>', '&gt;'     ), ('&', '&amp;'),
                 ('"', '&quot;'   ), ("'", '&apos;'),
-                ('§', '&#167;')
+                ('§', '&#167;'   ), ('⋔', '&#x22D4;')
         ):
             self.add_char_bt(char=c,
                 callback=self.get_char(fn_obj, char=c, htm_entity=e))

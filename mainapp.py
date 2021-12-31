@@ -54,9 +54,19 @@ class MainApp(tk.Toplevel):
             ('<Control-q>', self.quit),
             ('<Control-f>', self.find_text),
             ('<Control-r>', self.replace_text))
-
         for ev, fn in events:
             self.bind(ev, fn)
+
+        self.bind('<FocusIn>', self.set_current_working_dir)
+
+    def set_current_working_dir(self, event=None):
+        '''Sets current working directory (according to currently opened file)
+        on window FocusIn event.
+        '''
+        if (getattr(self, 'html_file_path')
+            and self.html_file_path is not None
+            and os.getcwd() != os.path.dirname(self.html_file_path)):
+            os.chdir(os.path.dirname(self.html_file_path))
 
     def find_text(self, event=None):
         SearchTextDialog(self.main_tabs.edit_html, self.main_tabs.edit_html)
@@ -153,14 +163,14 @@ class MainApp(tk.Toplevel):
     save_document = InnerDecorators.save(save_doc)
 
     def update_work_state(self, file_path):
-        '''Sets current: window title, working directory and appends opened/saved
-        file(name) to the list of the currently opened files (root.opened_files).'''
-
+        '''Sets current: window title, working directory and appends
+        opened/saved file(name) to the list of the currently opened
+        files (root.opened_files).
+        '''
         self.html_file_path = file_path
-        os.chdir(os.path.dirname(file_path))
         self.root.opened_files.append(file_path)
+        self.set_current_working_dir()
         self.set_mw_title()
-
 
     def set_mw_title(self):
         if self.html_file_path:
@@ -194,7 +204,7 @@ class MainApp(tk.Toplevel):
                     message='You have to save the file first in order'
                     ' to view it in an external browser.')
 
-                return # zamiast return powinno być raczej raise
+                return # zamiast return powinno raczej wzn. wyjątek
 
         if not self.html_file_path:
             return

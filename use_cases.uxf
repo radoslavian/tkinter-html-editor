@@ -444,8 +444,8 @@ specjalny</panel_attributes>
       <w>140</w>
       <h>80</h>
     </coordinates>
-    <panel_attributes>lt=.&gt;
-&lt;&lt;includes&gt;&gt;</panel_attributes>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;extends&gt;&gt;</panel_attributes>
     <additional_attributes>10.0;60.0;120.0;10.0</additional_attributes>
   </element>
   <element>
@@ -479,8 +479,8 @@ jako encję html</panel_attributes>
       <w>130</w>
       <h>130</h>
     </coordinates>
-    <panel_attributes>lt=.&gt;
-&lt;&lt;includes&gt;&gt;</panel_attributes>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;extends&gt;&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;80.0;110.0</additional_attributes>
   </element>
   <element>
@@ -514,8 +514,8 @@ tagami HTML</panel_attributes>
       <w>150</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>lt=.&gt;
-&lt;&lt;includes&gt;&gt;</panel_attributes>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;extends&gt;&gt;</panel_attributes>
     <additional_attributes>10.0;20.0;130.0;30.0</additional_attributes>
   </element>
   <element>
@@ -693,8 +693,7 @@ w oknie programu</panel_attributes>
       <h>70</h>
     </coordinates>
     <panel_attributes>Wyświetl podgląd
-w zewn. przeglądarce
-bg=red</panel_attributes>
+w zewn. przeglądarce</panel_attributes>
     <additional_attributes/>
   </element>
   <element>

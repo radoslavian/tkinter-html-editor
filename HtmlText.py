@@ -402,7 +402,7 @@ class HtmlText(ScrolledText):
         self.tag_remove(tag_name, *self.last_fed_indices)
 
     def clear_screen(self):
-        '''Refreshes tags on a current screen.'''
+        "Refreshes tags on a current screen."
 
         self.last_fed_indices = self.get_visible_area()
         for tag in self.tags:
@@ -421,6 +421,7 @@ class HtmlText(ScrolledText):
 
         self.tag_add(
             tk_tag, new_init_idx, '{0}+{1}c'.format(new_init_idx, tag_len))
+
 
 if __name__ == '__main__':
     root = tk.Tk()

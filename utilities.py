@@ -28,7 +28,7 @@ def getattr_redirect(self, attr_name, *pargs, **kwargs):
             return attribute(*pargs, **kwargs)
         else:
             raise AttributeError(
-                "{} is not a callable.".format(attr)) from ValueError
+                "{} is not callable.".format(attr)) from ValueError
 
     return wrapper
 
@@ -39,3 +39,10 @@ def base_file_name(path : 'str, bytes, os.PathLike'):
     except TypeError:
         file_name = None
     return file_name
+
+
+def lcm(a, b):
+    "Lowest common multiple for two integers."
+
+    from math import gcd
+    return abs(a*b) // gcd(a, b)
