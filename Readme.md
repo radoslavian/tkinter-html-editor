@@ -25,7 +25,7 @@ by clicking on the "Preview" tab you get the ... general impression of what the 
 
 Modal windows are implemented using tkSimpleDialog.
 
-#### How to launch the program:
+### How to launch the program:
 from the command-line:
 ```
 [localhost@localdomain]$ python3 <prog_directory_name>
@@ -38,7 +38,7 @@ from the command-line:
 
 - click on mainapp.py in a file manager (if nothing happens or a text editor with source code launches instead, check if the file has an executable attribute set).
 
-#### How to use it:
+### How to use it:
 - click on a button from one of editing tabs located over text-editing area to insert an html tag
 - select some text and click on a tag-button to add html tags to the selected text
 - use F2 keyboard key to change indentation level
