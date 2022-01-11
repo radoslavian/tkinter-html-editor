@@ -2,6 +2,8 @@
 
 This is a basic/toy HTML editor written in Python and tkinter as a project after completion of a Python self-study course.
 
+![screenshot](https://github.com/radoslavian/tkinter-html-editor/blob/main/screenshots/screenshot.jpg)
+
 ## Requirements:
 For code quick-preview you need either tkinterweb:
 ```
