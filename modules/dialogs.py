@@ -1,10 +1,10 @@
 import pathlib
 import tkinter as tk
 from tkinter import filedialog as fd
-from utilities import *
-from widgets import *
+from modules.utilities import *
+from modules.widgets import *
 from tkinter import messagebox as msgbox
-from tkSimpleDialog import Dialog
+from modules.tkSimpleDialog import Dialog
 
 class InsertImgDialog(Dialog):
     def body(self, parent):
@@ -508,8 +508,11 @@ class CollectValues(Dialog):
             return True
 
     def apply(self):
+        # using dict() instead of unpacking dict comprehension
+        # wouldn't be sufficient?
         self.result = {
-            **{bl: bl for bl in self.booleans if getattr(self, bl+'__').get()}}
+            **{bl: bl for bl in self.booleans
+               if getattr(self, bl+'__').get()}}
 
         val = dict()
         for attr_name in self.fields:
@@ -588,4 +591,3 @@ if __name__ == '__main__':
     hed = HttpEquivDialog(root)
     #print(cv.result)
     tk.mainloop()
-    

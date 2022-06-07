@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from tkinter import messagebox
-from html_editor import *
+from modules.html_editor import *
 import webbrowser
 
 

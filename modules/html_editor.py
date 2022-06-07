@@ -1,13 +1,13 @@
 import sys
 import tkinter as tk
 import urllib
-from widgets import *
-from utilities import *
-from icons import icon
-from dialogs import *
+from modules.widgets import *
+from modules.utilities import *
+from icons.icons_serialized import icon
+from modules.dialogs import *
 from tkinter import ttk
-from HtmlText import *
-from htmlpreview import *
+from modules.html_text import *
+from modules.htmlpreview import *
 from tkinter.scrolledtext import ScrolledText
 from PIL import Image, ImageTk
 

@@ -2157,6 +2157,7 @@ handle_*()</panel_attributes>
       <h>484</h>
     </coordinates>
     <panel_attributes>Checking if file is already loaded
+[to be made, if needed]
 bg=white
 layer=1</panel_attributes>
     <additional_attributes/>

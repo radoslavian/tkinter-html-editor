@@ -9,6 +9,7 @@ import os
 import io
 from PIL import Image, ImageTk
 
+
 class HtmlPreview(tk.Frame):
     '''Html file (very basic) preview frame that can be embedded in a
     separate tab. Requires tkhtml to work.'''
@@ -70,7 +71,8 @@ class HtmlPreview(tk.Frame):
         return photo
 
     def preview(self, html_code : str):
-        if hasattr(self.preview_frame, 'no_html'): return
+        if hasattr(self.preview_frame, 'no_html'):
+            return
         self.preview_frame.reset()
         self.preview_frame.parse(html_code)
 
@@ -100,7 +102,7 @@ class WebPreview(HtmlPreview, tk.Frame):
         # to the base url - doesn't work otherwise
 
         self.preview_frame.load_html(
-            html_code,base_url=pathlib.Path(
+            html_code, base_url=pathlib.Path(
                 os.getcwd() + '/index.html').as_uri())
 
 

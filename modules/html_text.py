@@ -1,4 +1,4 @@
-from utilities import *
+from modules.utilities import *
 import re
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
@@ -21,7 +21,9 @@ def scr_update_scheduler(fn):
     return wrapper
 
 
-def index_to_numbers(idx : 'line.col') -> '(line, col)':
+def index_to_numbers(idx):
+    """Input: line.col, output: (line, col)
+    """
     return tuple(map(lambda x: int(x), idx.split('.')))
 
 
@@ -39,12 +41,15 @@ def whole_scr_upd(fn):
     return wrapper
 
 
-class TextFieldModified(Exception): pass
+class TextFieldModified(Exception):
+    pass
 
 
 class HtmlParser(HTMLParser):
-    def __init__(self, text_ref : 'tk.Text', *pargs, **kwargs):
-        # definicja tagów etc.
+    def __init__(self, text_ref, *pargs, **kwargs):
+        """ txt_ref : tk.Text
+        """
+        # tags definition
         self.html_fld_ref = text_ref
         HTMLParser.__init__(self, *pargs, **kwargs)
         self.convert_charrefs = False

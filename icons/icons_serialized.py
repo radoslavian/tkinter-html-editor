@@ -1,6 +1,6 @@
 import bz2
 from io import BytesIO
-from utilities import list_files
+from modules.utilities import list_files
 
 
 def load_icons(directory, file_list):
