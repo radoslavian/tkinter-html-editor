@@ -2,9 +2,11 @@
 
 This is a basic/toy HTML editor written in Python and tkinter as a project after completion of a Python self-study course.
 
+<!--
 [Screenrecord - description of subsequent steps currently in Polish](https://youtu.be/R5uqftslidw)
 
 ![screenshot](https://github.com/radoslavian/tkinter-html-editor/blob/main/screenshots/screenshot.jpg)
+-->
 
 ## Requirements:
 <!--For quick code preview you need either tkinterweb:
