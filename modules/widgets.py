@@ -1,13 +1,13 @@
-"Customized tkinter widgets for the basic tkinter HTML Editor App"
+"""Customized tkinter widgets for the basic tkinter HTML Editor App"""
 
 import os
 import sys
 import tkinter as tk
 import pathlib
-from tkinter import messagebox as msgbox
 from tkinter import filedialog as fd
 from modules.utilities import *
 from PIL import ImageTk, Image
+
 
 class IconButton(tk.Button):
     def __init__(
@@ -15,7 +15,8 @@ class IconButton(tk.Button):
 
         self.parent = parent
         try:
-            if not icon_path: raise tk.TclError
+            if not icon_path:
+                raise tk.TclError
 
             img = Image.open(icon_path)
             img = self.resize_image(img, 28, 0.55)
@@ -85,9 +86,11 @@ class FileChooser(tk.Frame):
         self.cget = self.entry.cget
 
     def browse_cb(self):
-        path_to_file = fd.askopenfilename(parent=self, filetypes=self.filetypes)
+        path_to_file = fd.askopenfilename(
+            parent=self, filetypes=self.filetypes)
 
-        if not path_to_file: return
+        if not path_to_file:
+            return
 
         self.path_to_file = path_to_file
         file_name = base_file_name(self.path_to_file)
@@ -100,7 +103,8 @@ class FileChooser(tk.Frame):
     def get(self):
         "Returns absolute url or a relative path to a file."
 
-        if self.disabled(): return
+        if self.disabled():
+            return
 
         if self.path_to_file:
             return {
@@ -110,7 +114,7 @@ class FileChooser(tk.Frame):
             }[str(self.rel_path.get())]()
 
     def disabled(self):
-        "Returns state in a True (disabled)/False(normal) format."
+        """Returns state in a True (disabled)/False(normal) format."""
 
         return {'disabled': True, 'normal': False}[self._state]
 
@@ -119,11 +123,11 @@ class FileChooser(tk.Frame):
             # no state change
             return
 
-        if state == True:
+        if state is True:
             self._state = 'disabled'
             self.entry.configure(**self._locked)
 
-        elif state == False:
+        elif state is False:
             self._state = 'normal'
             self.entry.configure(**self._unlocked)
 
@@ -136,6 +140,8 @@ class FileChooser(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
+    # local tests
+    #
     # fc = FileChooser(root)
     # fc.disabled(True)
     # print(fc.disabled())
@@ -144,5 +150,4 @@ if __name__ == '__main__':
 
     from icons import icon
     IconButton(root, icon('button.png')).grid()
-    
     tk.mainloop()

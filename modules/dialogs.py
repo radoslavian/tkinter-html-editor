@@ -6,6 +6,7 @@ from modules.widgets import *
 from tkinter import messagebox as msgbox
 from modules.tkSimpleDialog import Dialog
 
+
 class InsertImgDialog(Dialog):
     def body(self, parent):
         def adjust_preview():
@@ -26,11 +27,12 @@ class InsertImgDialog(Dialog):
 
         def img_browse_callback():
             path_to_image = fd.askopenfilename(filetypes=(
-                ('Images', ('.jpg','.jpeg', '.png', '.gif')),
+                ('Images', ('.jpg', '.jpeg', '.png', '.gif')),
                 ('All files', '*')
             ))
 
-            if not path_to_image: return
+            if not path_to_image:
+                return
 
             self.path_to_image = path_to_image
             image_file_name = base_file_name(self.path_to_image)
@@ -68,7 +70,7 @@ class InsertImgDialog(Dialog):
 
         tk.Label(parent, text='File:').grid(row=1)
         self.img_path_ent = tk.Entry(
-            parent, textvariable = self.img_path, state='readonly')
+            parent, textvariable=self.img_path, state='readonly')
         self.img_path_ent.grid(row=1, column=1)
 
         tk.Label(parent, text='Alt:').grid(row=2)
@@ -98,7 +100,7 @@ class InsertImgDialog(Dialog):
 
         tk.Grid.columnconfigure(self, 2, weight=1)
         tk.Grid.rowconfigure(self, 1, weight=1)
-    
+
     def apply(self):
         path_to_image = ''
         if self.path_to_image:
@@ -142,7 +144,7 @@ class InsertDoctypeDialog(Dialog):
 
             'XHTML 1.0 Strict': '<!DOCTYPE html PUBLIC '
             + '"-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.o'
-            +'rg/TR/xhtml1/DTD/xhtml1-strict.dtd">',
+            + 'rg/TR/xhtml1/DTD/xhtml1-strict.dtd">',
 
             'XHTML 1.0 Transitional': '<!DOCTYPE html PUBLIC '
             + '"-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3'
@@ -167,8 +169,9 @@ class InsertDoctypeDialog(Dialog):
     def on_dtype_sel(self):
         "on doctype select"
 
-        {'0': lambda: self.dtype_version.configure(state='disabled'),
-         '1': lambda: self.dtype_version.configure(state='normal')
+        {
+            '0': lambda: self.dtype_version.configure(state='disabled'),
+            '1': lambda: self.dtype_version.configure(state='normal')
         }[str(self.doctype_var.get())]()
 
     def apply(self):
@@ -185,7 +188,7 @@ class InsertDoctypeDialog(Dialog):
 
 
 class SearchTextDialog(Dialog):
-    def __init__(self, master, txt_fld : tk.Text):
+    def __init__(self, master, txt_fld: tk.Text):
         for attr in 'direction', 'mode', 'case':
             setattr(self, attr, tk.IntVar())
 
@@ -242,10 +245,11 @@ class SearchTextDialog(Dialog):
         self.highlight_text(found_text_idx, last_idx)
         self.bring_index_up(found_text_idx)
 
-    def _search_text(self, search_txt, direction,
-                    mode, case, start_idx, stop_idx=None):
-        '''Returns indexes marking search phrase bounds if successes.
-        None otherwise.'''
+    def _search_text(
+            self, search_txt, direction, mode,
+            case, start_idx, stop_idx=None):
+        """Returns indices marking search phrase bounds if successes.
+        None otherwise."""
 
         # Put all search code into UML diagrams.
         # merge this meth into search_text()
@@ -272,7 +276,7 @@ class SearchTextDialog(Dialog):
         '''Returns indexes needed by search methods
         for seeking through contents of the tk.Text.'''
 
-        if direction == 0: # forward search
+        if direction == 0:  # forward search
             start_idx = self.last_idx
             stop_idx = tk.END
         else:
@@ -280,10 +284,11 @@ class SearchTextDialog(Dialog):
             stop_idx = '1.0'
 
         return start_idx, stop_idx
-        
+
     def search_text(self):
         (entry_text, direction, mode, case, *other) = self.get_form_values()
-        if not entry_text: return
+        if not entry_text:
+            return
 
         start_idx, stop_idx = self.get_start_stop_idx(direction)
         found_text_idxs = self._search_text(
@@ -370,7 +375,7 @@ class ReplaceTextDialog(SearchTextDialog):
             decision = msgbox.askyesnocancel(
                 parent=self, title='Found phrase', message='Replace?')
 
-            if decision == True:
+            if decision is True:
                 _noninteractive_replace()
             elif decision is None:
                 raise BreakLoop
@@ -485,20 +490,22 @@ class CollectValues(Dialog):
             for field in self.fields:
                 fld = getattr(self, field+'__')
 
-                if (type(fld) is tk.Entry
-                    and (len(fld.get())) > self.maxlength):
+                if (
+                        type(fld) is tk.Entry and
+                        (len(fld.get())) > self.maxlength
+                ):
                     raise ValueError(
-                        'The text in the field "{0}" is too long.'.format(
-                            field))
+                        f'The text in the field "{field}" is too long.')
 
                 elif type(fld) is tk.Spinbox:
                     if not fld.get().isdigit():
                         raise ValueError(
-                            'The value in the field "{0}"'.format(field)
-                            +' should be numerical.')
+                            f'The value in the field "{field}"'
+                            + ' should be numerical.')
                 else:
                     if hasattr(fld, 'get'):
-                        fld.get() # getting widget's value can raise exception
+                        # getting widget's value can raise exception
+                        fld.get()
 
         except ValueError as err:
             msgbox.showerror(parent=self, title='Input error', message=err)
@@ -587,7 +594,8 @@ class HttpEquivDialog(CollectValues):
 
 
 if __name__ == '__main__':
+    # tests (for manual testing only):
     root = tk.Tk()
     hed = HttpEquivDialog(root)
-    #print(cv.result)
+    # print(cv.result)
     tk.mainloop()

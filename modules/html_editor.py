@@ -1,6 +1,4 @@
-import sys
 import tkinter as tk
-import urllib
 from modules.widgets import *
 from modules.utilities import *
 from icons.icons_serialized import icon
@@ -8,8 +6,6 @@ from modules.dialogs import *
 from tkinter import ttk
 from modules.html_text import *
 from modules.htmlpreview import *
-from tkinter.scrolledtext import ScrolledText
-from PIL import Image, ImageTk
 
 
 file_types = (
@@ -18,7 +14,7 @@ file_types = (
     ('All files', '*'))
 
 
-def get_ev_cb(obj, event : str):
+def get_ev_cb(obj, event: str):
     '''Get event callback
     Returns callback for tkinter events such as cut, copy, paste.
     obj - tkinter class instance with focus_get() method'''
@@ -32,7 +28,7 @@ class BreakLoop(Exception): pass
 
 
 class SpecialCharactersFrame(tk.Frame):
-    def __init__(self, parent,  header, cols = 1, *args, **kwargs):
+    def __init__(self, parent,  header, cols=1, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         self.header = header
@@ -73,10 +69,10 @@ class SpecialCharactersFrame(tk.Frame):
                 ('"', '&quot;'   ), ("'", '&apos;'),
                 ('§', '&#167;'   ), ('⋔', '&#x22D4;')
         ):
-            self.add_char_bt(char=c,
-                callback=self.get_char(fn_obj, char=c, htm_entity=e))
-        
-    def add_char_bt(self, char : str, callback=None):
+            self.add_char_bt(
+                char=c, callback=self.get_char(fn_obj, char=c, htm_entity=e))
+
+    def add_char_bt(self, char: str, callback=None):
         """Adds a new button in a free row/column slot."""
         tk.Button(
             self.bt_frame, text=char, command=callback, relief='flat').grid(
@@ -154,8 +150,8 @@ class EditHtml(tk.Frame):
         return start_idx, end_idx
 
     def insert_tag(self, start_idx, end_idx, opening_tag,
-                   start_txt='', end_txt='', closing_tag : bool = False,
-                   opts : str = None):
+                   start_txt='', end_txt='', closing_tag: bool = False,
+                   opts: str = None):
         """
         start_idx-where opening tag should start
         end_idx-where closing tag should start
@@ -207,12 +203,13 @@ class EditHtml(tk.Frame):
             self.insert(init_idx, '<tr>\n')
 
         self.insert(init_idx, '<table id="">\n')
- 
+
     def dialog_insert_tag(self, dialog_obj, opening_tag,
-                          closing_tag : bool=False, title='Insert html tag:',
+                          closing_tag: bool = False, title='Insert html tag:',
                           opts=None, **kwargs):
         options = dialog_obj(self, title).result
-        if not options: return
+        if not options:
+            return
         html_opts = str()
 
         if opts:
@@ -232,10 +229,10 @@ class EditHtml(tk.Frame):
         for item in ((end_idx, closing_tag), (start_idx, opening_tag)):
             self.edit_field.insert(*item)
 
-    def insert_formatting_tag(self, opening_tag, closing_tag : bool = False,
-                   opts : str = None):
+    def insert_formatting_tag(
+            self, opening_tag, closing_tag: bool = False, opts: str = None):
         """Customized insert_tag() to be attached as a callback.
-        
+
         Should only be used when only simple tag insertions in
         editing viewport are needed (no additional dialog-boxes etc.)"""
 
@@ -250,6 +247,7 @@ class EditHtml(tk.Frame):
     def get_contents(self) -> str:
         # Move into HtmlText
         return self.edit_field.get('1.0', 'end-1c')
+
 
 class ToolBar(tk.Frame):
     """Class for making tool-bars with html-tag buttons.
@@ -300,7 +298,7 @@ class ToolBar(tk.Frame):
         return lambda: self.ctag_f(tag_name, **kwargs)
 
     def stag(self, tag_name, **kwargs):
-        "returns callback for inline _s_ingle closed <tag />"
+        """returns callback for inline _s_ingle closed <tag />"""
 
         return lambda: self.parent.insert_formatting_tag(
             opening_tag=tag_name, **kwargs)
@@ -318,11 +316,12 @@ class ToolBar(tk.Frame):
     def dialog_generator(
             self, inputs, booleans, tag, *args, title=None,
             start_txt='\n', end_txt='\n', icon=None, **kwargs):
-        '''Returns tuple to be used as an input for add_tool_buttons.'''
+        """Returns tuple to be used as an input for add_tool_buttons.
 
-        # The dialog is called in the following way:
-        # CollectValues(
-        # self, parent, booleans=[], inputs=[], title = None)
+        The dialog is called in the following way:
+        CollectValues(
+        self, parent, booleans=[], inputs=[], title = None)
+        """
 
         return (icon, tag, lambda:
                 self.collect_values_dialog(
@@ -430,8 +429,9 @@ class PageStructureBar(ToolBar):
             tk.OptionMenu, input_option, *self.meta_types,
             command=self.meta_http_equiv_cb)
 
-        self.meta_names = ['application-name', 'author', 'description',
-             'generator', 'keywords', 'viewport']
+        self.meta_names = [
+            'application-name', 'author', 'description',
+            'generator', 'keywords', 'viewport']
 
     def meta_http_equiv_cb(self, val):
         if val == 'name':
@@ -466,7 +466,7 @@ class MainToolBar(ToolBar):
         self.add_tool_buttons(
             (icon('copy.png'), 'Copy', get_ev_cb(self.parent, '<<Copy>>')),
             (icon('cut.png'), 'Cut', get_ev_cb(self.parent, '<<Cut>>')),
-            (icon('paste.png'), 'Paste', get_ev_cb(self.parent,'<<Paste>>')))
+            (icon('paste.png'), 'Paste', get_ev_cb(self.parent, '<<Paste>>')))
 
         self.separator()
 
@@ -499,7 +499,7 @@ class StandardTools(ToolBar):
 
             (icon('insert_image.png'), 'img',
              lambda: self.parent.dialog_insert_tag(
-                 opening_tag='img', title ='Insert image',
+                 opening_tag='img', title='Insert image',
                  dialog_obj=InsertImgDialog)),
 
             (icon('insert_hyperlink.png'), 'anchor',
@@ -528,7 +528,7 @@ class TableBar(ToolBar):
 
         self.add_tool_buttons(
             (icon('table.png'), 'table', self.tag('table')),
-            (icon('insert_row.png'), 'row',self.ctag('tr')),
+            (icon('insert_row.png'), 'row', self.ctag('tr')),
             (icon('table_header.png'), 'th', self.ctag('th')),
             (icon('table_cell.png'), 'td', self.ctag('td')))
 
@@ -536,16 +536,16 @@ class TableBar(ToolBar):
 class FontTools(ToolBar):
     def tools(self):
         self.add_tool_buttons(
-            (icon('bold_type.png'),     'B',self.ctag('b')),
-            (icon('font_italic.png'),   'I',self.ctag('i')),
-            (icon('strikethrough.png'), 'S',self.ctag('strike')),
-            (icon('underline.png'),     'U',self.ctag('u')))
+            (icon('bold_type.png'),     'B', self.ctag('b')),
+            (icon('font_italic.png'),   'I', self.ctag('i')),
+            (icon('strikethrough.png'), 'S', self.ctag('strike')),
+            (icon('underline.png'),     'U', self.ctag('u')))
 
         self.separator()
 
         self.add_tool_buttons(
-            (icon('superscript.png'), 'sup',self.ctag('sup')),
-            (icon('subscript.png'), 'sub',self.ctag('sub')))
+            (icon('superscript.png'), 'sup', self.ctag('sup')),
+            (icon('subscript.png'), 'sub', self.ctag('sub')))
 
         self.separator()
 
@@ -575,11 +575,12 @@ class ListTab(ToolBar):
             (icon('defined_term.png'), 'dt', self.ctag('dt')),
             (icon('definition.png'), 'dd', self.ctag('dd')))
 
+
 class SemanticTags(ToolBar):
     def tools(self):
         self.add_tool_buttons(
             (icon('strong.png'), 'strong', self.ctag('strong')),
-            (icon('emph.png'), 'em',self.ctag('em')),
+            (icon('emph.png'), 'em', self.ctag('em')),
 
             (icon('blockquote.png'), 'blockquote', lambda:
              self.parent.insert_tag(
@@ -620,7 +621,6 @@ class FormTab(ToolBar):
 
             return CollectValues(
                 parent, title, inputs=txarea_inputs, booleans=txarea_booleans)
-
 
         self.add_tool_buttons(
             (icon('webform.png'), 'form',
@@ -672,7 +672,6 @@ class FormTab(ToolBar):
 
             return SelectMenu(parent, 'true', 'false', '')
 
-
         self.input_list_dialog = {
             'file': {'booleans': ('accept', 'multiple')},
 
@@ -680,7 +679,7 @@ class FormTab(ToolBar):
                 (tk.Entry, ('formaction',)),
                 (lambda parent:
                  FileChooser(parent, filetypes=(
-                     ('Images', ('.jpg','.jpeg', '.png', '.gif')),
+                     ('Images', ('.jpg', '.jpeg', '.png', '.gif')),
                      ('All files', '*')
                  )), ('src',)),
 
@@ -704,13 +703,13 @@ class FormTab(ToolBar):
                                    parent, from_=0, to=100),
                                 ('maxlength', 'minlength', 'size'))]},
             'text': {'inputs': [(tk.Entry, ('placeholder',)),
-                                (spellcheck, ('spellcheck',)),
-            ]}
+                                (spellcheck, ('spellcheck',))]}
         }
-        
+
         inputs = ['Insert input', 'button', 'checkbox', 'color', 'date',
-                  'datetime-local', 'email', 'hidden','month', 'number', 'week',
-                  'password', 'radio', 'range', 'reset', 'search', 'time']
+                  'datetime-local', 'email', 'hidden', 'month', 'number',
+                  'week', 'password', 'radio', 'range', 'reset',
+                  'search', 'time']
         inputs.extend(self.input_list_dialog.keys())
 
         self.input_list = tuple(sorted(inputs))
@@ -746,7 +745,7 @@ class FormTab(ToolBar):
 
         elif type_ in self.input_list:
             self.ctag_f(
-                'input', opts='type="{0}" name="" id="" value=""'.format(type_),
+                'input', opts=f'type="{type_}" name="" id="" value=""',
                 closing_tag=False)
 
         self.input_option.set('Insert input')
@@ -792,10 +791,10 @@ class MenuBar(tk.Menu):
             setattr(self, menu, tk.Menu(self))
 
         menus = (
-            (self.file_menu,                                    # parent-menu
-             ('New window', 'Open', 'Save', 'Save as', 'Exit'), # label
-             ('Ctrl+N', 'Ctrl+O', 'Ctrl+S', None, 'Ctrl+Q'),    # accelerator
-             (app._new_instance, app.open_document,             # command
+            (self.file_menu,                                     # parent-menu
+             ('New window', 'Open', 'Save', 'Save as', 'Exit'),  # label
+             ('Ctrl+N', 'Ctrl+O', 'Ctrl+S', None, 'Ctrl+Q'),     # accelerator
+             (app._new_instance, app.open_document,              # command
               app.save_document, app.save_document_as, app.quit)),
 
             (self.edit_menu,
@@ -808,10 +807,10 @@ class MenuBar(tk.Menu):
               get_ev_cb(self.app, "<<Copy>>"), get_ev_cb(self.app, "<<Cut>>"),
               get_ev_cb(self.app, "<<Paste>>"))),
 
-             (self.document_menu,
-              ('Find text', 'Replace text', 'View in browser'),
-              ('Ctrl+F', 'Ctrl+R', None),
-              (app.find_text, app.replace_text, app.view_in_browser)))
+            (self.document_menu,
+             ('Find text', 'Replace text', 'View in browser'),
+             ('Ctrl+F', 'Ctrl+R', None),
+             (app.find_text, app.replace_text, app.view_in_browser)))
 
         for menu in menus:
             for (label, acc, cmd) in zip(*menu[1:]):

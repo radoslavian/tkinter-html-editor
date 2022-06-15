@@ -1,4 +1,4 @@
-"Classes for generating webpage previews."
+"""Classes for generating webpage previews."""
 
 import tkinter as tk
 import urllib.request
@@ -11,11 +11,8 @@ from PIL import Image, ImageTk
 
 
 class HtmlPreview(tk.Frame):
-    '''Html file (very basic) preview frame that can be embedded in a
-    separate tab. Requires tkhtml to work.'''
-
-    # To do: hyperlinks don't work (and I probably won't be able
-    # to fix that).
+    """Html file (very basic) preview frame that can be embedded in a
+    separate tab. Requires tkhtml to work."""
 
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
@@ -25,10 +22,11 @@ class HtmlPreview(tk.Frame):
             from tkinterhtml import TkinterHtml
 
         except ImportError as e:
-            error_message = ('The preview html tab is not working due to ' +
-            'the following  error:\n\n{0}.\n\nCheck the documentation ' +
-            'or try to install the required tkhtml module using the ' +
-            'pip command-line tool:\n\npip install tkinterhtml')
+            error_message = (
+                'The preview html tab is not working due to ' +
+                'the following  error:\n\n{0}.\n\nCheck the documentation ' +
+                'or try to install the required tkhtml module using the ' +
+                'pip command-line tool:\n\npip install tkinterhtml')
             print(e)
 
             self.preview_frame = tk.Text(self)
@@ -70,7 +68,7 @@ class HtmlPreview(tk.Frame):
 
         return photo
 
-    def preview(self, html_code : str):
+    def preview(self, html_code: str):
         if hasattr(self.preview_frame, 'no_html'):
             return
         self.preview_frame.reset()

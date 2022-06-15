@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
+import tkinter as tk
+import os
+import pathlib
 from tkinter import messagebox
 from modules.html_editor import *
 import webbrowser
 
 
 class MainApp(tk.Toplevel):
-    def __init__(self, root, path_to_doc = None):
+    def __init__(self, root, path_to_doc=None):
         tk.Toplevel.__init__(self, root)
 
         self.root = root
@@ -60,12 +63,14 @@ class MainApp(tk.Toplevel):
         self.bind('<FocusIn>', self.set_current_working_dir)
 
     def set_current_working_dir(self, event=None):
-        '''Sets current working directory (according to currently opened file)
+        """Sets current working directory (according to currently opened file)
         on window FocusIn event.
-        '''
-        if (getattr(self, 'html_file_path')
-            and self.html_file_path is not None
-            and os.getcwd() != os.path.dirname(self.html_file_path)):
+        """
+        if (
+                getattr(self, 'html_file_path')
+                and self.html_file_path is not None
+                and os.getcwd() != os.path.dirname(self.html_file_path)
+        ):
             os.chdir(os.path.dirname(self.html_file_path))
 
     def find_text(self, event=None):
@@ -106,7 +111,6 @@ class MainApp(tk.Toplevel):
         else:
             self.update_work_state(filename)
 
-
     class InnerDecorators:
         @classmethod
         def save_as(cls, fn):
@@ -126,10 +130,10 @@ class MainApp(tk.Toplevel):
                         self.update_work_state(file_path)
 
                 else:
-                    raise DocumentSaveCancelled('The document is unsaved - '
-                            'cancelled while selecting a file.')
+                    raise DocumentSaveCancelled(
+                        'The document is unsaved - '
+                        'cancelled while selecting a file.')
             return wrapper
-
 
         @classmethod
         def save(cls, fn):
@@ -142,8 +146,7 @@ class MainApp(tk.Toplevel):
                     self.save_document_as()
             return wrapper
 
-
-    def _save(self, file_path, txt_fld : tk.Text):
+    def _save(self, file_path, txt_fld: tk.Text):
         with open(file_path, 'w') as file:
             file.write(txt_fld.get("1.0", "end-1c"))
 
@@ -180,7 +183,8 @@ class MainApp(tk.Toplevel):
         self.title(self.app_name + title_addon)
 
     def ask_to_save_file(self):
-        result = messagebox.askyesnocancel(parent=self,
+        result = messagebox.askyesnocancel(
+            parent=self,
             title='unsaved document',
             message="The document '{}' was modified but wasn't saved. ".format(
                 base_file_name(self.html_file_path)) +
@@ -188,7 +192,7 @@ class MainApp(tk.Toplevel):
 
         if result:
             self.save_document()
-        elif result == False:
+        elif result is False:
             return
         else:
             raise DocumentSaveCancelled
@@ -197,14 +201,13 @@ class MainApp(tk.Toplevel):
         if self.main_tabs.edit_html.edit_modified():
             try:
                 self.save_document()
-
             except DocumentSaveCancelled:
                 messagebox.showinfo(
                     parent=self, title='Unsaved file',
                     message='You have to save the file first in order'
                     ' to view it in an external browser.')
 
-                return # zamiast return powinno raczej wzn. wyjątek
+                return  # zamiast return powinno raczej wzn. wyjątek
 
         if not self.html_file_path:
             return
@@ -216,7 +219,7 @@ class MainApp(tk.Toplevel):
             messagebox.showerror(
                 parent=self, title='Browser control error',
                 message='During the operation browser control error'
-                ' has occured: {}.'.format(err))
+                f' has occured: {err}.')
 
     def quit(self, event=None):
         if self.main_tabs.edit_html.edit_modified():
@@ -274,7 +277,7 @@ class RootWin(tk.Tk):
 
 def main():
     root = RootWin()
-    mapp = MainApp(root)
+    MainApp(root)
     root.mainloop()
 
 

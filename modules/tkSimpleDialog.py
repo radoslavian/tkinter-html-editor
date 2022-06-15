@@ -1,13 +1,14 @@
 from tkinter import *
-import os
+
 
 class Dialog(Toplevel):
     """Custom transient dialog window.
 
     Fetched from: An Introduction to Tkinter (Draft Edition)
-    (Check permission for reusal!)"""
+    (Check permission for reusal!)
+    """
 
-    def __init__(self, parent, title = None):
+    def __init__(self, parent, title=None):
 
         Toplevel.__init__(self, parent)
         self.transient(parent)

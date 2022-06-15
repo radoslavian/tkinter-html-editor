@@ -1,7 +1,7 @@
 import os
 
 
-def list_files(directory : str, f_ext : str) -> [] or None:
+def list_files(directory: str, f_ext: str) -> [] or None:
     '''Lists files with a given extension in a directory.
 
     f_ext-file extension
@@ -14,12 +14,13 @@ def list_files(directory : str, f_ext : str) -> [] or None:
         filenames))
 
 
-def getattr_redirect(self, attr_name, *pargs, **kwargs):
-    '''Redirects calls for attributes not present in an instance to
+def getattr_redirect(self, attr_name):
+    """Redirects calls for attributes not present in an instance to
     an embedded object-referenced by self.wrapped.
 
-    Function has to be assigned to the __getattr__ method of an 
-    instance. Only method calls are redirected.'''
+    Function has to be assigned to the __getattr__ method of an
+    instance. Only method calls are redirected.
+    """
 
     def wrapper(*pargs, **kwargs):
         attribute = getattr(self.wrapped, attr_name)
@@ -28,12 +29,14 @@ def getattr_redirect(self, attr_name, *pargs, **kwargs):
             return attribute(*pargs, **kwargs)
         else:
             raise AttributeError(
-                "{} is not callable.".format(attr)) from ValueError
+                "{} is not callable.".format(attr_name)) from ValueError
 
     return wrapper
 
 
-def base_file_name(path : 'str, bytes, os.PathLike'):
+def base_file_name(path):
+    """path: 'str, bytes, os.PathLike'"""
+
     try:
         file_name = os.path.basename(path)
     except TypeError:

@@ -17,7 +17,7 @@ def scr_update_scheduler(fn):
             self.update_after_id = self.after(
                 self.scr_update_time, run_fn)
         else:
-             run_fn()
+            run_fn()
     return wrapper
 
 
@@ -96,7 +96,7 @@ class HtmlParser(HTMLParser):
 
         # tag name with left < position within the html_tag:
 
-        tag_name_match = re.match('^<{0}\s'.format(tag_name), html_tag)
+        tag_name_match = re.match("^<{tag_name}\s", html_tag)
         if tag_name_match:
             start_idx = tag_name_match.end()
         else:
@@ -119,7 +119,7 @@ class HtmlParser(HTMLParser):
         attr_reg = r'["\'](.*?)["\']'
         attr_values_indices = tuple(
             (idx.start(), idx.end()) for idx in re.finditer(
-            attr_reg, html_tag))
+                attr_reg, html_tag))
 
         for idx in attr_values_indices:
             self.html_fld_ref.apply_tag(
@@ -137,12 +137,12 @@ class HtmlText(ScrolledText):
         # indentation:
         self.indent = True
         self.indent_depth = 2
-        self.indent_mark = ' ' # indenting with spaces
+        self.indent_mark = ' '  # indenting with spaces
 
         # starttags that shouldn't be followed by
         # an additional line indentation:
         self.non_ind_stags = 'meta', 'br', 'hr', 'img', 'link', 'input'
-        
+
         self.last_fed_indices = ('1.0', 'end')
         self.scr_update_time = 400
         self.update_after_id = self.after_idle(self.update_current_screen)
@@ -152,21 +152,19 @@ class HtmlText(ScrolledText):
 
         self.line_parser = HtmlText.ParseLine()
 
-
     class ParseLine(HTMLParser):
-        '''
-        This class instance, when called like a function and given
+        """This class instance, when called like a function and given
         html-formatted text as an argument, returns opening/closing etc.
         tags in the form of the list:
         [('starttag', init_offset), ('endtag', init_offset)]
-        '''
+        """
 
         def __init__(self):
             HTMLParser.__init__(self)
             self.data = []
 
         def handle_starttag(self, tag, attrs):
-            self.data.append(['starttag',tag, self.getpos()])
+            self.data.append(['starttag', tag, self.getpos()])
 
         def handle_startendtag(self, tag, attrs):
             self.data.append(['startendtag', tag, self.getpos()])
@@ -179,7 +177,6 @@ class HtmlText(ScrolledText):
             self.feed(data)
 
             return self.data
-
 
     def bind_events(self):
         events = (
@@ -197,8 +194,8 @@ class HtmlText(ScrolledText):
             return
 
         def check_if_opened_on_the_same_line(tags):
-            if not tags: return
-
+            if not tags:
+                return
             closing_tag = tags[-1][1]
 
             # extremely rudimentary, to be amended:
@@ -208,15 +205,15 @@ class HtmlText(ScrolledText):
 
             for tag in tags[0:-1]:
                 if tag[1] == closing_tag:
-                    return True                    
+                    return True
             return False
 
         cur_line_idx = self.index('insert linestart')
         cur_line = self.get(cur_line_idx, cur_line_idx+' lineend')
-                
+
         cur_tag = self.line_parser(cur_line)
 
-        cur_l_white_chars = re.match('^\s+', cur_line)
+        cur_l_white_chars = re.match("^\s+", cur_line)
 
         cur_line_indent = 0
         prev_line_indent = 0
@@ -230,9 +227,12 @@ class HtmlText(ScrolledText):
 
         new_indent = 0
 
-        if (cur_tag and cur_tag[-1][0] == 'endtag' and cur_line_indent
-            and not check_if_opened_on_the_same_line(cur_tag)):
-
+        if (
+                cur_tag
+                and cur_tag[-1][0] == 'endtag'
+                and cur_line_indent
+                and not check_if_opened_on_the_same_line(cur_tag)
+        ):
             new_indent = cur_line_indent - self.indent_depth
 
             if new_indent < 0:
@@ -254,7 +254,7 @@ class HtmlText(ScrolledText):
             prev_tag = self.line_parser(prev_line)
 
             # prev. line white characters:
-            white_chars = re.match('^\s+', prev_line)
+            white_chars = re.match("^\s+", prev_line)
 
         else:
             prev_tag = white_chars = None
@@ -284,15 +284,15 @@ class HtmlText(ScrolledText):
 
                 print(prev_tag)
                 print('indenting: {}'.format(
-                    self.indent_depth+prev_line_indent)) # debug
+                    self.indent_depth+prev_line_indent))  # debug
 
             elif prev_tag[-1][0] == 'endtag':
 
                 if cur_line_indent:
-                    if prev_line_indent == cur_line_indent: return
+                    if prev_line_indent == cur_line_indent:
+                        return
 
                     new_indent = prev_line_indent
-
                     self.delete(
                         'insert linestart', 'insert linestart+{0}c'.format(
                             cur_line_indent))
@@ -301,13 +301,13 @@ class HtmlText(ScrolledText):
                         new_indent = prev_line_indent-self.indent_depth
 
         # line with white characters only
-        elif re.match('^\s+$', prev_line):
+        elif re.match("^\s+$", prev_line):
             print('white chars')
 
         elif re.match('^$', prev_line):
             print('newline only')
 
-        else: # data - letters etc.
+        else:  # data - letters etc.
             if cur_line_indent == prev_line_indent:
                 return
 
@@ -330,17 +330,18 @@ class HtmlText(ScrolledText):
 
     @whole_scr_upd
     def load_doc(self, path):
-        if not path: return
+        if not path:
+            return
         try:
             html_file = open(path)
         except IOError as err:
-            print('Could not open file: {}'.format(err))
+            print(f"Could not open file: {err}")
             raise
         else:
             with html_file:
                 self.insert_if_empty(html_file.read())
             self.edit_reset()
-                
+
     def is_empty(self):
         return True if self.compare("end-1c", "==", "1.0") else False
 
@@ -353,7 +354,7 @@ class HtmlText(ScrolledText):
                 'Text field {0} is non-empty or modified'.format(self))
         else:
             self.insert('1.0', content)
-            self.edit_modified(False) # to chyba nie powinno tu być
+            self.edit_modified(False)  # check if this should be here
 
     def configure_tags(self):
         self.tags = (
@@ -384,14 +385,14 @@ class HtmlText(ScrolledText):
         self.feed_parser()
 
     def feed_parser(self):
-        '''Feeds text contents (portion of or whole document)
-        of the component into the parser.'''
+        """Feeds text contents (portion of or whole document)
+        of the component into the parser.
+        """
 
         self.reset()
-        indices = self.last_fed_indices
         self.feed(self.get(*self.last_fed_indices))
 
-    def get_visible_area(self) -> 'topleft_idx, bottom_right_idx':
+    def get_visible_area(self):
         width = self.winfo_width()
         height = self.winfo_height()
 
@@ -413,12 +414,13 @@ class HtmlText(ScrolledText):
         for tag in self.tags:
             self.clear_tags(tag[0])
 
-    def apply_tag(self, p_line : int, p_col : int, tag_len, tk_tag):
-        '''Apply tkinter.Text tag
+    def apply_tag(self, p_line: int, p_col: int, tag_len, tk_tag):
+        """Apply tkinter.Text tag
 
-        p_line, p_col - parser lines/columns: values returned by 
+        p_line, p_col - parser lines/columns: values returned by
         the html parser (lines/cols relative to
-        the start of what's been fed into it).'''
+        the start of what's been fed into it).
+        """
 
         text_line, text_col = index_to_numbers(self.last_fed_indices[0])
         new_init_idx = '{0}.{1}+{2}c'.format(
@@ -429,10 +431,11 @@ class HtmlText(ScrolledText):
 
 
 if __name__ == '__main__':
+    # for local manual testing
     root = tk.Tk()
     text = HtmlText(root)
     text.grid()
-    text.insert('1.0', '''<meta property="og:url" 
+    text.insert('1.0', '''<meta property="og:url"
 property="prcontentop2" content="httpsproperty://stackoverflow.com/"/>
   </a>
 <div>
