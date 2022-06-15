@@ -273,8 +273,8 @@ class SearchTextDialog(Dialog):
                 self.case.get())
 
     def get_start_stop_idx(self, direction):
-        '''Returns indexes needed by search methods
-        for seeking through contents of the tk.Text.'''
+        """Returns indices needed by search methods
+        for seeking through contents of the tk.Text."""
 
         if direction == 0:  # forward search
             start_idx = self.last_idx
@@ -315,7 +315,7 @@ class SearchTextDialog(Dialog):
             parent=self, title='End of search',
             message='Do you want to restart search?')
 
-        if decision == True:
+        if decision is True:
             if direction == 0:
                 self.last_idx = '1.0'
             else:
